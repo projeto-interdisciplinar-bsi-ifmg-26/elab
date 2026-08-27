@@ -1,4 +1,3 @@
-```markdown
 # ELAB
 
 Rede profissional que conecta colaboradoras (mulheres em tech) a empresas — vagas, eventos e projetos freelance.

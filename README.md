@@ -57,4 +57,3 @@ src/
 - Conectar frontend na API (fetch de login/registro)
 - Trocar repositories em memória por PostgreSQL
 - Mecanismo de match colaboradora ↔ oportunidade (plano já definido, não implementado)
-```

@@ -1,23 +1,113 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Início • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ELAB - Portal para mulheres na tecnologia</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="index">
-<div class="hero">
-  <a class="logo" href="index.html">{<span>ELA</span>B}</a>
-  <h1>Um portal para mulheres na tecnologia</h1>
-  <p>O ELAB conecta mulheres a oportunidades na área da tecnologia.</p>
-  <div class="acoes"><a class="btn" href="login.html">Entrar</a><a class="btn ghost" href="registro.html">Cadastrar</a></div>
-</div>
-<div class="tres">
-  <div class="caixa"><h2>Oportunidades</h2><p>Empregos, projetos, bolsas de estudo e outras oportunidades na área da tecnologia.</p></div>
-  <div class="caixa"><h2>Comunidade</h2><p>Conexão e compartilhamento de experiências entre mulheres nesta profissão.</p></div>
-  <div class="caixa"><h2>Crescimento</h2><p>Conteúdo, palestras, eventos e acesso a mentoria.</p></div>
-</div>
-<script src="js/app.js"></script>
+
+  <header class="landing-header"><a class="logo" href="index.html" aria-label="ELAB, página inicial"><img
+        src="img/logo-elab-oficial.png" alt="" width="460" height="176"></a>
+    <nav class="landing-nav"><a href="#propostas">O que você encontra</a><a href="#sobre">Sobre o ELAB</a><a
+        class="btn ghost sm" href="login.html">Entrar</a><a class="btn sm" href="registro.html">Cadastrar</a></nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-tag">Para mulheres na tecnologia</div>
+      <h1>Vagas, eventos e formação em tecnologia.</h1>
+      <p class="lead">Consulte oportunidades publicadas por empresas e organizações e encontre atividades para sua
+        carreira.</p>
+
+      <div class="acoes">
+        <a class="btn" href="registro.html">Criar uma conta</a>
+        <a class="btn ghost" href="login.html">Já tenho cadastro</a>
+      </div>
+
+      <div class="metricas">
+        <div class="metrica-card mc-vagas">
+          <img class="metrica-icone" src="https://img.icons8.com/ios/32/6c4173/briefcase.png" alt="" aria-hidden="true">
+          <span class="metrica-num">Vagas</span>
+          <span class="metrica-label">Empregos, estágios e trainee</span>
+        </div>
+        <div class="metrica-card mc-eventos">
+          <img class="metrica-icone" src="https://img.icons8.com/ios/32/6c4173/calendar.png" alt="" aria-hidden="true">
+          <span class="metrica-num">Eventos</span>
+          <span class="metrica-label">Atividades presenciais e online</span>
+        </div>
+        <div class="metrica-card mc-bolsas">
+          <img class="metrica-icone" src="https://img.icons8.com/ios/32/6c4173/graduation-cap.png" alt=""
+            aria-hidden="true">
+          <span class="metrica-num">Bolsas</span>
+          <span class="metrica-label">Formação e desenvolvimento profissional</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tres" id="propostas">
+      <article class="caixa cx-vagas">
+        <div class="cx-header">
+          <img class="cx-icone" src="https://img.icons8.com/ios/32/6c4173/briefcase.png" alt="" aria-hidden="true">
+          <span class="cx-badge">Para você</span>
+        </div>
+        <h2>Oportunidades de emprego</h2>
+        <p>Encontre vagas, estágios e bolsas na área de tecnologia, publicados por empresas parceiras. Consulte os
+          detalhes de cada oportunidade antes de se candidatar.</p>
+        <ul class="cx-lista">
+          <li>Vagas efetivas, estágio e trainee</li>
+          <li>Contratações CLT e PJ</li>
+          <li>Requisitos e modalidade de trabalho</li>
+        </ul>
+        <a href="login.html" class="btn sm" style="margin-top:auto">Ver vagas →</a>
+      </article>
+
+      <article class="caixa cx-eventos">
+        <div class="cx-header">
+          <img class="cx-icone" src="https://img.icons8.com/ios/32/6c4173/calendar.png" alt="" aria-hidden="true">
+          <span class="cx-badge">Comunidade</span>
+        </div>
+        <h2>Eventos e encontros</h2>
+        <p>Veja atividades para aprender, trocar experiências e conhecer outras pessoas da área. Há opções presenciais e
+          online.</p>
+        <ul class="cx-lista">
+          <li>Palestras e conversas com profissionais</li>
+          <li>Oficinas para aprender na prática</li>
+          <li>Informações de data e inscrição</li>
+        </ul>
+        <a href="login.html" class="btn sm" style="margin-top:auto">Ver eventos →</a>
+      </article>
+
+      <article class="caixa cx-perfil">
+        <div class="cx-header">
+          <img class="cx-icone" src="https://img.icons8.com/ios/32/6c4173/user.png" alt="" aria-hidden="true">
+          <span class="cx-badge">Seu espaço</span>
+        </div>
+        <h2>Seu perfil profissional</h2>
+        <p>Reúna suas informações profissionais em um só lugar e deixe mais claro o que você sabe fazer e quais são seus
+          próximos passos.</p>
+        <ul class="cx-lista">
+          <li>Área de atuação, habilidades e experiência</li>
+          <li>Acompanhamento das suas inscrições</li>
+          <li>Perfil disponível para empresas parceiras</li>
+        </ul>
+        <a href="registro.html" class="btn sm" style="margin-top:auto">Criar meu perfil →</a>
+      </article>
+    </section>
+  </main>
+
+  <footer class="landing-footer" id="sobre">
+    <p><strong>ELAB - oportunidades para mulheres na tecnologia</strong></p>
+    <p class="mut">IFMG - Campus Sabará - Programação Web II - 2026</p>
+    <p class="mut" style="font-size: 0.84rem;">Integrantes: Caio Vitor, David Rodrigues, Jonathan Alexandre, Igor
+      Barbosa, Isabelle Pascini e Mateus Batista</p>
+    <p class="mut">Ícones por <a href="https://icons8.com" target="_blank" rel="noopener noreferrer">Icons8</a></p>
+  </footer>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

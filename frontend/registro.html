@@ -1,29 +1,106 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cadastro • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastro - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="registro">
-<div class="split inv">
-  <div class="ilus"><a class="logo" href="index.html">{<span>ELA</span>B}</a><div class="ph-ilus">Espaço para ilustração</div></div>
-  <div class="form-lado"><form novalidate>
-    <h1>Junte-se ao ELAB</h1>
-    <p class="mut">Crie uma conta para ficar por dentro de notícias e oportunidades para mulheres na tecnologia.</p>
-    <div class="linha">
-      <label>Nome<input name="nome" autocomplete="given-name" required></label>
-      <label>Sobrenome<input name="sobrenome" autocomplete="family-name"></label>
-    </div>
-    <label>Tipo de conta<select name="tipo"><option value="colaboradora">Colaboradora</option><option value="empresa">Empresa</option></select></label>
-    <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
-    <label>Senha (mínimo 8 caracteres)<input type="password" name="senha" autocomplete="new-password" minlength="8" required></label>
-    <p class="erro" role="alert"></p>
-    <button class="btn block" type="submit">Criar conta</button>
-    <p style="margin-top:1rem"><a class="btn ghost block" href="login.html">Já tenho uma conta</a></p>
-  </form></div>
-</div>
-<script src="js/app.js"></script>
+
+  <div class="split inv">
+    <main class="form-lado">
+      <div class="box">
+        <h1>Junte-se ao ELAB</h1>
+        <p class="mut">Preencha seus dados para criar uma conta.</p>
+
+        <form id="form-registro">
+          <div class="linha">
+            <label>
+              Nome
+              <input name="nome" placeholder="Seu nome" autocomplete="given-name" required autofocus>
+            </label>
+            <label>
+              Sobrenome
+              <input name="sobrenome" placeholder="Seu sobrenome" autocomplete="family-name">
+            </label>
+          </div>
+
+          <label>
+            Tipo de conta
+            <select name="tipo" id="campo-tipo" required>
+              <option value="colaboradora">Profissional - buscar oportunidades</option>
+              <option value="empresa">Empresa - publicar oportunidades</option>
+            </select>
+          </label>
+
+          <label>
+            E-mail
+            <input type="email" name="email" placeholder="seu.email@exemplo.com" autocomplete="email" required>
+          </label>
+
+          <div class="linha">
+            <label>
+              Senha (mínimo 8 caracteres)
+              <div class="campo-senha">
+                <input type="password" name="senha" id="reg-senha" placeholder="********" autocomplete="new-password"
+                  minlength="8" required>
+                <button type="button" class="btn-olho" data-alvo="reg-senha" aria-label="Mostrar senha">Mostrar</button>
+              </div>
+            </label>
+            <label>
+              Confirmar senha
+              <div class="campo-senha">
+                <input type="password" name="confirmar_senha" id="reg-conf-senha" placeholder="********"
+                  autocomplete="new-password" minlength="8" required>
+                <button type="button" class="btn-olho" data-alvo="reg-conf-senha"
+                  aria-label="Mostrar senha">Mostrar</button>
+              </div>
+            </label>
+          </div>
+
+          <div style="margin: 0.5rem 0 1rem; font-size: 0.88rem;">
+            <label
+              style="display:inline-flex; align-items:flex-start; gap:0.5rem; margin:0; cursor:pointer; font-weight:normal;">
+              <input type="checkbox" id="aceite-termos" required style="width:auto; margin-top:0.2rem;">
+              <span>Concordo com os Termos de Uso e Política de Privacidade do ELAB.</span>
+            </label>
+          </div>
+
+          <p class="erro" role="alert"></p>
+
+          <button class="btn block" type="submit">Criar conta</button>
+
+          <div class="centro" style="margin-top: 1.25rem;">
+            <p class="mut" style="margin-bottom: 0.5rem;">Já possui uma conta no ELAB?</p>
+            <a class="btn ghost block" href="login.html">Fazer login</a>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <aside class="ilus">
+      <div class="ilus-topo">
+        <a class="logo" href="index.html" aria-label="ELAB, página inicial"><img src="img/logo-elab-oficial.png" alt=""
+            width="460" height="176"></a>
+        <span class="tag">Para mulheres na tecnologia</span>
+      </div>
+      <div class="ilus-imagem">
+        <video class="registro-video" autoplay muted loop playsinline preload="metadata" poster="img/elab-cadastro.png"
+          aria-label="Vídeo de apresentação do ELAB">
+          <source src="media/registro-elab.webm" type="video/webm">
+        </video>
+      </div>
+      <div class="ilus-rodape">
+        <strong>ELAB - oportunidades na tecnologia.</strong>
+        <span>Crie sua conta para consultar vagas, eventos e bolsas.</span>
+      </div>
+    </aside>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

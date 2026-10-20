@@ -1,24 +1,97 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entrar • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="login">
-<div class="split">
-  <div class="ilus"><a class="logo" href="index.html">{<span>ELA</span>B}</a><div class="ph-ilus">Espaço para ilustração</div></div>
-  <div class="form-lado"><form novalidate>
-    <h1>Entrar</h1>
-    <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
-    <label>Senha<input type="password" name="senha" autocomplete="current-password" required></label>
-    <p class="erro" role="alert"></p>
-    <button class="btn block" type="submit">Entrar</button>
-    <p class="centro" style="margin-top:1rem"><a class="btn ghost block" href="registro.html">Criar nova conta</a></p>
-    <p class="mut centro">Teste: colab@elab.com ou empresa@elab.com • senha12345</p>
-  </form></div>
-</div>
-<script src="js/app.js"></script>
+
+  <div class="split">
+    <aside class="ilus">
+      <div class="ilus-topo">
+        <a class="logo" href="index.html" aria-label="ELAB, página inicial"><img src="img/logo-elab-oficial.png" alt=""
+            width="460" height="176"></a>
+        <span class="tag">Rede ELAB</span>
+      </div>
+      <div class="ilus-imagem">
+        <video class="login-video" autoplay muted loop playsinline preload="metadata"
+          aria-label="Vídeo de apresentação do ELAB">
+          <source src="media/login-elab-transparente.webm" type="video/webm">
+        </video>
+      </div>
+      <div class="ilus-rodape">
+        <strong>Entre na sua conta do ELAB.</strong>
+        <span>Consulte vagas e eventos publicados na plataforma.</span>
+      </div>
+    </aside>
+
+    <main class="form-lado">
+      <div class="box">
+        <h1>Acessar conta</h1>
+        <p class="mut">Use seu e-mail e senha para entrar.</p>
+
+        <form id="form-login">
+          <label>
+            E-mail
+            <input type="email" name="email" id="campo-email" placeholder="exemplo@email.com" autocomplete="email"
+              required autofocus>
+          </label>
+
+          <label>
+            Senha
+            <div class="campo-senha">
+              <input type="password" name="senha" id="campo-senha" placeholder="Digite sua senha"
+                autocomplete="current-password" required>
+              <button type="button" class="btn-olho" id="btn-toggle-senha" aria-label="Mostrar senha">Mostrar</button>
+            </div>
+          </label>
+
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin: 0.5rem 0 1rem; font-size: 0.88rem;">
+            <label style="display:inline-flex; align-items:center; gap:0.4rem; margin:0; cursor:pointer;">
+              <input type="checkbox" id="lembrar-me" style="width:auto; margin:0;"> Lembrar de mim
+            </label>
+            <a href="#recuperar" id="link-esqueci" style="font-weight:600;">Esqueceu sua senha?</a>
+          </div>
+
+          <p class="erro" role="alert"></p>
+
+          <button class="btn block" type="submit">Entrar</button>
+
+          <div class="centro" style="margin-top: 1.25rem;">
+            <p class="mut" style="margin-bottom: 0.5rem;">Ainda não tem uma conta?</p>
+            <a class="btn ghost block" href="registro.html">Criar conta</a>
+          </div>
+
+          <div class="demo-box">
+            <p>Contas de demonstração:</p>
+            <div class="demo-chips">
+              <button type="button" class="demo-chip" id="demo-colab" aria-pressed="false">Colaboradora (Ana)</button>
+              <button type="button" class="demo-chip" id="demo-empresa" aria-pressed="false">Empresa (Tech
+                Sabará)</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modal-esqueci" hidden>
+    <div class="modal-conteudo" role="dialog" aria-modal="true" aria-labelledby="recuperar-titulo">
+      <h2 id="recuperar-titulo">Recuperar acesso</h2>
+      <p class="mut">A redefinição de senha ainda não está disponível pelo portal. Entre em contato com a equipe
+        responsável pelo ELAB para recuperar seu acesso.</p>
+      <div class="acoes" style="justify-content: flex-end; margin-top: 1rem;">
+        <button type="button" class="btn sm" id="fechar-modal">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

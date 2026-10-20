@@ -1,19 +1,59 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Feed • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feed - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="feed">
-<main>
-  <h1 id="ola"></h1>
-  <div class="grid">
-    <section aria-label="Publicações"><div class="lista" id="lista"></div></section>
-    <aside aria-label="Em destaque"><h2>Eventos e bolsas</h2><div class="lista" id="destaques"></div></aside>
-  </div>
-</main>
-<script src="js/app.js"></script>
+
+  <main>
+    <header class="banner-feed">
+      <div class="banner-texto">
+        <h1 id="ola">Olá!</h1>
+        <p id="sub-saudacao">Veja as publicações mais recentes.</p>
+      </div>
+      <div class="banner-acoes">
+        <a href="vagas.html" class="btn sm">Ver vagas</a>
+      </div>
+    </header>
+
+    <div class="filtros" id="filtros-feed" role="region" aria-label="Filtrar por categoria">
+      <button data-tipo="" aria-pressed="true">Tudo</button>
+      <button data-tipo="vaga" aria-pressed="false">Vagas</button>
+      <button data-tipo="evento" aria-pressed="false"> Eventos</button>
+      <button data-tipo="palestra" aria-pressed="false"> Palestras</button>
+      <button data-tipo="bolsa" aria-pressed="false"> Bolsas</button>
+    </div>
+
+    <div class="grid">
+      <section aria-label="Publicações recentes">
+        <div class="lista" id="lista">
+          <div class="vazio">
+            <p>Carregando publicações...</p>
+          </div>
+        </div>
+      </section>
+
+      <aside aria-label="Outras publicações">
+        <h2>Outras publicações</h2>
+        <div class="lista" id="destaques"></div>
+
+        <div class="painel" style="margin-top: 1.5rem;">
+          <h3>Seu perfil</h3>
+          <p class="mut" style="font-size:0.9rem;">
+            Adicione sua área de atuação e experiência ao perfil.
+          </p>
+          <a href="editar-perfil.html" class="btn ghost sm" style="width:100%;">Editar perfil</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

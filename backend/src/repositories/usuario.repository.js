@@ -1,38 +1,77 @@
-// Camada de dados em memória. Para trocar por Postgres depois, reescreva o corpo
-// destas funções mantendo as assinaturas — nada fora deste arquivo muda.
 const bcrypt = require('bcryptjs');
 const { nodeEnv } = require('../config/env');
+const { getDb } = require('../config/db');
 
-const usuarios = [];
-let proximoId = 1;
+// Memória para fallback caso o banco não esteja disponível
+const usuariosMock = [];
+let proximoIdMock = 1;
 
-async function criar({ nome, email, senhaHash, tipo }) {
-  const usuario = { id: proximoId++, nome, email, senhaHash, tipo, area: '', cidade: '', bio: '' };
-  usuarios.push(usuario);
+async function criar({ email, senhaHash, tipo_usuario }) {
+  const db = await getDb();
+
+  if (db) {
+    const [result] = await db.execute(
+      'INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)',
+      [email, senhaHash, tipo_usuario]
+    );
+    return { idUsuario: result.insertId, email, tipo_usuario };
+  }
+
+  // Fallback Mock
+  const usuario = { idUsuario: proximoIdMock++, email, senha: senhaHash, tipo_usuario };
+  usuariosMock.push(usuario);
   return usuario;
 }
 
 async function buscarPorEmail(email) {
-  return usuarios.find(u => u.email === email) || null;
+  const db = await getDb();
+
+  if (db) {
+    const [rows] = await db.execute('SELECT * FROM Usuarios WHERE email = ?', [email]);
+    return rows[0] || null;
+  }
+
+  return usuariosMock.find(u => u.email === email) || null;
 }
 
 async function buscarPorId(id) {
-  return usuarios.find(u => u.id === id) || null;
+  const db = await getDb();
+
+  if (db) {
+    const [rows] = await db.execute('SELECT * FROM Usuarios WHERE idUsuario = ?', [id]);
+    return rows[0] || null;
+  }
+
+  return usuariosMock.find(u => u.idUsuario === id) || null;
 }
 
 async function atualizar(id, campos) {
-  const usuario = usuarios.find(u => u.id === id);
+  const db = await getDb();
+
+  if (db) {
+    const keys = Object.keys(campos);
+    const values = Object.values(campos);
+    const setClause = keys.map(key => `${key} = ?`).join(', ');
+
+    await db.execute(
+      `UPDATE Usuarios SET ${setClause} WHERE idUsuario = ?`,
+      [...values, id]
+    );
+    return await buscarPorId(id);
+  }
+
+  const usuario = usuariosMock.find(u => u.idUsuario === id);
   if (!usuario) return null;
   Object.assign(usuario, campos);
   return usuario;
 }
 
-// Contas de exemplo (só fora de produção): senha "senha12345"
 if (nodeEnv !== 'production') {
   const hash = bcrypt.hashSync('senha12345', 10);
-  usuarios.push(
-    { id: proximoId++, nome: 'Tech Sabará', email: 'empresa@elab.com', senhaHash: hash, tipo: 'empresa', area: '', cidade: 'Sabará, MG', bio: 'Empresa de exemplo.' },
-    { id: proximoId++, nome: 'Ana Souza', email: 'colab@elab.com', senhaHash: hash, tipo: 'colaboradora', area: 'Front-end', cidade: 'Sabará, MG', bio: '' }
+  // Popular mock apenas para garantir que o app funcione sem DB
+  usuariosMock.push(
+    { idUsuario: proximoIdMock++, email: 'empresa@elab.com', senha: hash, tipo_usuario: 'entidade_parceira' },
+    { idUsuario: proximoIdMock++, email: 'colab@elab.com', senha: hash, tipo_usuario: 'profissional' }
   );
 }
 

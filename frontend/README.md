@@ -99,8 +99,8 @@ As páginas e os fluxos da interface que foram criados no front-end são:
 ## 6. Boas Práticas de Manutenção
 
 * Cada página diz qual é o seu controlador em `data-page`. Novos comportamentos devem ser adicionados ao controlador certo em `js/app.js`, para não ter código repetido.
-* Continue usando a validação HTML nativa (`required`, `type`, `maxlength`, etc.). Só use `novalidate` se a validação já estiver feita e funcionando no JavaScript.
-* Separe os erros de conexão de rede das respostas de erro da API: o modo local só deve mostrar falha se a API não estiver funcionando, sem esconder erros do servidor.
+* Continuar usando a validação HTML nativa (`required`, `type`, `maxlength`, etc.). Só use `novalidate` se a validação já estiver feita e funcionando no JavaScript.
+* Separar os erros de conexão de rede das respostas de erro da API: o modo local só deve mostrar falha se a API não estiver funcionando, sem esconder erros do servidor.
 * Os dados de demonstração guardados no navegador são só para um usuário e não devem ser usados como se fosse uma conta real ou para produção. Sair da conta desativa o modo de demonstração.
-* Guarde o CSS que é usado em vários lugares em `css/style.css`. Use classes que podem ser reutilizadas em vez de estilos diretos no HTML para novas interfaces e preste atenção nos tamanhos de tela pequeno, médio e grande.
+* Guardar o CSS que é usado em vários lugares em `css/style.css`. Use classes que podem ser reutilizadas em vez de estilos diretos no HTML para novas interfaces e preste atenção nos tamanhos de tela pequeno, médio e grande.
 * O front-end é feito em JavaScript, sem TypeScript, e não tem um sistema automático de testes próprio. Verifique as mudanças testando a sintaxe, no navegador e nos fluxos de formulário/API.

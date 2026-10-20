@@ -9,9 +9,10 @@ Rede profissional que conecta colaboradoras (mulheres em tech) a empresas — va
 - `login.html` / `registro.html`
 - `painel-empresa.html` / `painel-colaboradora.html`
 
-**Backend** (`/backend`) — API Node.js + Express, dados em memória (sem banco ainda):
+**Backend** (`/backend`) — API Node.js + Express com banco de dados MySQL:
 - Autenticação (registro/login) com JWT + senha criptografada
-- CRUD básico de oportunidades (vagas/eventos)
+- CRUD de oportunidades (vagas/eventos)
+- Sistema de migrations e seeds para versionamento do banco
 - Validação de entrada, rate limit no login, tratamento de erros
 
 ## Como rodar o backend
@@ -20,6 +21,10 @@ Rede profissional que conecta colaboradoras (mulheres em tech) a empresas — va
 cd backend
 npm install
 cp .env.example .env
+# Rodar migrations para criar as tabelas
+npm run migrate
+# Opcional: Popular com dados de teste
+npm run seed
 npm run dev
 ```
 
@@ -46,14 +51,18 @@ Abrir os arquivos `.html` da pasta `frontend/` direto no navegador, ou usar a ex
 src/
 ├── config/       → variáveis de ambiente
 ├── middlewares/  → auth, validação, rate limit, erros
-├── repositories/ → dados (hoje: memória / futuro: banco)
+├── repositories/ → persistência de dados (MySQL)
 ├── services/     → regras de negócio
 ├── controllers/  → recebe request, chama service
 └── routes/       → define os endpoints
+db/
+├── config.js     → configurações de conexão
+├── pool.js       → singleton de conexões
+├── migrate.js    → motor de migrations
+└── migrations/   → arquivos .sql de versão do banco
 ```
 
 ## Próximos passos
 
 - Conectar frontend na API (fetch de login/registro)
-- Trocar repositories em memória por PostgreSQL
 - Mecanismo de match colaboradora ↔ oportunidade (plano já definido, não implementado)

@@ -9,6 +9,7 @@ const validar = require('../middlewares/validate');
 const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt();
 
 router.get('/', oportunidadesController.listar);
+router.get('/minhas', autenticar, permitir('empresa'), oportunidadesController.listarMinhas);
 router.get('/:id', [idValido], validar, oportunidadesController.obter);
 
 router.post('/', autenticar, permitir('empresa'), [
@@ -24,5 +25,7 @@ router.post('/:id/inscricoes', autenticar, permitir('colaboradora'), [
   idValido,
   body('mensagem').optional().trim().isLength({ max: 500 }).withMessage('Mensagem muito longa')
 ], validar, oportunidadesController.inscrever);
+
+router.get('/:id/candidatos', autenticar, permitir('empresa'), [idValido], validar, oportunidadesController.listarCandidatos);
 
 module.exports = router;

@@ -5,17 +5,29 @@ async function criar({ email, senhaHash, tipo_usuario }) {
     'INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)',
     [email, senhaHash, tipo_usuario]
   );
-  return { idUsuario: result.insertId, email, tipo_usuario };
+  return { id: result.insertId, email, tipo_usuario };
 }
 
 async function buscarPorEmail(email) {
-  const rows = await query('SELECT * FROM Usuarios WHERE email = ?', [email]);
-  return rows[0] || null;
+  const rows = await query('SELECT idUsuario as id, email, senha, tipo_usuario FROM Usuarios WHERE email = ?', [email]);
+  if (!rows[0]) return null;
+  return {
+    id: rows[0].id,
+    email: rows[0].email,
+    senha: rows[0].senha,
+    tipo_usuario: rows[0].tipo_usuario
+  };
 }
 
 async function buscarPorId(id) {
-  const rows = await query('SELECT * FROM Usuarios WHERE idUsuario = ?', [id]);
-  return rows[0] || null;
+  const rows = await query('SELECT idUsuario as id, email, senha, tipo_usuario FROM Usuarios WHERE idUsuario = ?', [id]);
+  if (!rows[0]) return null;
+  return {
+    id: rows[0].id,
+    email: rows[0].email,
+    senha: rows[0].senha,
+    tipo_usuario: rows[0].tipo_usuario
+  };
 }
 
 async function atualizar(id, campos) {
@@ -29,5 +41,7 @@ async function atualizar(id, campos) {
   );
   return await buscarPorId(id);
 }
+
+module.exports = { criar, buscarPorEmail, buscarPorId, atualizar };
 
 module.exports = { criar, buscarPorEmail, buscarPorId, atualizar };

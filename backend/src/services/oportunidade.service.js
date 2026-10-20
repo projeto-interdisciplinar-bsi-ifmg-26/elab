@@ -1,9 +1,23 @@
 const ApiError = require('../utils/ApiError');
 const oportunidadeRepository = require('../repositories/oportunidade.repository');
 const usuarioRepository = require('../repositories/usuario.repository');
+const { query } = require('../../db/pool');
 
 async function listar(filtros) {
   return oportunidadeRepository.listar(filtros);
+}
+
+async function listarPorEmpresa(usuarioId) {
+  const rows = await query(
+    'SELECT idEntidade_Parceira FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
+    [usuarioId]
+  );
+
+  if (!rows || rows.length === 0) {
+    return [];
+  }
+
+  return oportunidadeRepository.listar({ empresaId: rows[0].idEntidade_Parceira });
 }
 
 async function obter(id) {
@@ -28,4 +42,8 @@ async function inscrever(usuarioId, oportunidadeId, mensagem) {
   return { protocolo: i.id, oportunidade: { id: o.id, titulo: o.titulo, tipo: o.tipo } };
 }
 
-module.exports = { listar, obter, criar, inscrever };
+async function listarCandidatos(oportunidadeId) {
+  return oportunidadeRepository.buscarCandidatos(oportunidadeId);
+}
+
+module.exports = { listar, listarPorEmpresa, obter, criar, inscrever, listarCandidatos };

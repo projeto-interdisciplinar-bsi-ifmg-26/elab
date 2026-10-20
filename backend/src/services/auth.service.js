@@ -14,7 +14,7 @@ async function registrar({ email, senha, tipo }) {
   const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo });
 
   // Nunca devolver o hash da senha.
-  return { id: usuario.idUsuario, email: usuario.email, tipo: usuario.tipo_usuario };
+  return { id: usuario.id, email: usuario.email, tipo: usuario.tipo_usuario };
 }
 
 async function login({ email, senha }) {
@@ -27,7 +27,7 @@ async function login({ email, senha }) {
   if (!senhaValida) throw new ApiError(401, 'E-mail ou senha inválidos');
 
   const token = jwt.sign(
-    { id: usuario.idUsuario, tipo: usuario.tipo_usuario },
+    { id: usuario.id, tipo: usuario.tipo_usuario },
     jwtSecret,
     { expiresIn: jwtExpiresIn }
   );

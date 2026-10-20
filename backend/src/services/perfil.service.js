@@ -3,7 +3,10 @@ const { query } = require('../../db/pool');
 const usuarioRepository = require('../repositories/usuario.repository');
 
 // O front trata 'empresa' como entidade parceira; o banco usa 'entidade_parceira'.
-const tipoFront = (t) => (t === 'entidade_parceira' ? 'empresa' : t);
+const tipoFront = (t) => {
+  const map = { 'entidade_parceira': 'empresa', 'profissional': 'colaboradora' };
+  return map[t] || t;
+};
 
 async function obter(id) {
   const u = await usuarioRepository.buscarPorId(id);
@@ -13,6 +16,7 @@ async function obter(id) {
   let area = '';
   let cidade = '';
   let bio = '';
+  let entidadeId = null;
 
   if (u.tipo_usuario === 'profissional') {
     const rows = await query(
@@ -25,14 +29,24 @@ async function obter(id) {
     }
   } else if (u.tipo_usuario === 'entidade_parceira') {
     const rows = await query(
-      'SELECT nome_organizacao, descricao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?', [id]);
+      'SELECT idEntidade_Parceira as id, nome_organizacao, descricao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?', [id]);
     if (rows[0]) {
       nome = rows[0].nome_organizacao;
       bio = rows[0].descricao || '';
+      entidadeId = rows[0].id;
     }
   }
 
-  return { id: u.idUsuario, nome, email: u.email, tipo: tipoFront(u.tipo_usuario), area, cidade, bio };
+  return {
+    id: u.id,
+    nome,
+    email: u.email,
+    tipo: tipoFront(u.tipo_usuario),
+    area,
+    cidade,
+    bio,
+    entidadeId: entidadeId
+  };
 }
 
 async function atualizar(id, { nome, area, cidade, bio }) {
@@ -42,11 +56,11 @@ async function atualizar(id, { nome, area, cidade, bio }) {
   if (u.tipo_usuario === 'profissional') {
     await query(
       'UPDATE Profissionais SET nome = ?, area = ?, cidade = ?, bio = ? WHERE Usuario_idUsuario = ?',
-      [nome, area, cidade, bio, id]);
+      [nome || '', area || '', cidade || '', bio || '', id]);
   } else if (u.tipo_usuario === 'entidade_parceira') {
     await query(
       'UPDATE Entidades_Parceiras SET nome_organizacao = ?, descricao = ? WHERE Usuario_idUsuario = ?',
-      [nome, bio, id]);
+      [nome || '', bio || '', id]);
   }
   return obter(id);
 }

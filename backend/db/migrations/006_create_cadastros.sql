@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS `Cadastros_Oportunidades` (
   `Oportunidade_idOportunidade`   INT NOT NULL,
   `Profissionais_idProfissionais` INT NOT NULL,
+  `mensagem`                    TEXT,
   `data_aplicacao`                DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`Oportunidade_idOportunidade`, `Profissionais_idProfissionais`),
   KEY `idx_co_profissional` (`Profissionais_idProfissionais`),

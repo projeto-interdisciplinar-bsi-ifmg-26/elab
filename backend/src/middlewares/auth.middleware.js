@@ -19,7 +19,18 @@ function autenticar(req, res, next) {
 
 function permitir(...tipos) {
   return (req, res, next) => {
-    if (!tipos.includes(req.usuario?.tipo)) {
+    const usuarioTipo = req.usuario?.tipo;
+
+    // Mapeamento de tipos para compatibilidade entre banco e frontend/rotas
+    const mapeamento = {
+      'profissional': 'colaboradora',
+      'entidade_parceira': 'empresa',
+      'admin': 'admin'
+    };
+
+    const tipoNormalizado = mapeamento[usuarioTipo] || usuarioTipo;
+
+    if (!tipos.includes(tipoNormalizado)) {
       return next(new ApiError(403, 'Acesso não permitido para este perfil'));
     }
     next();

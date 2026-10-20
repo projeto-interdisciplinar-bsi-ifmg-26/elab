@@ -1,16 +1,20 @@
 const { query } = require('../../db/pool');
 
-async function listar({ tipo, status } = {}) {
+async function listar({ tipo, status, empresaId } = {}) {
   let sql = 'SELECT * FROM Oportunidades';
   const params = [];
 
   if (tipo) {
-    sql += ' WHERE tipo = ?';
+    sql += (params.length ? ' AND' : ' WHERE') + ' tipo = ?';
     params.push(tipo);
   }
   if (status) {
     sql += (params.length ? ' AND' : ' WHERE') + ' status = ?';
     params.push(status);
+  }
+  if (empresaId) {
+    sql += (params.length ? ' AND' : ' WHERE') + ' Entidade_Parceira_idEntidade_Parceira = ?';
+    params.push(empresaId);
   }
 
   const rows = await query(sql, params);
@@ -52,10 +56,21 @@ async function buscarInscricao(oportunidadeId, usuarioId) {
 
 async function criarInscricao({ oportunidadeId, usuarioId, mensagem = '' }) {
   const result = await query(
-    'INSERT INTO Inscricoes (oportunidadeId, usuarioId, mensagem) VALUES (?, ?, ?)',
+    'INSERT INTO Cadastros_Oportunidades (Oportunidade_idOportunidade, Profissionais_idProfissionais, mensagem) VALUES (?, ?, ?)',
     [oportunidadeId, usuarioId, mensagem]
   );
   return { id: result.insertId, oportunidadeId, usuarioId, mensagem };
 }
 
-module.exports = { listar, buscarPorId, criar, buscarInscricao, criarInscricao };
+async function buscarCandidatos(oportunidadeId) {
+  const sql = `
+    SELECT p.nome, u.email, c.mensagem, c.data_aplicacao as data_inscricao
+    FROM Cadastros_Oportunidades c
+    JOIN Profissionais p ON c.Profissionais_idProfissionais = p.idProfissionais
+    JOIN Usuarios u ON p.Usuario_idUsuario = u.idUsuario
+    WHERE c.Oportunidade_idOportunidade = ?
+  `;
+  return await query(sql, [oportunidadeId]);
+}
+
+module.exports = { listar, buscarPorId, criar, buscarInscricao, criarInscricao, buscarCandidatos };

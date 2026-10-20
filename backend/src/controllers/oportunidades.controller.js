@@ -8,6 +8,11 @@ const listar = asyncHandler(async (req, res) => {
   sucesso(res, 200, lista);
 });
 
+const listarMinhas = asyncHandler(async (req, res) => {
+  const lista = await oportunidadeService.listarPorEmpresa(req.usuario.id);
+  sucesso(res, 200, lista);
+});
+
 const obter = asyncHandler(async (req, res) => {
   sucesso(res, 200, await oportunidadeService.obter(req.params.id));
 });
@@ -22,4 +27,9 @@ const inscrever = asyncHandler(async (req, res) => {
   sucesso(res, 201, r);
 });
 
-module.exports = { listar, obter, criar, inscrever };
+const listarCandidatos = asyncHandler(async (req, res) => {
+  const candidatos = await oportunidadeService.listarCandidatos(req.params.id);
+  sucesso(res, 200, candidatos);
+});
+
+module.exports = { listar, listarMinhas, obter, criar, inscrever, listarCandidatos };

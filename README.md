@@ -1,62 +1,101 @@
-# ELAB
+# ELAB 🚀
 Rede profissional que conecta colaboradoras (mulheres em tech) a empresas — vagas, eventos e projetos freelance.
 
-## Funcionalidades Implementadas
+## 🌟 Visão Geral
+O ELAB é uma plataforma desenvolvida para fomentar a inclusão de mulheres na área de tecnologia, facilitando a conexão entre profissionais e oportunidades de carreira, eventos de networking e bolsas de estudo.
 
-**Frontend (`/frontend`)** — Totalmente conectado ao backend:
-- Login e Registro com validação.
-- Feed de oportunidades com filtros por tipo.
-- Página de Detalhes da Oportunidade.
-- Fluxo de Inscrição/Candidatura com geração de protocolo.
-- Gestão de Perfil (Visualização e Edição).
-- Painel da Empresa: Publicação de novas oportunidades e listagem de postagens da própria empresa.
+### 🛠️ Tecnologias Utilizadas
+- **Frontend:** HTML5, CSS3, JavaScript ES6+ (Vanilla JS)
+- **Backend:** Node.js, Express
+- **Banco de Dados:** MySQL
+- **Autenticação:** JWT (JSON Web Tokens) & bcrypt
 
-**Backend (`/backend`)** — API Node.js + Express com MySQL:
-- Autenticação JWT com senhas criptografadas (bcrypt).
-- CRUD completo de Oportunidades (Vagas, Eventos, Palestras e Bolsas).
-- Sistema de Inscrições vinculando Profissionais às Oportunidades.
-- Modelagem de Habilidades N:N para filtragem e requisitos.
-- Validação de entrada, rate limit no login e tratamento de erros global.
+---
 
-## Como rodar o projeto
+## ✨ Funcionalidades
 
-### Backend
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Importar o esquema completo do banco de dados
-/opt/lampp/bin/mysql -u root elab < db/migrations/full_schema.sql
-# Popular com dados de teste
-/opt/lampp/bin/mysql -u root elab < db/seed.sql
-npm run dev
+### 👩‍💻 Para Profissionais
+- **Feed de Oportunidades:** Exploração de vagas, eventos, palestras e bolsas com filtros por categoria.
+- **Inscrições Simplificadas:** Fluxo de candidatura com envio de portfólio/GitHub e geração de protocolo de confirmação.
+- **Gestão de Perfil:** Visualização e edição de dados pessoais e área de atuação.
+- **Histórico:** Acompanhamento de candidaturas e inscrições realizadas.
+
+### 🏢 Para Empresas
+- **Painel Administrativo:** Publicação de novas oportunidades (vagas, eventos, etc.).
+- **Gestão de Vagas:** Listagem e controle das postagens realizadas pela empresa.
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### 📋 Pré-requisitos
+- [Node.js](https://nodejs.org/) instalado.
+- [MySQL](https://dev.mysql.com/downloads/) instalado e rodando.
+- Um banco de dados criado com o nome `elab`.
+
+### ⚙️ Configuração do Backend
+1. Acesse a pasta do backend:
+   ```bash
+   cd backend
+   ```
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Configure as variáveis de ambiente:
+   ```bash
+   cp .env.example .env
+   # Edite o arquivo .env com suas credenciais do MySQL
+   ```
+
+### 🗄️ Banco de Dados (Migrations & Seed)
+O projeto possui scripts automatizados para configurar o banco de dados via npm:
+
+1. **Executar Migrations** (Criação das tabelas):
+   ```bash
+   npm run migrate
+   ```
+2. **Executar Seed** (Popular com dados de teste):
+   ```bash
+   npm run seed
+   ```
+
+### 🏃 Executando a Aplicação
+1. **Iniciar o Servidor:**
+   ```bash
+   npm run dev
+   ```
+   O servidor estará disponível em `http://localhost:3000`.
+
+2. **Frontend:**
+   Os arquivos do frontend estão na pasta `/frontend`. Você pode:
+   - Abrir os arquivos `.html` diretamente no navegador.
+   - Utilizar a extensão **Live Server** do VS Code para um desenvolvimento mais fluido.
+
+---
+
+## 📂 Estrutura do Projeto
+
 ```
-Servidor sobe em `http://localhost:3000`.
-
-### Frontend
-Abrir os arquivos `.html` da pasta `frontend/` direto no navegador, ou usar a extensão **Live Server** do VS Code.
-
-## Principais rotas da API
-
-| Método | Rota | Requer login | Descrição |
-|---|---|---|---|
-| POST | `/api/v1/auth/registrar` | não | Criar conta |
-| POST | `/api/v1/auth/login` | não | Login (retorna token) |
-| GET | `/api/v1/oportunidades` | não | Listar vagas/eventos |
-| POST | `/api/v1/oportunidades` | sim (empresa) | Criar vaga/evento |
-| POST | `/api/v1/oportunidades/:id/inscricoes` | sim (colab) | Inscrever-se em oportunidade |
-| GET | `/api/v1/perfil` | sim | Obter/Atualizar perfil |
-
-## Estrutura do projeto
+.
+├── frontend/           # Interface do usuário (HTML, CSS, JS)
+└── backend/            # API Node.js
+    ├── src/
+    │   ├── config/       # Configurações e variáveis de ambiente
+    │   ├── controllers/  # Lógica de controle das requisições
+    │   ├── middlewares/  # Auth, Validação, Rate Limit e Erros
+    │   ├── repositories/ # Camada de persistência (MySQL)
+    │   ├── services/    # Regras de negócio
+    │   └── routes/       # Definição dos endpoints da API
+    └── db/
+        ├── pool.js       # Singleton de conexão com banco
+        ├── migrate.js    # Script de migração de esquema
+        └── seed.js       # Script de população de dados
 ```
-src/
-├── config/       → variáveis de ambiente
-├── middlewares/  → auth, validação, rate limit, erros
-├── repositories/ → persistência de dados (MySQL)
-├── services/     → regras de negócio
-├── controllers/  → recebe request, chama service
-└── routes/       → define os endpoints
-db/
-├── pool.js       → singleton de conexões
-└── migrations/   → scripts SQL de estrutura e seed
-```
+
+## 🎨 Identidade Visual
+A interface foi projetada com foco em acessibilidade e modernidade, utilizando uma paleta de cores baseada em tons de roxo, rosa e lilás, proporcionando um ambiente acolhedor e profissional.
+
+---
+
+**Desenvolvido por:** Caio Vitor, David Rodrigues, Jonathan Alexandre, Igor Barbosa, Isabelle Pascini e Mateus Batista.

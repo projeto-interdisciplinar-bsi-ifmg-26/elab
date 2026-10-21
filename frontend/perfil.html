@@ -1,13 +1,56 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Perfil • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meu perfil - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="perfil">
-<main><h1>Meu perfil</h1><div class="painel"><dl id="dados"></dl><a class="btn" href="editar-perfil.html">Editar perfil</a></div></main>
-<script src="js/app.js"></script>
+
+  <main>
+    <div style="margin-bottom: 1.5rem;">
+      <h1>Meu perfil</h1>
+      <p class="mut">Edite seus dados e consulte suas candidaturas.</p>
+    </div>
+
+    <div class="painel">
+      <div class="perfil-topo">
+        <div class="perfil-avatar" id="avatar-grande">A</div>
+        <div class="perfil-info">
+          <h2 id="perfil-nome" style="font-size:1.6rem; color:var(--roxo-esc); margin-bottom:0.25rem;">Nome da Usuária
+          </h2>
+          <p class="mut" id="perfil-email" style="margin:0 0 0.5rem;">email@exemplo.com</p>
+          <span class="tag" id="perfil-tag-tipo">Colaboradora</span>
+        </div>
+        <div style="margin-left: auto;">
+          <a class="btn sm" href="editar-perfil.html">Editar perfil</a>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 1rem; border-bottom: 1px solid var(--borda-suave); padding-bottom: 0.5rem;">Informações
+        Cadastrais</h3>
+      <dl id="dados"></dl>
+
+      <div class="minhas-inscricoes" id="secao-inscricoes">
+        <h3
+          style="border-bottom: 1px solid var(--borda-suave); padding-bottom: 0.5rem; display:flex; justify-content:space-between; align-items:center;">
+          <span>Minhas candidaturas e inscrições</span>
+          <span class="mut" id="contagem-inscricoes" style="font-size:0.85rem; font-weight:normal;">0 registradas</span>
+        </h3>
+        <div id="lista-inscricoes">
+          <div class="vazio" style="padding: 1.75rem 1rem;">
+            <p class="mut">Você ainda não enviou candidaturas ou inscrições nesta sessão.</p>
+            <a href="vagas.html" class="btn sm ghost" style="margin-top: 0.5rem;">Ver vagas disponíveis</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

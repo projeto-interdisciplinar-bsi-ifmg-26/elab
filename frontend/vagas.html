@@ -1,13 +1,36 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vagas e Empregos • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vagas e empregos - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="vagas">
-<main><h1>Vagas e Empregos</h1><div class="lista" id="lista"></div></main>
-<script src="js/app.js"></script>
+
+  <main>
+    <div style="margin-bottom: 1.5rem;">
+      <h1>Vagas</h1>
+      <p class="mut">Vagas de emprego e estágio na área de tecnologia.</p>
+    </div>
+
+    <div class="filtros" id="filtros-modalidade">
+      <button data-mod="" aria-pressed="true">Todas as modalidades</button>
+      <button data-mod="remoto" aria-pressed="false">Remoto</button>
+      <button data-mod="hibrido" aria-pressed="false">Híbrido</button>
+      <button data-mod="presencial" aria-pressed="false">Presencial</button>
+    </div>
+
+    <div class="lista" id="lista">
+      <div class="vazio">
+        <p>Carregando vagas...</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

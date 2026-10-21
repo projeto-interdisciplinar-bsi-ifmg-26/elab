@@ -1,21 +1,60 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Editar perfil • ELAB</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editar perfil - ELAB</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body data-page="editar">
-<main><div class="painel" style="max-width:560px"><h1>Editar perfil</h1>
-  <form novalidate>
-    <label>Nome<input name="nome" required maxlength="80"></label>
-    <label>Área de atuação<input name="area" maxlength="80"></label>
-    <label>Cidade<input name="cidade" maxlength="80"></label>
-    <label>Sobre você<textarea name="bio" maxlength="500"></textarea></label>
-    <p class="erro" role="alert"></p>
-    <button class="btn" type="submit">Salvar alterações</button> <a class="btn ghost" href="perfil.html">Cancelar</a>
-  </form></div></main>
-<script src="js/app.js"></script>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="feed.html">Feed</a> &gt;
+      <a href="perfil.html">Meu perfil</a> &gt;
+      <span>Editar Perfil</span>
+    </div>
+
+    <div class="painel" style="max-width: 600px; margin: 0 auto;">
+      <h1>Editar Perfil</h1>
+      <p class="mut">Atualize seus dados e informe sua área de atuação.</p>
+
+      <form>
+        <label>
+          Nome completo
+          <input name="nome" required maxlength="80" placeholder="Seu nome completo">
+        </label>
+
+        <label>
+          Área de atuação
+          <input name="area" maxlength="80" placeholder="Ex: Front-end, Ciência de Dados, UI/UX Design, Back-end">
+        </label>
+
+        <label>
+          Cidade / Estado
+          <input name="cidade" maxlength="80" placeholder="Ex: Sabará, MG ou Remoto">
+        </label>
+
+        <label>
+          Sobre você (mini-bio)
+          <textarea name="bio" maxlength="500"
+            placeholder="Escreva sobre sua experiência, seus interesses ou projetos."></textarea>
+        </label>
+
+        <p class="erro" role="alert"></p>
+        <p class="ok" role="status"></p>
+
+        <div class="acoes" style="justify-content: flex-start; margin-top: 1.5rem;">
+          <button class="btn" type="submit">Salvar alterações</button>
+          <a class="btn ghost" href="perfil.html">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
+
 </html>

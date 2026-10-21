@@ -35,11 +35,33 @@ async function criar(empresaId, dados) {
 // Serve tanto para candidatura (vaga) quanto para inscrição (demais tipos).
 async function inscrever(usuarioId, oportunidadeId, mensagem) {
   const o = await obter(oportunidadeId);
-  if (await oportunidadeRepository.buscarInscricao(oportunidadeId, usuarioId)) {
+
+  // Buscar o ID do profissional vinculado ao usuário
+  const profissional = await query(
+    'SELECT idProfissionais FROM Profissionais WHERE Usuario_idUsuario = ?',
+    [usuarioId]
+  );
+
+  if (!profissional || profissional.length === 0) {
+    throw new ApiError(400, 'Seu perfil de profissional não foi encontrado.');
+  }
+
+  const profissionalId = profissional[0].idProfissionais;
+
+  if (await oportunidadeRepository.buscarInscricao(oportunidadeId, profissionalId)) {
     throw new ApiError(409, 'Você já se inscreveu nesta oportunidade');
   }
-  const i = await oportunidadeRepository.criarInscricao({ oportunidadeId, usuarioId, mensagem });
-  return { protocolo: i.id, oportunidade: { id: o.id, titulo: o.titulo, tipo: o.tipo } };
+
+  const i = await oportunidadeRepository.criarInscricao({
+    oportunidadeId,
+    usuarioId: profissionalId,
+    mensagem
+  });
+
+  // Gerar um protocolo único baseado no timestamp e ID do profissional
+  const protocolo = Math.floor(100000 + Math.random() * 900000);
+
+  return { protocolo: protocolo, oportunidade: { id: o.id, titulo: o.titulo, tipo: o.tipo } };
 }
 
 async function listarCandidatos(oportunidadeId) {

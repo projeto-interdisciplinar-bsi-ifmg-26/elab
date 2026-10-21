@@ -1,40 +1,40 @@
 # ELAB
-
 Rede profissional que conecta colaboradoras (mulheres em tech) a empresas — vagas, eventos e projetos freelance.
 
-## O que já existe
+## Funcionalidades Implementadas
 
-**Frontend** (`/frontend`) — páginas HTML/CSS simples, sem lógica ainda:
-- `index.html` — landing
-- `login.html` / `registro.html`
-- `painel-empresa.html` / `painel-colaboradora.html`
+**Frontend (`/frontend`)** — Totalmente conectado ao backend:
+- Login e Registro com validação.
+- Feed de oportunidades com filtros por tipo.
+- Página de Detalhes da Oportunidade.
+- Fluxo de Inscrição/Candidatura com geração de protocolo.
+- Gestão de Perfil (Visualização e Edição).
+- Painel da Empresa: Publicação de novas oportunidades e listagem de postagens da própria empresa.
 
-**Backend** (`/backend`) — API Node.js + Express com banco de dados MySQL:
-- Autenticação (registro/login) com JWT + senha criptografada
-- CRUD de oportunidades (vagas/eventos)
-- Sistema de migrations e seeds para versionamento do banco
-- Validação de entrada, rate limit no login, tratamento de erros
+**Backend (`/backend`)** — API Node.js + Express com MySQL:
+- Autenticação JWT com senhas criptografadas (bcrypt).
+- CRUD completo de Oportunidades (Vagas, Eventos, Palestras e Bolsas).
+- Sistema de Inscrições vinculando Profissionais às Oportunidades.
+- Modelagem de Habilidades N:N para filtragem e requisitos.
+- Validação de entrada, rate limit no login e tratamento de erros global.
 
-## Como rodar o backend
+## Como rodar o projeto
 
+### Backend
 ```bash
 cd backend
 npm install
 cp .env.example .env
-# Rodar migrations para criar as tabelas
-npm run migrate
-# Opcional: Popular com dados de teste
-npm run seed
+# Importar o esquema completo do banco de dados
+/opt/lampp/bin/mysql -u root elab < db/migrations/full_schema.sql
+# Popular com dados de teste
+/opt/lampp/bin/mysql -u root elab < db/seed.sql
 npm run dev
 ```
-
 Servidor sobe em `http://localhost:3000`.
 
-## Como rodar o frontend
-
+### Frontend
 Abrir os arquivos `.html` da pasta `frontend/` direto no navegador, ou usar a extensão **Live Server** do VS Code.
-
-> Frontend e backend ainda não estão conectados (sem `fetch` implementado).
 
 ## Principais rotas da API
 
@@ -44,9 +44,10 @@ Abrir os arquivos `.html` da pasta `frontend/` direto no navegador, ou usar a ex
 | POST | `/api/v1/auth/login` | não | Login (retorna token) |
 | GET | `/api/v1/oportunidades` | não | Listar vagas/eventos |
 | POST | `/api/v1/oportunidades` | sim (empresa) | Criar vaga/evento |
+| POST | `/api/v1/oportunidades/:id/inscricoes` | sim (colab) | Inscrever-se em oportunidade |
+| GET | `/api/v1/perfil` | sim | Obter/Atualizar perfil |
 
-## Estrutura do backend
-
+## Estrutura do projeto
 ```
 src/
 ├── config/       → variáveis de ambiente
@@ -56,13 +57,6 @@ src/
 ├── controllers/  → recebe request, chama service
 └── routes/       → define os endpoints
 db/
-├── config.js     → configurações de conexão
 ├── pool.js       → singleton de conexões
-├── migrate.js    → motor de migrations
-└── migrations/   → arquivos .sql de versão do banco
+└── migrations/   → scripts SQL de estrutura e seed
 ```
-
-## Próximos passos
-
-- Conectar frontend na API (fetch de login/registro)
-- Mecanismo de match colaboradora ↔ oportunidade (plano já definido, não implementado)

@@ -30,7 +30,7 @@ async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data
   const status = tipo === 'vaga' ? 'ativo' : 'agendado';
 
   const result = await query(
-    'INSERT INTO Oportunidades (empresaId, titulo, tipo, descricao, local, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, descricao, local, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [empresaId, titulo, tipo, descricao, local, data, status]
   );
 
@@ -46,10 +46,10 @@ async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data
   return { id: id, empresaId, titulo, tipo, descricao, local, data, status };
 }
 
-async function buscarInscricao(oportunidadeId, usuarioId) {
+async function buscarInscricao(oportunidadeId, profissionalId) {
   const rows = await query(
-    'SELECT * FROM Inscricoes WHERE oportunidadeId = ? AND usuarioId = ?',
-    [oportunidadeId, usuarioId]
+    'SELECT * FROM Cadastros_Oportunidades WHERE Oportunidade_idOportunidade = ? AND Profissionais_idProfissionais = ?',
+    [oportunidadeId, profissionalId]
   );
   return rows[0] || null;
 }

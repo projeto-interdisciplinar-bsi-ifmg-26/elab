@@ -1,5 +1,5 @@
 (() => {
-  const API = '/api/v1';
+  const API = 'http://localhost:3000/api/v1';
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -21,9 +21,9 @@
   ];
 
   async function api(path, { method = 'GET', body, auth = true } = {}) {
-    if (token()?.startsWith('mock_jwt_token_') && !path.startsWith('/auth/')) {
-      return mockFallback(path, method, body);
-    }
+    // if (token()?.startsWith('mock_jwt_token_') && !path.startsWith('/auth/')) {
+    //   return mockFallback(path, method, body);
+    // }
 
     const headers = {};
     if (body) headers['Content-Type'] = 'application/json';
@@ -203,12 +203,13 @@
   const dataBR = d => (d ? d.split('-').reverse().join('/') : '');
 
   const card = o => {
+    const id = o.id || o.idOportunidade;
     const tipo = o.tipo || 'vaga';
-    return `<a class="card" href="detalhe.html?id=${Number(o.id)}" data-tipo="${esc(tipo)}">
+    return `<a class="card" href="detalhe.html?id=${Number(id)}" data-tipo="${esc(tipo)}">
       <div class="card-corpo">
         <span class="tag ${esc(tipo)}" data-tipo="${esc(tipo)}">${esc(TIPOS[tipo] || tipo)}</span>
         <h3>${esc(o.titulo)}</h3>
-        <p class="mut">${esc([o.empresaNome, o.local].filter(Boolean).join(' | '))}</p>
+        <p class="mut">${esc([o.empresaNome || 'Empresa', o.local].filter(Boolean).join(' | '))}</p>
         ${o.data ? `<p class="mut" style="font-size:0.85rem;">Data: ${esc(dataBR(o.data))}</p>` : ''}
         <div class="chips">
           ${(o.habilidades || []).map(h => `<span class="chip">${esc(h)}</span>`).join('')}
@@ -509,7 +510,7 @@
       const vaga = o.tipo === 'vaga';
       let acao = '';
       if (user.tipo === 'colaboradora') {
-        acao = `<a class="btn" href="inscricao.html?id=${Number(o.id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
+        acao = `<a class="btn" href="inscricao.html?id=${Number(id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
       } else {
         acao = `<p class="mut" style="background:var(--painel-claro); padding:0.6rem 1rem; border-radius:var(--r);">Entre com uma conta profissional para se candidatar.</p>`;
       }
@@ -654,7 +655,7 @@
       const f = $('main form');
       const carregar = async () => {
         const todas = await api('/oportunidades', { auth: false });
-        const minhas = todas.filter(o => o.empresaId === user.id);
+        const minhas = todas.filter(o => (o.empresaId || o.Entidade_Parceira_idEntidade_Parceira) === user.id);
         $('#lista').innerHTML = minhas.length ? minhas.map(card).join('') : vazio('Sua empresa ainda não publicou nenhuma oportunidade.');
       };
 

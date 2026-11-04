@@ -1,0 +1,167 @@
+[
+  {
+    "slug": "ti",
+    "nome": "Tecnologia da Informacao",
+    "Area_Pai_idArea": null
+  },
+  {
+    "slug": "backend",
+    "nome": "Backend",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "backend-node",
+    "nome": "Backend Node.js",
+    "Area_Pai_idArea": "backend"
+  },
+  {
+    "slug": "backend-java",
+    "nome": "Backend Java",
+    "Area_Pai_idArea": "backend"
+  },
+  {
+    "slug": "backend-python",
+    "nome": "Backend Python",
+    "Area_Pai_idArea": "backend"
+  },
+  {
+    "slug": "backend-dotnet",
+    "nome": "Backend .NET",
+    "Area_Pai_idArea": "backend"
+  },
+  {
+    "slug": "frontend",
+    "nome": "Frontend",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "frontend-react",
+    "nome": "Frontend React",
+    "Area_Pai_idArea": "frontend"
+  },
+  {
+    "slug": "frontend-vue-angular",
+    "nome": "Frontend Vue e Angular",
+    "Area_Pai_idArea": "frontend"
+  },
+  {
+    "slug": "fullstack",
+    "nome": "Fullstack",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "dados",
+    "nome": "Dados",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "dados-engenharia",
+    "nome": "Engenharia de Dados",
+    "Area_Pai_idArea": "dados"
+  },
+  {
+    "slug": "dados-analise",
+    "nome": "Analise de Dados e BI",
+    "Area_Pai_idArea": "dados"
+  },
+  {
+    "slug": "dados-ciencia",
+    "nome": "Ciencia de Dados",
+    "Area_Pai_idArea": "dados"
+  },
+  {
+    "slug": "ia-ml",
+    "nome": "Inteligencia Artificial e ML",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "devops",
+    "nome": "DevOps e Infraestrutura",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "devops-cloud",
+    "nome": "Cloud",
+    "Area_Pai_idArea": "devops"
+  },
+  {
+    "slug": "devops-sre",
+    "nome": "SRE e Observabilidade",
+    "Area_Pai_idArea": "devops"
+  },
+  {
+    "slug": "mobile",
+    "nome": "Mobile",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "mobile-android",
+    "nome": "Mobile Android",
+    "Area_Pai_idArea": "mobile"
+  },
+  {
+    "slug": "mobile-ios",
+    "nome": "Mobile iOS",
+    "Area_Pai_idArea": "mobile"
+  },
+  {
+    "slug": "mobile-cross",
+    "nome": "Mobile Multiplataforma",
+    "Area_Pai_idArea": "mobile"
+  },
+  {
+    "slug": "seguranca",
+    "nome": "Seguranca da Informacao",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "seguranca-appsec",
+    "nome": "Seguranca de Aplicacoes",
+    "Area_Pai_idArea": "seguranca"
+  },
+  {
+    "slug": "qa",
+    "nome": "Qualidade e Testes",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "qa-automacao",
+    "nome": "Automacao de Testes",
+    "Area_Pai_idArea": "qa"
+  },
+  {
+    "slug": "ux-ui",
+    "nome": "UX e UI Design",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "ux-pesquisa",
+    "nome": "Pesquisa de UX",
+    "Area_Pai_idArea": "ux-ui"
+  },
+  {
+    "slug": "gestao",
+    "nome": "Gestao e Produto",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "gestao-produto",
+    "nome": "Product Management",
+    "Area_Pai_idArea": "gestao"
+  },
+  {
+    "slug": "gestao-agil",
+    "nome": "Agilidade e Projetos",
+    "Area_Pai_idArea": "gestao"
+  },
+  {
+    "slug": "suporte",
+    "nome": "Suporte e Infraestrutura de TI",
+    "Area_Pai_idArea": "ti"
+  },
+  {
+    "slug": "arquitetura",
+    "nome": "Arquitetura de Software",
+    "Area_Pai_idArea": "ti"
+  }
+]

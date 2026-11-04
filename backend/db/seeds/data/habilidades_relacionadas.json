@@ -1,0 +1,1262 @@
+[
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "typescript",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "react",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "node",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "vue",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "angular",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "svelte",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "nextjs",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "jquery",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "html",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "javascript",
+    "Habilidade_B": "css",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "react",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "angular",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "nestjs",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "node",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "nextjs",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "typescript",
+    "Habilidade_B": "vue",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "nextjs",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "redux",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "react-native",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "vue",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "angular",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "svelte",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "jest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "tailwind",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "html",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "react",
+    "Habilidade_B": "css",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "vue",
+    "Habilidade_B": "angular",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "vue",
+    "Habilidade_B": "svelte",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "html",
+    "Habilidade_B": "css",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "css",
+    "Habilidade_B": "tailwind",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "css",
+    "Habilidade_B": "bootstrap",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "bootstrap",
+    "Habilidade_B": "tailwind",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "css",
+    "Habilidade_B": "acessibilidade",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "html",
+    "Habilidade_B": "acessibilidade",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "express",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "nestjs",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "express",
+    "Habilidade_B": "nestjs",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "rest",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "mongodb",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "mysql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "jwt",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "node",
+    "Habilidade_B": "jest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "express",
+    "Habilidade_B": "rest",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "websocket",
+    "Habilidade_B": "node",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "django",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "flask",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "fastapi",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "django",
+    "Habilidade_B": "flask",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "flask",
+    "Habilidade_B": "fastapi",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "django",
+    "Habilidade_B": "fastapi",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "pandas",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "numpy",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "pandas",
+    "Habilidade_B": "numpy",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "scikit-learn",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "pytest",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "airflow",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "pytorch",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "tensorflow",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "bash",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "r",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "spark",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "python",
+    "Habilidade_B": "sql",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "kotlin",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "spring",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "junit",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "csharp",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "scala",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "kotlin",
+    "Habilidade_B": "android",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "kotlin",
+    "Habilidade_B": "jetpack-compose",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "android",
+    "Habilidade_B": "jetpack-compose",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "spring",
+    "Habilidade_B": "microsservicos",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "java",
+    "Habilidade_B": "sql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "csharp",
+    "Habilidade_B": "dotnet",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "csharp",
+    "Habilidade_B": "sqlserver",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "dotnet",
+    "Habilidade_B": "sqlserver",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "csharp",
+    "Habilidade_B": "cpp",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "c",
+    "Habilidade_B": "cpp",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "c",
+    "Habilidade_B": "rust",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "cpp",
+    "Habilidade_B": "rust",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "c",
+    "Habilidade_B": "go",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "go",
+    "Habilidade_B": "rust",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "go",
+    "Habilidade_B": "microsservicos",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "go",
+    "Habilidade_B": "docker",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "php",
+    "Habilidade_B": "laravel",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "php",
+    "Habilidade_B": "mysql",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "ruby",
+    "Habilidade_B": "rails",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "swift",
+    "Habilidade_B": "swiftui",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "swift",
+    "Habilidade_B": "ios",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "swiftui",
+    "Habilidade_B": "ios",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "dart",
+    "Habilidade_B": "flutter",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "flutter",
+    "Habilidade_B": "react-native",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "flutter",
+    "Habilidade_B": "android",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "flutter",
+    "Habilidade_B": "ios",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "react-native",
+    "Habilidade_B": "android",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "react-native",
+    "Habilidade_B": "ios",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "android",
+    "Habilidade_B": "ios",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "swift",
+    "Habilidade_B": "kotlin",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "mysql",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "postgresql",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "sqlserver",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "oracle",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "sqlite",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "mysql",
+    "Habilidade_B": "postgresql",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "mysql",
+    "Habilidade_B": "sqlserver",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "postgresql",
+    "Habilidade_B": "oracle",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "mongodb",
+    "Habilidade_B": "dynamodb",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "mongodb",
+    "Habilidade_B": "cassandra",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "mongodb",
+    "Habilidade_B": "firebase",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "redis",
+    "Habilidade_B": "elasticsearch",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "redis",
+    "Habilidade_B": "mongodb",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "neo4j",
+    "Habilidade_B": "mongodb",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "bigquery",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "snowflake",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "power-bi",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "tableau",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "etl",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "dbt",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "sql",
+    "Habilidade_B": "excel",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "rails",
+    "Habilidade_B": "postgresql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "laravel",
+    "Habilidade_B": "mysql",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "django",
+    "Habilidade_B": "postgresql",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "spring",
+    "Habilidade_B": "mysql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "spring",
+    "Habilidade_B": "postgresql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "nestjs",
+    "Habilidade_B": "postgresql",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "docker",
+    "Habilidade_B": "kubernetes",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "docker",
+    "Habilidade_B": "linux",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "docker",
+    "Habilidade_B": "ci-cd",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "kubernetes",
+    "Habilidade_B": "terraform",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "terraform",
+    "Habilidade_B": "ansible",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "terraform",
+    "Habilidade_B": "aws",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "terraform",
+    "Habilidade_B": "azure",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "terraform",
+    "Habilidade_B": "gcp",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "aws",
+    "Habilidade_B": "azure",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "aws",
+    "Habilidade_B": "gcp",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "azure",
+    "Habilidade_B": "gcp",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "aws",
+    "Habilidade_B": "dynamodb",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "gcp",
+    "Habilidade_B": "bigquery",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "gcp",
+    "Habilidade_B": "firebase",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "azure",
+    "Habilidade_B": "sqlserver",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "aws",
+    "Habilidade_B": "docker",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "aws",
+    "Habilidade_B": "kubernetes",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "linux",
+    "Habilidade_B": "bash",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "linux",
+    "Habilidade_B": "nginx",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "git",
+    "Habilidade_B": "github-actions",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "git",
+    "Habilidade_B": "gitlab-ci",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "github-actions",
+    "Habilidade_B": "gitlab-ci",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "github-actions",
+    "Habilidade_B": "jenkins",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "gitlab-ci",
+    "Habilidade_B": "jenkins",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "jenkins",
+    "Habilidade_B": "ci-cd",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "github-actions",
+    "Habilidade_B": "ci-cd",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "gitlab-ci",
+    "Habilidade_B": "ci-cd",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "prometheus",
+    "Habilidade_B": "grafana",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "kubernetes",
+    "Habilidade_B": "prometheus",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "ansible",
+    "Habilidade_B": "linux",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "git",
+    "Habilidade_B": "ci-cd",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "pandas",
+    "Habilidade_B": "scikit-learn",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "numpy",
+    "Habilidade_B": "scikit-learn",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "scikit-learn",
+    "Habilidade_B": "machine-learning",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "tensorflow",
+    "Habilidade_B": "deep-learning",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "pytorch",
+    "Habilidade_B": "deep-learning",
+    "peso": 0.9
+  },
+  {
+    "Habilidade_A": "tensorflow",
+    "Habilidade_B": "pytorch",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "machine-learning",
+    "Habilidade_B": "deep-learning",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "deep-learning",
+    "Habilidade_B": "nlp",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "machine-learning",
+    "Habilidade_B": "nlp",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "machine-learning",
+    "Habilidade_B": "estatistica",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "estatistica",
+    "Habilidade_B": "r",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "estatistica",
+    "Habilidade_B": "pandas",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "power-bi",
+    "Habilidade_B": "tableau",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "power-bi",
+    "Habilidade_B": "excel",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "power-bi",
+    "Habilidade_B": "looker",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "tableau",
+    "Habilidade_B": "looker",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "power-bi",
+    "Habilidade_B": "data-viz",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "tableau",
+    "Habilidade_B": "data-viz",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "looker",
+    "Habilidade_B": "data-viz",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "spark",
+    "Habilidade_B": "databricks",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "spark",
+    "Habilidade_B": "kafka",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "spark",
+    "Habilidade_B": "scala",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "airflow",
+    "Habilidade_B": "dbt",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "airflow",
+    "Habilidade_B": "etl",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "dbt",
+    "Habilidade_B": "etl",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "bigquery",
+    "Habilidade_B": "snowflake",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "snowflake",
+    "Habilidade_B": "databricks",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "bigquery",
+    "Habilidade_B": "databricks",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "kafka",
+    "Habilidade_B": "rabbitmq",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "kafka",
+    "Habilidade_B": "microsservicos",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "firebase",
+    "Habilidade_B": "flutter",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "firebase",
+    "Habilidade_B": "react-native",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "figma",
+    "Habilidade_B": "ui-design",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "figma",
+    "Habilidade_B": "adobe-xd",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "figma",
+    "Habilidade_B": "prototipagem",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "figma",
+    "Habilidade_B": "design-system",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "figma",
+    "Habilidade_B": "wireframe",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "ui-design",
+    "Habilidade_B": "design-system",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "ux-research",
+    "Habilidade_B": "design-thinking",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "ux-research",
+    "Habilidade_B": "wireframe",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "prototipagem",
+    "Habilidade_B": "wireframe",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "ui-design",
+    "Habilidade_B": "acessibilidade",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "ux-research",
+    "Habilidade_B": "ui-design",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "adobe-xd",
+    "Habilidade_B": "prototipagem",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "jest",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "cypress",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "selenium",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "playwright",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "junit",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "pytest",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "cypress",
+    "Habilidade_B": "playwright",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "cypress",
+    "Habilidade_B": "selenium",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "playwright",
+    "Habilidade_B": "selenium",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "jest",
+    "Habilidade_B": "cypress",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "tdd",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "tdd",
+    "Habilidade_B": "jest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "postman",
+    "Habilidade_B": "rest",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "postman",
+    "Habilidade_B": "testes-automatizados",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "junit",
+    "Habilidade_B": "pytest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "jest",
+    "Habilidade_B": "junit",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "owasp",
+    "Habilidade_B": "pentest",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "owasp",
+    "Habilidade_B": "jwt",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "owasp",
+    "Habilidade_B": "oauth",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "oauth",
+    "Habilidade_B": "jwt",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "oauth",
+    "Habilidade_B": "iam",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "criptografia",
+    "Habilidade_B": "jwt",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "criptografia",
+    "Habilidade_B": "pentest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "siem",
+    "Habilidade_B": "pentest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "lgpd",
+    "Habilidade_B": "owasp",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "iam",
+    "Habilidade_B": "aws",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "siem",
+    "Habilidade_B": "linux",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "rest",
+    "Habilidade_B": "graphql",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "rest",
+    "Habilidade_B": "grpc",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "graphql",
+    "Habilidade_B": "grpc",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "rest",
+    "Habilidade_B": "microsservicos",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "microsservicos",
+    "Habilidade_B": "docker",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "microsservicos",
+    "Habilidade_B": "rabbitmq",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "websocket",
+    "Habilidade_B": "rest",
+    "peso": 0.4
+  },
+  {
+    "Habilidade_A": "clean-architecture",
+    "Habilidade_B": "solid",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "clean-architecture",
+    "Habilidade_B": "ddd",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "solid",
+    "Habilidade_B": "design-patterns",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "ddd",
+    "Habilidade_B": "microsservicos",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "design-patterns",
+    "Habilidade_B": "tdd",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "solid",
+    "Habilidade_B": "tdd",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "scrum",
+    "Habilidade_B": "kanban",
+    "peso": 0.8
+  },
+  {
+    "Habilidade_A": "scrum",
+    "Habilidade_B": "jira",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "kanban",
+    "Habilidade_B": "jira",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "scrum",
+    "Habilidade_B": "gestao-de-projetos",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "gestao-de-projetos",
+    "Habilidade_B": "product-management",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "lideranca",
+    "Habilidade_B": "mentoria",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "lideranca",
+    "Habilidade_B": "comunicacao",
+    "peso": 0.6
+  },
+  {
+    "Habilidade_A": "comunicacao",
+    "Habilidade_B": "trabalho-em-equipe",
+    "peso": 0.7
+  },
+  {
+    "Habilidade_A": "trabalho-em-equipe",
+    "Habilidade_B": "resolucao-de-problemas",
+    "peso": 0.3
+  },
+  {
+    "Habilidade_A": "lideranca",
+    "Habilidade_B": "gestao-de-projetos",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "mentoria",
+    "Habilidade_B": "comunicacao",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "product-management",
+    "Habilidade_B": "scrum",
+    "peso": 0.5
+  },
+  {
+    "Habilidade_A": "ingles",
+    "Habilidade_B": "comunicacao",
+    "peso": 0.3
+  }
+]

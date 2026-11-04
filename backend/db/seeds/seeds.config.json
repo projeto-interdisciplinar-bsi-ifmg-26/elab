@@ -1,0 +1,23 @@
+[
+  {
+    "arquivo": "areas.json",
+    "tabela": "Areas_Atuacao",
+    "chave": ["slug"],
+    "refs": { "Area_Pai_idArea": { "tabela": "Areas_Atuacao", "por": "slug" } }
+  },
+  {
+    "arquivo": "habilidades.json",
+    "tabela": "Habilidades",
+    "chave": ["nome_habilidade"]
+  },
+  {
+    "arquivo": "habilidades_relacionadas.json",
+    "tabela": "Habilidades_Relacionadas",
+    "chave": ["Habilidade_A", "Habilidade_B"],
+    "refs": {
+      "Habilidade_A": { "tabela": "Habilidades", "por": "nome_habilidade" },
+      "Habilidade_B": { "tabela": "Habilidades", "por": "nome_habilidade" }
+    },
+    "normalizarPar": ["Habilidade_A", "Habilidade_B"]
+  }
+]

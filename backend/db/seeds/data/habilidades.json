@@ -1,0 +1,570 @@
+[
+  {
+    "nome_habilidade": "javascript",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "typescript",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "python",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "java",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "kotlin",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "swift",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "csharp",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "go",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "rust",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "php",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "ruby",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "c",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "cpp",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "dart",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "r",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "scala",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "bash",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "html",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "css",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "sql",
+    "categoria": "linguagem"
+  },
+  {
+    "nome_habilidade": "react",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "nextjs",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "vue",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "angular",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "svelte",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "node",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "express",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "nestjs",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "django",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "flask",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "fastapi",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "spring",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "laravel",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "rails",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "dotnet",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "flutter",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "react-native",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "jetpack-compose",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "swiftui",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "tailwind",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "bootstrap",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "redux",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "jquery",
+    "categoria": "framework"
+  },
+  {
+    "nome_habilidade": "android",
+    "categoria": "mobile"
+  },
+  {
+    "nome_habilidade": "ios",
+    "categoria": "mobile"
+  },
+  {
+    "nome_habilidade": "mysql",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "postgresql",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "mongodb",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "redis",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "sqlite",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "oracle",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "sqlserver",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "elasticsearch",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "dynamodb",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "cassandra",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "neo4j",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "firebase",
+    "categoria": "banco"
+  },
+  {
+    "nome_habilidade": "aws",
+    "categoria": "cloud"
+  },
+  {
+    "nome_habilidade": "azure",
+    "categoria": "cloud"
+  },
+  {
+    "nome_habilidade": "gcp",
+    "categoria": "cloud"
+  },
+  {
+    "nome_habilidade": "docker",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "kubernetes",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "terraform",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "ansible",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "jenkins",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "github-actions",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "gitlab-ci",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "linux",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "nginx",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "prometheus",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "grafana",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "ci-cd",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "git",
+    "categoria": "devops"
+  },
+  {
+    "nome_habilidade": "pandas",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "numpy",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "scikit-learn",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "tensorflow",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "pytorch",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "power-bi",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "tableau",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "spark",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "airflow",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "kafka",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "dbt",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "etl",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "excel",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "looker",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "machine-learning",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "deep-learning",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "nlp",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "estatistica",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "data-viz",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "bigquery",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "snowflake",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "databricks",
+    "categoria": "dados"
+  },
+  {
+    "nome_habilidade": "figma",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "ux-research",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "ui-design",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "design-system",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "prototipagem",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "adobe-xd",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "acessibilidade",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "wireframe",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "design-thinking",
+    "categoria": "design"
+  },
+  {
+    "nome_habilidade": "jest",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "cypress",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "selenium",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "playwright",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "junit",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "pytest",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "testes-automatizados",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "tdd",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "postman",
+    "categoria": "qualidade"
+  },
+  {
+    "nome_habilidade": "owasp",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "pentest",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "criptografia",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "oauth",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "jwt",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "iam",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "siem",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "lgpd",
+    "categoria": "seguranca"
+  },
+  {
+    "nome_habilidade": "rest",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "graphql",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "grpc",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "microsservicos",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "websocket",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "rabbitmq",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "clean-architecture",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "solid",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "design-patterns",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "ddd",
+    "categoria": "arquitetura"
+  },
+  {
+    "nome_habilidade": "comunicacao",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "lideranca",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "trabalho-em-equipe",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "resolucao-de-problemas",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "scrum",
+    "categoria": "gestao"
+  },
+  {
+    "nome_habilidade": "kanban",
+    "categoria": "gestao"
+  },
+  {
+    "nome_habilidade": "jira",
+    "categoria": "gestao"
+  },
+  {
+    "nome_habilidade": "gestao-de-projetos",
+    "categoria": "gestao"
+  },
+  {
+    "nome_habilidade": "ingles",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "mentoria",
+    "categoria": "soft"
+  },
+  {
+    "nome_habilidade": "product-management",
+    "categoria": "gestao"
+  }
+]

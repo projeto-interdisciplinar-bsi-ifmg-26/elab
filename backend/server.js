@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const authRoutes = require('./src/routes/auth.routes');
 const oportunidadesRoutes = require('./src/routes/oportunidades.routes');
 const perfilRoutes = require('./src/routes/perfil.routes');
+const catalogoRoutes = require('./src/routes/catalogo.routes');
 const tratarErros = require('./src/middlewares/error.middleware');
 const { port, nodeEnv } = require('./src/config/env');
 
@@ -21,6 +22,7 @@ app.use(morgan(nodeEnv === 'production' ? 'combined' : 'dev'));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/oportunidades', oportunidadesRoutes);
 app.use('/api/v1/perfil', perfilRoutes);
+app.use('/api/v1/catalogo', catalogoRoutes);
 app.get('/api/v1/status', (req, res) => res.json({ status: 'ELAB API rodando' }));
 
 // Front servido pelo próprio Express: mesma origem, sem CORS. Com o CSP padrão do helmet,

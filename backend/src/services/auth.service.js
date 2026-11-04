@@ -3,18 +3,37 @@ const jwt = require('jsonwebtoken');
 const ApiError = require('../utils/ApiError');
 const usuarioRepository = require('../repositories/usuario.repository');
 const { jwtSecret, jwtExpiresIn } = require('../config/env');
+const { withTransaction } = require('../../db/pool');
 
 const SALT_ROUNDS = 10;
 
-async function registrar({ email, senha, tipo }) {
-  const existente = await usuarioRepository.buscarPorEmail(email);
-  if (existente) throw new ApiError(409, 'E-mail já cadastrado');
+async function registrar({ email, senha, tipo, nome = '' }) {
+  return await withTransaction(async (conn) => {
+    const existente = await usuarioRepository.buscarPorEmail(email);
+    if (existente) throw new ApiError(409, 'E-mail já cadastrado');
 
-  const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
-  const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo });
+    const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
 
-  // Nunca devolver o hash da senha.
-  return { id: usuario.id, email: usuario.email, tipo: usuario.tipo_usuario };
+    // Criar usuário
+    const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo });
+    const usuarioId = usuario.id;
+
+    // Se for profissional, criar perfil básico automaticamente
+    if (tipo === 'profissional') {
+      await conn.execute(
+        'INSERT INTO Profissionais (Usuario_idUsuario, nome) VALUES (?, ?)',
+        [usuarioId, nome]
+      );
+    } else if (tipo === 'entidade_parceira') {
+      await conn.execute(
+        'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
+        [usuarioId, nome, '00000000000000']
+      );
+    }
+
+    // Nunca devolver o hash da senha.
+    return { id: usuarioId, email: usuario.email, tipo: tipo };
+  });
 }
 
 async function login({ email, senha }) {

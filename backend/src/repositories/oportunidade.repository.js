@@ -26,12 +26,12 @@ async function buscarPorId(id) {
   return rows[0] || null;
 }
 
-async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data = '', habilidades = [] }) {
+async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data = null, habilidades = [] }) {
   const status = tipo === 'vaga' ? 'ativo' : 'agendado';
 
   const result = await query(
     'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, descricao, local, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [empresaId, titulo, tipo, descricao, local, data, status]
+    [empresaId, titulo, tipo, descricao, local, data === '' ? null : data, status]
   );
 
   const id = result.insertId;
@@ -54,12 +54,12 @@ async function buscarInscricao(oportunidadeId, profissionalId) {
   return rows[0] || null;
 }
 
-async function criarInscricao({ oportunidadeId, usuarioId, mensagem = '' }) {
+async function criarInscricao({ oportunidadeId, usuarioId, mensagem = '', protocolo }) {
   const result = await query(
-    'INSERT INTO Cadastros_Oportunidades (Oportunidade_idOportunidade, Profissionais_idProfissionais, mensagem) VALUES (?, ?, ?)',
-    [oportunidadeId, usuarioId, mensagem]
+    'INSERT INTO Cadastros_Oportunidades (Oportunidade_idOportunidade, Profissionais_idProfissionais, mensagem, protocolo) VALUES (?, ?, ?, ?)',
+    [oportunidadeId, usuarioId, mensagem, protocolo]
   );
-  return { id: result.insertId, oportunidadeId, usuarioId, mensagem };
+  return { id: result.insertId, oportunidadeId, usuarioId, mensagem, protocolo };
 }
 
 async function buscarCandidatos(oportunidadeId) {

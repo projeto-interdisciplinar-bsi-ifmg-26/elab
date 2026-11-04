@@ -27,9 +27,20 @@ async function obter(id) {
 }
 
 async function criar(empresaId, dados) {
-  const empresa = await usuarioRepository.buscarPorId(empresaId);
+  const empresa = await query(
+    'SELECT idEntidade_Parceira, nome_organizacao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
+    [empresaId]
+  );
+
+  if (!empresa || empresa.length === 0) {
+    throw new ApiError(400, 'Perfil de empresa não encontrado.');
+  }
+
+  const idEntidade = empresa[0].idEntidade_Parceira;
+  const nomeEmpresa = empresa[0].nome_organizacao;
   const habilidades = (dados.habilidades || []).map(h => String(h).trim().slice(0, 30)).filter(Boolean);
-  return oportunidadeRepository.criar({ ...dados, habilidades, empresaId, empresaNome: empresa?.nome || '' });
+
+  return oportunidadeRepository.criar({ ...dados, habilidades, empresaId: idEntidade, empresaNome: nomeEmpresa });
 }
 
 // Serve tanto para candidatura (vaga) quanto para inscrição (demais tipos).
@@ -52,14 +63,14 @@ async function inscrever(usuarioId, oportunidadeId, mensagem) {
     throw new ApiError(409, 'Você já se inscreveu nesta oportunidade');
   }
 
+  const protocolo = Math.floor(100000 + Math.random() * 900000).toString();
+
   const i = await oportunidadeRepository.criarInscricao({
     oportunidadeId,
     usuarioId: profissionalId,
-    mensagem
+    mensagem,
+    protocolo
   });
-
-  // Gerar um protocolo único baseado no timestamp e ID do profissional
-  const protocolo = Math.floor(100000 + Math.random() * 900000);
 
   return { protocolo: protocolo, oportunidade: { id: o.id, titulo: o.titulo, tipo: o.tipo } };
 }

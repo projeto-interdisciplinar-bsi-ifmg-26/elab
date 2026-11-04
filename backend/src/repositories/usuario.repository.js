@@ -31,8 +31,19 @@ async function buscarPorId(id) {
 }
 
 async function atualizar(id, campos) {
-  const keys = Object.keys(campos);
-  const values = Object.values(campos);
+  const allowedFields = ['email', 'senha'];
+  const filteredCampos = {};
+
+  for (const key in campos) {
+    if (allowedFields.includes(key)) {
+      filteredCampos[key] = campos[key];
+    }
+  }
+
+  const keys = Object.keys(filteredCampos);
+  if (keys.length === 0) return await buscarPorId(id);
+
+  const values = Object.values(filteredCampos);
   const setClause = keys.map(key => `${key} = ?`).join(', ');
 
   await query(
@@ -41,7 +52,5 @@ async function atualizar(id, campos) {
   );
   return await buscarPorId(id);
 }
-
-module.exports = { criar, buscarPorEmail, buscarPorId, atualizar };
 
 module.exports = { criar, buscarPorEmail, buscarPorId, atualizar };

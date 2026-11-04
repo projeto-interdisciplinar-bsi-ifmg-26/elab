@@ -1,4 +1,5 @@
 const oportunidadeService = require('../services/oportunidade.service');
+const candidatosService = require('../services/candidatos.service');
 const asyncHandler = require('../utils/asyncHandler');
 const { sucesso } = require('../utils/response');
 
@@ -28,7 +29,7 @@ const inscrever = asyncHandler(async (req, res) => {
 });
 
 const listarCandidatos = asyncHandler(async (req, res) => {
-  const candidatos = await oportunidadeService.listarCandidatos(req.params.id);
+  const candidatos = await candidatosService.listarRanqueados(req.usuario.id, req.params.id);
   sucesso(res, 200, candidatos);
 });
 

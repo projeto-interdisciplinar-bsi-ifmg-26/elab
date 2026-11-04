@@ -4,13 +4,15 @@ const ApiError = require('../utils/ApiError');
 const usuarioRepository = require('../repositories/usuario.repository');
 const { jwtSecret, jwtExpiresIn } = require('../config/env');
 const { withTransaction } = require('../../db/pool');
+const { normalizarCnpj } = require('../utils/cnpj');
 
 const SALT_ROUNDS = 10;
 
-async function registrar({ email, senha, tipo, nome = '' }) {
+async function registrar({ email, senha, tipo, nome = '', cnpj }) {
   return await withTransaction(async (conn) => {
     const existente = await usuarioRepository.buscarPorEmail(email);
     if (existente) throw new ApiError(409, 'E-mail já cadastrado');
+    if (tipo === 'entidade_parceira' && (await conn.execute('SELECT 1 FROM Entidades_Parceiras WHERE cnpj = ?', [normalizarCnpj(cnpj)]))[0].length) throw new ApiError(409, 'CNPJ já cadastrado');
 
     const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
 
@@ -27,7 +29,7 @@ async function registrar({ email, senha, tipo, nome = '' }) {
     } else if (tipo === 'entidade_parceira') {
       await conn.execute(
         'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
-        [usuarioId, nome, '00000000000000']
+        [usuarioId, nome, normalizarCnpj(cnpj)]
       );
     }
 

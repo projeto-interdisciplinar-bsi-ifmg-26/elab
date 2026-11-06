@@ -1,7 +1,8 @@
 const { query } = require('../../db/pool');
 
-async function criar({ email, senhaHash, tipo_usuario }) {
-  const result = await query(
+async function criar({ email, senhaHash, tipo_usuario }, conn) {
+  const executar = conn ? async (sql, params) => (await conn.execute(sql, params))[0] : query;
+  const result = await executar(
     'INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)',
     [email, senhaHash, tipo_usuario]
   );

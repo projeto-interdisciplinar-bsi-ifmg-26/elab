@@ -17,7 +17,7 @@ async function registrar({ email, senha, tipo, nome = '', cnpj }) {
     const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
 
     // Criar usuário
-    const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo });
+    const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo }, conn);
     const usuarioId = usuario.id;
 
     // Se for profissional, criar perfil básico automaticamente

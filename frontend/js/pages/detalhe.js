@@ -1,6 +1,7 @@
 import { $, esc } from '../core/dom.js';
 import { params, user } from '../core/state.js';
 import { api } from '../core/api.js';
+import { carregarMatch } from "../core/match.js";
 import { TIPOS, dataBR } from '../core/render.js';
 
 export async function detalhe() {
@@ -9,6 +10,7 @@ export async function detalhe() {
 
   const o = await api('/oportunidades/' + encodeURIComponent(id), { auth: false });
   const vaga = o.tipo === 'vaga';
+  const matchHtml = await carregarMatch(o, user);
   let acao = '';
   if (user.tipo === 'colaboradora') {
     acao = `<a class="btn" href="inscricao.html?id=${Number(id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
@@ -39,6 +41,7 @@ export async function detalhe() {
         : '<span class="mut">A organização não informou requisitos específicos.</span>'}
     </div>
 
+    ${matchHtml}
     <div style="border-top:1px solid var(--borda); padding-top:1.5rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
       ${acao}
       <a class="btn ghost" href="feed.html">Voltar ao feed</a>

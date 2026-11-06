@@ -3225,3 +3225,9 @@ body[data-page="index"] .landing-footer p {
 .badge-match.alto { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9 }
 .badge-match.medio { background: #fff8e1; color: #8d6e00; border: 1px solid #ffecb3 }
 .badge-match.baixo { background: #eceff1; color: #546e7a; border: 1px solid #cfd8dc }
+
+.match-bloco { margin: 1.5rem 0; padding: 1.1rem 1.25rem; background: var(--painel-claro); border-radius: var(--r) }
+.match-linha { display: grid; grid-template-columns: 7rem 1fr 3rem; align-items: center; gap: 0.6rem; margin: 0.35rem 0; font-size: 0.9rem }
+.match-barra { height: 0.55rem; background: var(--borda); border-radius: var(--r-pill); overflow: hidden }
+.match-barra i { display: block; height: 100%; background: var(--roxo) }
+.match-bloco ul, .match-bloco ol { margin: 0.4rem 0 0 1.2rem; padding: 0; font-size: 0.92rem }

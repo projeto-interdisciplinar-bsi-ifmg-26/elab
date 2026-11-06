@@ -2,7 +2,22 @@ import { $, esc } from '../core/dom.js';
 import { params, user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { carregarMatch } from "../core/match.js";
+import { htmlCandidatas } from '../core/candidatas.js';
 import { TIPOS, dataBR } from '../core/render.js';
+
+// Candidaturas aparecem so para a empresa dona da oportunidade. Qualquer falha (ex: 403) esconde o bloco.
+const carregarCandidaturas = async (id) => {
+  if (user.tipo !== 'empresa') return '';
+  try {
+    const lista = await api('/oportunidades/' + Number(id) + '/candidatos');
+    return `<section class="match-bloco" aria-label="Candidaturas">
+      <h3>Candidaturas (${lista.length})</h3>
+      ${htmlCandidatas(lista)}
+    </section>`;
+  } catch {
+    return '';
+  }
+};
 
 export async function detalhe() {
   const id = params.get('id');
@@ -11,11 +26,10 @@ export async function detalhe() {
   const o = await api('/oportunidades/' + encodeURIComponent(id), { auth: false });
   const vaga = o.tipo === 'vaga';
   const matchHtml = await carregarMatch(o, user);
+  const candidaturasHtml = await carregarCandidaturas(id);
   let acao = '';
   if (user.tipo === 'colaboradora') {
     acao = `<a class="btn" href="inscricao.html?id=${Number(id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
-  } else {
-    acao = `<p class="mut" style="background:var(--painel-claro); padding:0.6rem 1rem; border-radius:var(--r);">Entre com uma conta profissional para se candidatar.</p>`;
   }
 
   $('#conteudo').innerHTML = `
@@ -42,6 +56,7 @@ export async function detalhe() {
     </div>
 
     ${matchHtml}
+    ${candidaturasHtml}
     <div style="border-top:1px solid var(--borda); padding-top:1.5rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
       ${acao}
       <a class="btn ghost" href="feed.html">Voltar ao feed</a>

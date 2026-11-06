@@ -3232,8 +3232,6 @@ body[data-page="index"] .landing-footer p {
 .match-barra i { display: block; height: 100%; background: var(--roxo) }
 .match-bloco ul, .match-bloco ol { margin: 0.4rem 0 0 1.2rem; padding: 0; font-size: 0.92rem }
 
-.item-vaga { display: flex; flex-direction: column; gap: 0.4rem }
-.item-acoes { display: flex; justify-content: flex-end }
 .cand { padding: 0.9rem 0; border-top: 1px solid var(--borda) }
 .cand header { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap }
 .cand-msg { font-size: 0.9rem; font-style: italic; margin: 0.3rem 0 }

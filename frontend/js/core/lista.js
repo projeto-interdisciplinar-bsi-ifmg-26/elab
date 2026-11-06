@@ -1,6 +1,6 @@
 import { esc, normalizarTexto } from './dom.js';
 
-// Monta busca + filtros + paginacao dentro do elemento "el".
+// Monta busca + filtros + paginacao (em cima e embaixo) dentro do elemento "el".
 // Opcoes: itens, desenhar(item), porPagina, busca(item) -> texto pesquisavel,
 // filtros: [{ chave, rotulo, opcoes: [{ valor, rotulo }], teste(item, valor), oculto }],
 // vazio (mensagem), classeItens (classe CSS do container dos itens), rotuloBusca.
@@ -24,13 +24,21 @@ export function montarLista(el, opcoes) {
   el.innerHTML =
     '<div class="lista-barra">' + campoBusca + selects + '</div>' +
     '<p class="mut lista-total" role="status"></p>' +
+    '<nav class="lista-pag" aria-label="Paginação (topo)"></nav>' +
     '<div class="' + esc(classeItens) + '"></div>' +
-    '<nav class="lista-pag" aria-label="Paginação"></nav>';
+    '<nav class="lista-pag" aria-label="Paginação (rodapé)"></nav>';
 
   const barra = el.children[0];
   const total = el.children[1];
-  const area = el.children[2];
-  const pag = el.children[3];
+  const pagTopo = el.children[2];
+  const area = el.children[3];
+  const pagBase = el.children[4];
+
+  const htmlPaginacao = (atual, paginas) => (paginas > 1
+    ? '<button type="button" class="btn sm secundario" data-pag="' + (atual - 1) + '"' + (atual === 1 ? ' disabled' : '') + '>Anterior</button>' +
+      '<span>Página ' + atual + ' de ' + paginas + '</span>' +
+      '<button type="button" class="btn sm secundario" data-pag="' + (atual + 1) + '"' + (atual === paginas ? ' disabled' : '') + '>Próxima</button>'
+    : '');
 
   const passa = item => {
     if (estado.termo && !normalizarTexto(busca(item)).includes(estado.termo)) return false;
@@ -46,11 +54,9 @@ export function montarLista(el, opcoes) {
     area.innerHTML = lista.length
       ? lista.slice(inicio, inicio + porPagina).map(i => desenhar(i)).join('')
       : '<div class="vazio"><p>' + esc(vazio) + '</p></div>';
-    pag.innerHTML = paginas > 1
-      ? '<button type="button" class="btn sm secundario" data-pag="' + (estado.pagina - 1) + '"' + (estado.pagina === 1 ? ' disabled' : '') + '>Anterior</button>' +
-        '<span>Página ' + estado.pagina + ' de ' + paginas + '</span>' +
-        '<button type="button" class="btn sm secundario" data-pag="' + (estado.pagina + 1) + '"' + (estado.pagina === paginas ? ' disabled' : '') + '>Próxima</button>'
-      : '';
+    const html = htmlPaginacao(estado.pagina, paginas);
+    pagTopo.innerHTML = html;
+    pagBase.innerHTML = html;
   };
 
   barra.addEventListener('input', e => {
@@ -68,13 +74,15 @@ export function montarLista(el, opcoes) {
     desenharTudo();
   });
 
-  pag.addEventListener('click', e => {
+  const aoClicarPagina = e => {
     const b = e.target.closest('button[data-pag]');
     if (!b || b.disabled) return;
     estado.pagina = Number(b.dataset.pag);
     desenharTudo();
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  };
+  pagTopo.addEventListener('click', aoClicarPagina);
+  pagBase.addEventListener('click', aoClicarPagina);
 
   desenharTudo();
 

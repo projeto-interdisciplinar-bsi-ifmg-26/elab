@@ -3241,3 +3241,5 @@ body[data-page="index"] .landing-footer p {
 .lista-barra select { flex: 0 1 auto; width: auto }
 .lista-total { font-size: 0.85rem; margin: 0 0 0.6rem }
 .lista-pag { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.25rem 0 }
+
+.lista-pag:empty { display: none }

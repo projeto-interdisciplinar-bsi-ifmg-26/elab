@@ -40,7 +40,6 @@ async function criar(empresaId, dados) {
 
   const idEntidade = empresa[0].idEntidade_Parceira;
   const nomeEmpresa = empresa[0].nome_organizacao;
-  const habilidades = (dados.habilidades || []).map(h => String(h).trim().slice(0, 30)).filter(Boolean);
 
   const requisitos = [...new Map((dados.requisitos || []).map((r) => [r.habilidadeId, r])).values()];
   if (dados.areaId && !(await perfilRepo.areasExistentes([dados.areaId])).length) {
@@ -50,7 +49,7 @@ async function criar(empresaId, dados) {
   const invalidas = requisitos.filter((r) => !existem.has(r.habilidadeId)).map((r) => r.habilidadeId);
   if (invalidas.length) throw new ApiError(400, 'Habilidades inexistentes: ' + invalidas.join(', '));
 
-  const criada = await oportunidadeRepository.criar({ ...dados, habilidades, empresaId: idEntidade, empresaNome: nomeEmpresa });
+  const criada = await oportunidadeRepository.criar({ ...dados, empresaId: idEntidade, empresaNome: nomeEmpresa });
   if (dados.tipo === 'vaga') await detalhesRepo.salvarDetalhes(criada.id, { ...dados, requisitos });
   return criada;
 }

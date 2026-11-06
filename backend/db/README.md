@@ -20,8 +20,10 @@ db/
 | `004_create_habilidades.sql` | `Habilidades` + junção `Habilidades_Profissional` (N:N) |
 | `005_create_eventos_oportunidades.sql` | `Eventos` e `Oportunidades` (1:N) |
 | `006_create_cadastros.sql` | `Cadastros_Oportunidades` e `Cadastros_Eventos` (N:N) |
+| `007` a `019` | Perfil completo, catálogo de habilidades e áreas, grafo de habilidades, requisitos de vagas e ajustes de colunas |
+| `020_drop_tabelas_legadas.sql` | Remove `Eventos`, `Cadastros_Eventos` e `Habilidades_Oportunidade`, que nunca foram usadas ou foram substituídas |
 
-A ordem numérica respeita as dependências de chave estrangeira.
+A ordem numérica respeita as dependências de chave estrangeira. Eventos, palestras e bolsas vivem em `Oportunidades` (coluna `tipo`) e as inscrições em `Cadastros_Oportunidades`.
 
 ## Como rodar
 

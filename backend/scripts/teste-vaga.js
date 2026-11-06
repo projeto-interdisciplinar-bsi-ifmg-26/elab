@@ -105,8 +105,13 @@ async function main() {
     conferir('evento nao grava requisitos', Number(n[0].n) === 0, n);
   }
 
-  r = await chamar('POST', '/oportunidades', { titulo: 'TESTE-VAGA legado', tipo: 'vaga', habilidades: ['react'] }, tokEmp);
-  conferir('formato antigo (habilidades em texto) continua funcionando', r.status === 201, r);
+  r = await chamar('POST', '/oportunidades', { titulo: 'TESTE-VAGA texto livre', tipo: 'vaga', habilidades: ['react'] }, tokEmp);
+  const textoId = dadosDe(r) && dadosDe(r).id;
+  conferir('habilidades em texto livre e ignorada (vaga criada sem requisitos)', r.status === 201 && !!textoId, r);
+  if (textoId) {
+    const n = await query('SELECT COUNT(*) AS n FROM Oportunidades_Habilidades WHERE Oportunidade_idOportunidade = ?', [textoId]);
+    conferir('vaga de texto livre nao grava requisitos', Number(n[0].n) === 0, n);
+  }
 
   r = await chamar('POST', '/oportunidades', vaga, tokCand);
   conferir('colaboradora nao cria vaga (403)', r.status === 403, r);

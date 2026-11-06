@@ -1,6 +1,6 @@
 const { query } = require('../../db/pool');
 
-// Anexa "habilidades" (lista de nomes) a cada oportunidade: requisitos novos + texto livre legado.
+// Anexa "habilidades" (lista de nomes) a cada oportunidade, a partir dos requisitos estruturados.
 async function anexarHabilidades(lista) {
   if (lista.length === 0) return lista;
   const ids = lista.map((o) => o.idOportunidade);
@@ -9,12 +9,8 @@ async function anexarHabilidades(lista) {
     'SELECT oh.Oportunidade_idOportunidade AS oid, h.nome_habilidade AS nome FROM Oportunidades_Habilidades oh JOIN Habilidades h ON h.idHabilidades = oh.Habilidade_idHabilidades WHERE oh.Oportunidade_idOportunidade IN (' + marcas + ') ORDER BY oh.importancia DESC',
     ids
   );
-  const legados = await query(
-    'SELECT oportunidadeId AS oid, habilidade AS nome FROM Habilidades_Oportunidade WHERE oportunidadeId IN (' + marcas + ')',
-    ids
-  );
   const mapa = new Map(ids.map((i) => [i, []]));
-  for (const r of [...novos, ...legados]) {
+  for (const r of novos) {
     const l = mapa.get(r.oid);
     if (!l.includes(r.nome)) l.push(r.nome);
   }
@@ -47,7 +43,7 @@ async function buscarPorId(id) {
   return rows[0] || null;
 }
 
-async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data = null, habilidades = [] }) {
+async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data = null }) {
   const status = tipo === 'vaga' ? 'ativo' : 'agendado';
 
   const result = await query(
@@ -56,13 +52,6 @@ async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data
   );
 
   const id = result.insertId;
-
-  // Inserir habilidades se houver
-  if (habilidades.length > 0) {
-    for (const h of habilidades) {
-      await query('INSERT INTO Habilidades_Oportunidade (oportunidadeId, habilidade) VALUES (?, ?)', [id, h]);
-    }
-  }
 
   return { id: id, empresaId, titulo, tipo, descricao, local, data, status };
 }

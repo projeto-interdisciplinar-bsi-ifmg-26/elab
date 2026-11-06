@@ -19,7 +19,6 @@ router.post('/', autenticar, permitir('empresa'), [
   body('descricao').optional().trim().isLength({ max: 1000 }).withMessage('Descrição muito longa'),
   body('local').optional().trim().isLength({ max: 80 }).withMessage('Local muito longo'),
   body('data').optional({ checkFalsy: true }).isISO8601().withMessage('Data inválida'),
-  body('habilidades').optional().isArray({ max: 10 }).withMessage('Habilidades inválidas'),
   body('areaId').optional({ checkFalsy: true }).isInt({ min: 1 }).withMessage('Área inválida').toInt(),
   body('nivel').optional({ checkFalsy: true }).isIn(['estagio', 'junior', 'pleno', 'senior', 'especialista', 'qualquer']).withMessage('Nível inválido'),
   body('modalidade').optional({ checkFalsy: true }).isIn(['remoto', 'hibrido', 'presencial']).withMessage('Modalidade inválida'),

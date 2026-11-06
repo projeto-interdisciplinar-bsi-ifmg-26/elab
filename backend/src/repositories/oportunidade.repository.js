@@ -54,12 +54,12 @@ async function buscarInscricao(oportunidadeId, profissionalId) {
   return rows[0] || null;
 }
 
-async function criarInscricao({ oportunidadeId, usuarioId, mensagem = '', protocolo }) {
+async function criarInscricao({ oportunidadeId, profissionalId, mensagem = '', protocolo }) {
   const result = await query(
     'INSERT INTO Cadastros_Oportunidades (Oportunidade_idOportunidade, Profissionais_idProfissionais, mensagem, protocolo) VALUES (?, ?, ?, ?)',
-    [oportunidadeId, usuarioId, mensagem, protocolo]
+    [oportunidadeId, profissionalId, mensagem, protocolo]
   );
-  return { id: result.insertId, oportunidadeId, usuarioId, mensagem, protocolo };
+  return { id: result.insertId, oportunidadeId, profissionalId, mensagem, protocolo };
 }
 
 async function buscarCandidatos(oportunidadeId) {

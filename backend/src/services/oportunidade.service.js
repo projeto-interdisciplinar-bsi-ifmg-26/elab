@@ -79,7 +79,7 @@ async function inscrever(usuarioId, oportunidadeId, mensagem) {
 
   const i = await oportunidadeRepository.criarInscricao({
     oportunidadeId,
-    usuarioId: profissionalId,
+    profissionalId,
     mensagem,
     protocolo
   });

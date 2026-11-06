@@ -8,7 +8,7 @@ const { authLimiter } = require('../middlewares/rateLimiter');
 const { cnpjValido } = require('../utils/cnpj');
 
 router.post('/registrar', authLimiter, [
-  body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
+  body('nome').trim().notEmpty().withMessage('Nome é obrigatório').isLength({ max: 255 }).withMessage('Nome deve ter no máximo 255 caracteres'),
   body('email').isEmail().withMessage('E-mail inválido').normalizeEmail(),
   body('senha').isLength({ min: 8 }).withMessage('Senha deve ter no mínimo 8 caracteres'),
   body('tipo').isIn(['entidade_parceira', 'profissional']).withMessage('Tipo de conta inválido'),

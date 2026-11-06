@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "migrate": "node db/migrate.js",
-    "seed": "node db/seed.js"
+    "seed": "node db/seed.js",
+    "test": "node scripts/teste-grafo.js && node scripts/teste-perfil.js && node scripts/teste-match.js && node scripts/teste-candidatos.js && node scripts/teste-vaga.js && node scripts/teste-alocacao.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

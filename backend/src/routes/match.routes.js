@@ -20,4 +20,7 @@ router.get(
   matchController.trilha
 );
 
+// Alocacao otima global das inscritas nas vagas ativas da empresa logada.
+router.post('/alocacao', permitir('empresa'), matchController.alocacao);
+
 module.exports = router;

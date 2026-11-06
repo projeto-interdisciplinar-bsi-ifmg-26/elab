@@ -68,6 +68,14 @@ npm run dev       # servidor em http://localhost:3000
 
 O seed carrega **apenas dados de referência**, sem usuárias, vagas ou inscrições falsas. Ele é idempotente e lê `backend/db/seeds/seeds.config.json` e os JSONs em `backend/db/seeds/data/`.
 
+#### 🎭 Dados de demonstração (opcional)
+```bash
+npm run seed:demo
+```
+> ⚠️ **Destrutivo:** apaga todos os usuários, exceto `admin@elab.com`, e recria os dados de demonstração. Faça backup antes, se o banco tiver algo que importe.
+
+Cria 8 empresas (`empresa1@elab.com` a `empresa8@elab.com`), 40 vagas, 8 eventos, palestras e bolsas, 100 colaboradoras (`colab1@elab.com` a `colab100@elab.com`) e 429 candidaturas. A senha de todas é `demo12345`. A semente é fixa, então o resultado é sempre o mesmo. `empresa1` e `empresa2` recebem de 10 a 16 candidatas por vaga; `colab1` e `colab2` têm perfil completo e candidaturas, ideais para demonstrar o match. A tela de login também tem botões de conta demo.
+
 ### 🖥️ Frontend
 O próprio Express serve a pasta `frontend/`. Com o servidor rodando, abra `http://localhost:3000`.
 
@@ -89,6 +97,7 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`.
 | Auth | `POST /auth/registrar`, `POST /auth/login` | público |
 | Catálogo | `GET /catalogo/habilidades`, `/areas`, `/opcoes` | público |
 | Oportunidades | `GET /oportunidades`, `GET /oportunidades/:id` | público |
+| | `GET /oportunidades/minhas-inscricoes` | colaboradora (histórico de candidaturas e inscrições, com nota de compatibilidade nas vagas) |
 | | `GET /oportunidades/minhas`, `POST /oportunidades`, `GET /oportunidades/:id/candidatos` | empresa (candidatos só da própria vaga) |
 | | `POST /oportunidades/:id/inscricoes` | colaboradora |
 | Perfil | `GET/PUT /perfil`, `GET /perfil/completo` | autenticado / colaboradora |

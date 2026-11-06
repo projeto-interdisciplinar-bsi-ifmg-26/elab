@@ -1,0 +1,48 @@
+=== EXPERIMENTO: grafo x baselines (componente de habilidades) ===
+Candidatas: 100 | Vagas ativas com requisitos: 40 | Pares: 4000
+
+--- 1) Resgate: pares SEM nenhuma habilidade em comum ---
+Pares sem sobreposicao (baselines dao 0): 2286 (57.1%)
+  destes, o grafo reconhece alguma afinidade em: 1566 (68.5%)
+  nota media de habilidades nesses pares (grafo): 19.73 de 100
+
+Exemplos (maiores afinidades que os baselines nao enxergam):
+  Candidata #66 (tem: figma, git, html, typescript, jest)
+    x vaga "Desenvolvedora Back-end Node.js Júnior": pede javascript, afinidade 0.90 via typescript
+    habilidades: grafo 57 | cobertura 0 | jaccard 0
+  Candidata #126 (tem: excel, figma, nextjs, react, html)
+    x vaga "Desenvolvedora Back-end Node.js Júnior": pede javascript, afinidade 0.90 via typescript
+    habilidades: grafo 57 | cobertura 0 | jaccard 0
+  Candidata #129 (tem: design-patterns, microsservicos, rabbitmq, rest, mysql)
+    x vaga "Engenheira de Dados Sênior": pede sql, afinidade 0.90 via mysql
+    habilidades: grafo 57 | cobertura 0 | jaccard 0
+  Candidata #144 (tem: design-patterns, microsservicos, rabbitmq, rest, mysql)
+    x vaga "Engenheira de Dados Pleno": pede sql, afinidade 0.90 via mysql
+    habilidades: grafo 56 | cobertura 0 | jaccard 0
+  Candidata #54 (tem: design-patterns, microsservicos, rabbitmq, rest, mysql)
+    x vaga "Engenheira de Dados Pleno": pede sql, afinidade 0.90 via mysql
+    habilidades: grafo 55 | cobertura 0 | jaccard 0
+  Candidata #58 (tem: estatistica, pandas, pytorch, tensorflow, sql)
+    x vaga "Desenvolvedora Back-end Python Sênior": pede postgresql, afinidade 0.90 via sql
+    habilidades: grafo 55 | cobertura 0 | jaccard 0
+  Candidata #69 (tem: rabbitmq, rest, mysql, kafka, prototipagem)
+    x vaga "Engenheira de Dados Pleno": pede sql, afinidade 0.90 via mysql
+    habilidades: grafo 55 | cobertura 0 | jaccard 0
+  Candidata #148 (tem: deep-learning, estatistica, nlp, pandas, scikit-learn)
+    x vaga "Desenvolvedora Back-end Python Sênior": pede postgresql, afinidade 0.90 via sql
+    habilidades: grafo 55 | cobertura 0 | jaccard 0
+
+--- 2) Divergencia de ranking: sobreposicao media do top-5 de vagas por candidata ---
+grafo x cobertura: 76.6% | grafo x jaccard: 71.0%
+(100% = rankings iguais; quanto menor, mais o grafo muda o resultado)
+
+--- 3) Habilidade oculta: esconde 1 habilidade que a candidata TEM e a vaga pede ---
+Casos: 1714 (uma vaga por caso, ranking entre 40 vagas)
+metodo     | piora media no ranking | nota retida | continua no top-10
+grafo      |                   4.29 |       66.6% | 67.5%
+cobertura  |                   8.81 |       25.8% | 49.8%
+jaccard    |                   8.43 |       28.8% | 55.8%
+(piora menor, nota retida maior e top-10 maior = metodo mais robusto a habilidade faltante)
+
+LIMITES: nao ha gabarito de relevancia no banco. Os resultados dependem da qualidade das arestas
+de Habilidades_Relacionadas e do seed:demo. A parte 3 e um proxy de robustez, nao uma prova de acerto.

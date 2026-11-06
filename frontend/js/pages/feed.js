@@ -2,6 +2,20 @@ import { $, esc } from '../core/dom.js';
 import { params, user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { TIPOS, filtrar, dataBR, card, vazio } from '../core/render.js';
+import { montarLista } from '../core/lista.js';
+
+const NIVEIS = [
+  { valor: 'estagio', rotulo: 'Estágio' },
+  { valor: 'junior', rotulo: 'Júnior' },
+  { valor: 'pleno', rotulo: 'Pleno' },
+  { valor: 'senior', rotulo: 'Sênior' },
+  { valor: 'especialista', rotulo: 'Especialista' }
+];
+const MODALIDADES = [
+  { valor: 'remoto', rotulo: 'Remoto' },
+  { valor: 'hibrido', rotulo: 'Híbrido' },
+  { valor: 'presencial', rotulo: 'Presencial' }
+];
 
 export async function feed() {
   const q = params.get('q') || '';
@@ -11,28 +25,32 @@ export async function feed() {
   const todas = await api('/oportunidades', { auth: false });
   const idDe = o => Number(o.id || o.idOportunidade);
   let scores = new Map();
-  if (user.tipo === "colaboradora") {
+  if (user.tipo === 'colaboradora') {
     try {
-      const ranking = await api("/match/vagas");
+      const ranking = await api('/match/vagas');
       scores = new Map(ranking.filter(r => r.requisitos.length > 0).map(r => [r.vagaId, r]));
     } catch {
       scores = new Map();
     }
   }
   const porCompatibilidade = lista => [...lista].sort((a, b) => (scores.get(idDe(b))?.score ?? -1) - (scores.get(idDe(a))?.score ?? -1));
-  if (scores.size) $("#sub-saudacao").textContent = "Vagas ordenadas pela compatibilidade com o seu perfil.";
-  let listaAtual = porCompatibilidade(filtrar(todas, q));
+  if (scores.size) $('#sub-saudacao').textContent = 'Vagas ordenadas pela compatibilidade com o seu perfil.';
 
-  const renderLista = itens => {
-    const el = $('#lista');
-    if (!itens.length) {
-      el.innerHTML = vazio(q ? `Nenhuma publicação encontrada para "${q}".` : 'Ainda não há publicações nesta seção.');
-    } else {
-      el.innerHTML = itens.map(o => card(o, scores.get(idDe(o)))).join('');
-    }
-  };
+  const ordenadas = porCompatibilidade(filtrar(todas, q));
 
-  renderLista(listaAtual);
+  const lista = montarLista($('#lista'), {
+    itens: ordenadas,
+    desenhar: o => card(o, scores.get(idDe(o))),
+    porPagina: 9,
+    rotuloBusca: 'Buscar por título, empresa ou habilidade',
+    busca: o => [o.titulo, o.empresaNome, o.local, o.tipo, ...(o.habilidades || [])].join(' '),
+    vazio: q ? `Nenhuma publicação encontrada para "${q}".` : 'Nenhuma publicação encontrada.',
+    filtros: [
+      { chave: 'tipo', rotulo: 'Tipo', oculto: true, opcoes: [], teste: (o, v) => o.tipo === v },
+      { chave: 'nivel', rotulo: 'Nível', opcoes: NIVEIS, teste: (o, v) => o.nivel === v },
+      { chave: 'modalidade', rotulo: 'Modalidade', opcoes: MODALIDADES, teste: (o, v) => o.modalidade === v }
+    ]
+  });
 
   const boxFiltros = $('#filtros-feed');
   if (boxFiltros) {
@@ -41,9 +59,7 @@ export async function feed() {
       if (!btn) return;
       boxFiltros.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false'));
       btn.setAttribute('aria-pressed', 'true');
-      const tipo = btn.dataset.tipo;
-      const filtradas = tipo ? listaAtual.filter(o => o.tipo === tipo) : listaAtual;
-      renderLista(filtradas);
+      lista.definirFiltro('tipo', btn.dataset.tipo || '');
     });
   }
 

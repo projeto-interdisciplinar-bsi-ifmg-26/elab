@@ -1,0 +1,110 @@
+{
+  "senha": "demo12345",
+  "empresas": [
+    { "nome": "Tech Sabará", "cnpj": "12345678000100", "descricao": "Consultoria de software focada em produtos web e mobile." },
+    { "nome": "Innovate BH", "cnpj": "98765432000199", "descricao": "Hub de inovação e dados em Belo Horizonte." },
+    { "nome": "Nuvem Mineira", "cnpj": "11222333000181", "descricao": "Infraestrutura em nuvem e DevOps para empresas de médio porte." },
+    { "nome": "Dados & Cia", "cnpj": "45997418000153", "descricao": "Analytics, engenharia de dados e inteligência artificial aplicada." },
+    { "nome": "Pixel Forge Studio", "cnpj": "33000167000101", "descricao": "Estúdio de design de produto e desenvolvimento front-end." },
+    { "nome": "Rota Digital", "cnpj": "60701190000104", "descricao": "Plataformas de logística e mobilidade urbana." },
+    { "nome": "Verde Software", "cnpj": "07526557000100", "descricao": "Software para o agronegócio e sustentabilidade." },
+    { "nome": "Horizonte Labs", "cnpj": "02558157000162", "descricao": "Laboratório de segurança, qualidade e arquitetura de software." }
+  ],
+  "cidades": [
+    ["Belo Horizonte", "MG"], ["Sabará", "MG"], ["Contagem", "MG"], ["São Paulo", "SP"],
+    ["Rio de Janeiro", "RJ"], ["Curitiba", "PR"], ["Porto Alegre", "RS"], ["Recife", "PE"],
+    ["Salvador", "BA"], ["Florianópolis", "SC"], ["Brasília", "DF"], ["Fortaleza", "CE"]
+  ],
+  "nomes": [
+    "Ana", "Beatriz", "Camila", "Daniela", "Eduarda", "Fernanda", "Gabriela", "Helena", "Isabela", "Juliana",
+    "Karina", "Larissa", "Mariana", "Natália", "Olívia", "Patrícia", "Rafaela", "Sabrina", "Tatiana", "Vanessa",
+    "Yasmin", "Aline", "Bruna", "Carolina", "Débora", "Elisa", "Flávia", "Giovana", "Heloísa", "Ingrid",
+    "Jéssica", "Kelly", "Letícia", "Marina", "Nicole", "Paula", "Renata", "Sofia", "Talita", "Viviane"
+  ],
+  "sobrenomes": [
+    "Silva", "Souza", "Oliveira", "Santos", "Pereira", "Lima", "Costa", "Ferreira", "Rodrigues", "Almeida",
+    "Nascimento", "Carvalho", "Araújo", "Ribeiro", "Gomes", "Martins", "Barbosa", "Rocha", "Dias", "Moreira",
+    "Cardoso", "Teixeira", "Correia", "Mendes", "Nunes", "Freitas", "Vieira", "Pinto", "Machado", "Azevedo",
+    "Monteiro", "Moura", "Campos", "Castro", "Cavalcanti", "Duarte", "Fonseca", "Lopes", "Medeiros", "Ramos"
+  ],
+  "empresasAnteriores": [
+    "Banco Horizonte", "Loja Virtual BR", "Fintech Aurora", "Agência Pixel", "Consultoria Alfa",
+    "Startup Colmeia", "Telecom Minas", "Seguradora Norte", "Hospital Digital", "EdTech Saber"
+  ],
+  "instituicoes": ["IFMG", "UFMG", "PUC Minas", "UFOP", "USP", "UNICAMP"],
+  "cursos": [
+    "Ciência da Computação", "Sistemas de Informação", "Engenharia de Computação",
+    "Análise e Desenvolvimento de Sistemas", "Engenharia de Software"
+  ],
+  "bootcamps": ["Alura", "Rocketseat", "Trybe", "Senac"],
+  "mensagens": [
+    "Tenho muito interesse na vaga e acredito que meu perfil combina com o time.",
+    "Gostaria de contribuir com o time e crescer junto com a empresa.",
+    "Já trabalhei com tecnologias parecidas e quero aprofundar essa experiência.",
+    "Estou em transição de carreira e essa vaga é exatamente o que procuro.",
+    "Meu portfólio está no perfil. Fico à disposição para conversar.",
+    "Admiro o trabalho da empresa e gostaria de fazer parte."
+  ],
+  "descricoesVaga": [
+    "Buscamos pessoa para atuar em time ágil, com foco em entregas contínuas, qualidade e colaboração.",
+    "Você vai participar de todo o ciclo do produto, da discussão da solução até a entrega em produção.",
+    "Ambiente inclusivo, com mentoria, plano de carreira e incentivo à evolução técnica."
+  ],
+  "eventos": [
+    { "tipo": "evento", "titulo": "Workshop de React para iniciantes", "descricao": "Oficina prática de uma tarde para dar os primeiros passos com React.", "local": "Belo Horizonte - MG", "dias": 20 },
+    { "tipo": "palestra", "titulo": "Palestra: carreira em dados", "descricao": "Caminhos para entrar e crescer na área de dados.", "local": "Online", "dias": 25 },
+    { "tipo": "bolsa", "titulo": "Bolsa Mulheres em Tecnologia", "descricao": "Bolsa integral para curso de desenvolvimento web.", "local": "Online", "dias": 40 },
+    { "tipo": "evento", "titulo": "Hackathon ELAB", "descricao": "Maratona de 24 horas para criar soluções de impacto social.", "local": "Sabará - MG", "dias": 30 },
+    { "tipo": "palestra", "titulo": "Palestra: cloud na prática", "descricao": "Como migrar e operar aplicações na nuvem sem sustos.", "local": "Online", "dias": 15 },
+    { "tipo": "bolsa", "titulo": "Bolsa de estudos em Segurança", "descricao": "Bolsa parcial para formação em segurança da informação.", "local": "Online", "dias": 50 },
+    { "tipo": "evento", "titulo": "Oficina de UX Research", "descricao": "Aprenda a conduzir entrevistas e testes de usabilidade.", "local": "Contagem - MG", "dias": 35 },
+    { "tipo": "palestra", "titulo": "Palestra: liderança técnica", "descricao": "Do código à liderança: como assumir o primeiro papel de tech lead.", "local": "Online", "dias": 45 }
+  ],
+  "arquetipos": [
+    { "chave": "frontend", "rotulo": "Front-end", "titulo": "Desenvolvedora Front-end", "area": "frontend-react", "areasExtras": ["frontend", "ux-ui"],
+      "nucleo": ["javascript", "html", "css", "react", "typescript"],
+      "extras": ["redux", "tailwind", "git", "jest", "nextjs", "figma", "acessibilidade", "ingles"] },
+    { "chave": "fullstack", "rotulo": "Full Stack", "titulo": "Desenvolvedora Full Stack", "area": "fullstack", "areasExtras": ["frontend", "backend-node"],
+      "nucleo": ["javascript", "node", "react", "sql", "git"],
+      "extras": ["typescript", "express", "postgresql", "docker", "rest", "ingles"] },
+    { "chave": "backend-node", "rotulo": "Back-end Node.js", "titulo": "Desenvolvedora Back-end Node.js", "area": "backend-node", "areasExtras": ["backend", "devops-cloud"],
+      "nucleo": ["node", "express", "javascript", "rest", "postgresql"],
+      "extras": ["typescript", "nestjs", "mysql", "redis", "docker", "jwt", "mongodb", "git"] },
+    { "chave": "backend-java", "rotulo": "Back-end Java", "titulo": "Desenvolvedora Back-end Java", "area": "backend-java", "areasExtras": ["backend", "arquitetura"],
+      "nucleo": ["java", "spring", "mysql", "rest", "junit"],
+      "extras": ["postgresql", "docker", "microsservicos", "kafka", "rabbitmq", "git", "design-patterns"] },
+    { "chave": "backend-python", "rotulo": "Back-end Python", "titulo": "Desenvolvedora Back-end Python", "area": "backend-python", "areasExtras": ["backend", "dados-engenharia"],
+      "nucleo": ["python", "django", "postgresql", "rest", "git"],
+      "extras": ["fastapi", "flask", "docker", "pytest", "redis", "ingles"] },
+    { "chave": "dados-analise", "rotulo": "Análise de Dados", "titulo": "Analista de Dados", "area": "dados-analise", "areasExtras": ["dados", "dados-ciencia"],
+      "nucleo": ["sql", "excel", "power-bi", "python", "estatistica"],
+      "extras": ["tableau", "data-viz", "pandas", "looker", "bigquery", "comunicacao"] },
+    { "chave": "dados-engenharia", "rotulo": "Engenharia de Dados", "titulo": "Engenheira de Dados", "area": "dados-engenharia", "areasExtras": ["dados", "devops-cloud"],
+      "nucleo": ["python", "sql", "spark", "airflow", "etl"],
+      "extras": ["dbt", "kafka", "snowflake", "databricks", "aws", "docker"] },
+    { "chave": "ia-ml", "rotulo": "IA e Machine Learning", "titulo": "Cientista de Dados", "area": "ia-ml", "areasExtras": ["dados-ciencia", "dados"],
+      "nucleo": ["python", "machine-learning", "pandas", "scikit-learn", "estatistica"],
+      "extras": ["numpy", "pytorch", "tensorflow", "deep-learning", "nlp", "sql"] },
+    { "chave": "devops", "rotulo": "DevOps e Cloud", "titulo": "Engenheira DevOps", "area": "devops-cloud", "areasExtras": ["devops-sre", "backend"],
+      "nucleo": ["linux", "docker", "kubernetes", "ci-cd", "aws"],
+      "extras": ["terraform", "github-actions", "jenkins", "bash", "ansible", "prometheus", "grafana", "azure"] },
+    { "chave": "mobile-android", "rotulo": "Mobile Android", "titulo": "Desenvolvedora Android", "area": "mobile-android", "areasExtras": ["mobile", "mobile-cross"],
+      "nucleo": ["kotlin", "android", "jetpack-compose", "git", "rest"],
+      "extras": ["java", "firebase", "sqlite", "junit", "figma"] },
+    { "chave": "mobile-cross", "rotulo": "Mobile Multiplataforma", "titulo": "Desenvolvedora Mobile", "area": "mobile-cross", "areasExtras": ["mobile", "frontend"],
+      "nucleo": ["flutter", "dart", "react-native", "git", "rest"],
+      "extras": ["javascript", "typescript", "firebase", "figma", "jest"] },
+    { "chave": "qa", "rotulo": "QA e Automação", "titulo": "Analista de QA", "area": "qa-automacao", "areasExtras": ["qa", "backend"],
+      "nucleo": ["testes-automatizados", "selenium", "cypress", "postman", "jira"],
+      "extras": ["playwright", "jest", "pytest", "tdd", "ci-cd", "javascript", "git"] },
+    { "chave": "ux", "rotulo": "UX/UI Design", "titulo": "Designer UX/UI", "area": "ux-ui", "areasExtras": ["ux-pesquisa", "frontend"],
+      "nucleo": ["figma", "ui-design", "ux-research", "prototipagem", "wireframe"],
+      "extras": ["design-system", "design-thinking", "adobe-xd", "acessibilidade", "html", "css"] },
+    { "chave": "seguranca", "rotulo": "Segurança da Informação", "titulo": "Analista de Segurança", "area": "seguranca-appsec", "areasExtras": ["seguranca", "devops-cloud"],
+      "nucleo": ["owasp", "pentest", "criptografia", "oauth", "linux"],
+      "extras": ["jwt", "lgpd", "iam", "siem", "python", "bash"] },
+    { "chave": "gestao", "rotulo": "Gestão de Produto", "titulo": "Product Owner", "area": "gestao-produto", "areasExtras": ["gestao-agil", "ux-ui"],
+      "nucleo": ["product-management", "scrum", "kanban", "jira", "comunicacao"],
+      "extras": ["gestao-de-projetos", "lideranca", "ingles", "design-thinking", "sql", "trabalho-em-equipe"] }
+  ]
+}

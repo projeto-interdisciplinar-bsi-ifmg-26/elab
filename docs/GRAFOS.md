@@ -4,7 +4,7 @@ Este documento descreve **como** a teoria de grafos é usada no projeto, **por q
 
 ## 1. Problema e modelagem
 
-O ELAB precisa responder três perguntas, e cada uma virou um problema clássico de grafos:
+O ELAB precisa responder quatro perguntas, e cada uma virou um problema clássico de grafos:
 
 | Pergunta | Modelagem | Algoritmo |
 |---|---|---|

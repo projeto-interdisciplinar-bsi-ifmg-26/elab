@@ -3,20 +3,56 @@ import { params, user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { carregarMatch } from "../core/match.js";
 import { htmlCandidatas } from '../core/candidatas.js';
+import { montarLista } from '../core/lista.js';
 import { TIPOS, dataBR } from '../core/render.js';
 
-// Candidaturas aparecem so para a empresa dona da oportunidade. Qualquer falha (ex: 403) esconde o bloco.
+const temNota = c => typeof c.score === 'number';
+
+// Candidaturas aparecem so para a empresa dona da oportunidade. Qualquer falha (ex: 403) devolve null e esconde o bloco.
 const carregarCandidaturas = async (id) => {
-  if (user.tipo !== 'empresa') return '';
+  if (user.tipo !== 'empresa') return null;
   try {
-    const lista = await api('/oportunidades/' + Number(id) + '/candidatos');
-    return `<section class="match-bloco" aria-label="Candidaturas">
-      <h3>Candidaturas (${lista.length})</h3>
-      ${htmlCandidatas(lista)}
-    </section>`;
+    return await api('/oportunidades/' + Number(id) + '/candidatos');
   } catch {
-    return '';
+    return null;
   }
+};
+
+const montarCandidaturas = (el, candidaturas) => {
+  const comNota = candidaturas.some(temNota);
+  const filtros = [];
+  if (comNota) {
+    filtros.push({
+      chave: 'faixa', rotulo: 'Compatibilidade',
+      opcoes: [
+        { valor: 'alta', rotulo: 'Alta (75% ou mais)' },
+        { valor: 'media', rotulo: 'Média (50% a 74%)' },
+        { valor: 'baixa', rotulo: 'Baixa (abaixo de 50%)' }
+      ],
+      teste: (c, v) => temNota(c) && (v === 'alta' ? c.score >= 75 : v === 'media' ? c.score >= 50 && c.score < 75 : c.score < 50)
+    });
+    filtros.push({
+      chave: 'obrigatorio', rotulo: 'Requisito obrigatório',
+      opcoes: [
+        { valor: 'faltando', rotulo: 'Está faltando' },
+        { valor: 'ok', rotulo: 'Atendido' }
+      ],
+      teste: (c, v) => {
+        const falta = (c.eliminatorias || []).length > 0;
+        return v === 'faltando' ? falta : !falta;
+      }
+    });
+  }
+  montarLista(el, {
+    itens: candidaturas,
+    desenhar: c => htmlCandidatas([c]),
+    porPagina: 5,
+    classeItens: 'cand-lista',
+    rotuloBusca: 'Buscar candidata por nome ou e-mail',
+    busca: c => [c.nome, c.email].join(' '),
+    vazio: 'Nenhuma candidata encontrada com esses filtros.',
+    filtros
+  });
 };
 
 export async function detalhe() {
@@ -26,7 +62,13 @@ export async function detalhe() {
   const o = await api('/oportunidades/' + encodeURIComponent(id), { auth: false });
   const vaga = o.tipo === 'vaga';
   const matchHtml = await carregarMatch(o, user);
-  const candidaturasHtml = await carregarCandidaturas(id);
+  const candidaturas = await carregarCandidaturas(id);
+  const candidaturasHtml = candidaturas
+    ? `<section class="match-bloco" aria-label="Candidaturas">
+      <h3>Candidaturas (${candidaturas.length})</h3>
+      <div id="lista-candidaturas"></div>
+    </section>`
+    : '';
   let acao = '';
   if (user.tipo === 'colaboradora') {
     acao = `<a class="btn" href="inscricao.html?id=${Number(id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
@@ -61,4 +103,6 @@ export async function detalhe() {
       ${acao}
       <a class="btn ghost" href="feed.html">Voltar ao feed</a>
     </div>`;
+
+  if (candidaturas) montarCandidaturas($('#lista-candidaturas'), candidaturas);
 }

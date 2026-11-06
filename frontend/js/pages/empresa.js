@@ -2,7 +2,8 @@ import { $ } from '../core/dom.js';
 import { user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { enviar } from '../core/forms.js';
-import { card, vazio } from '../core/render.js';
+import { card, TIPOS } from '../core/render.js';
+import { montarLista } from '../core/lista.js';
 import { montarBlocoVaga } from '../core/vagaForm.js';
 
 const CAMPOS_VAGA = ['areaId', 'nivel', 'modalidade', 'salario_min', 'salario_max'];
@@ -26,11 +27,23 @@ export async function empresa() {
   f.elements.tipo.addEventListener('change', ajustarBloco);
   ajustarBloco();
 
+  let lista = null;
   const carregar = async () => {
     const minhas = await api('/oportunidades/minhas');
-    $('#lista').innerHTML = minhas.length
-      ? minhas.map(o => card(o)).join('')
-      : vazio('Sua empresa ainda não publicou nenhuma oportunidade.');
+    if (lista) return void lista.atualizar(minhas);
+    lista = montarLista($('#lista'), {
+      itens: minhas,
+      desenhar: o => card(o),
+      porPagina: 6,
+      rotuloBusca: 'Buscar por título, local ou habilidade',
+      busca: o => [o.titulo, o.local, o.tipo, ...(o.habilidades || [])].join(' '),
+      vazio: 'Nenhuma publicação encontrada. Publique uma oportunidade ou ajuste os filtros.',
+      filtros: [{
+        chave: 'tipo', rotulo: 'Tipo',
+        opcoes: Object.keys(TIPOS).map(t => ({ valor: t, rotulo: TIPOS[t] })),
+        teste: (o, v) => o.tipo === v
+      }]
+    });
   };
 
   enviar(f, async d => {

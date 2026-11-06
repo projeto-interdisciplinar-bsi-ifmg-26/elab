@@ -20,7 +20,7 @@ export function login() {
   const escolherContaDemo = (tipo, email) => {
     contaDemo = tipo;
     $('#campo-email').value = email;
-    $('#campo-senha').value = 'senha12345';
+    $('#campo-senha').value = 'demo12345';
     demoColab?.setAttribute('aria-pressed', String(tipo === 'colaboradora'));
     demoEmpresa?.setAttribute('aria-pressed', String(tipo === 'empresa'));
   };

@@ -12,12 +12,19 @@ export const filtrar = (lista, q) => {
 
 export const dataBR = d => (d ? d.split('-').reverse().join('/') : '');
 
-export const card = o => {
+const badgeMatch = m => {
+  if (!m || typeof m !== "object" || typeof m.score !== "number") return "";
+  const nivel = m.score >= 75 ? "alto" : m.score >= 50 ? "medio" : "baixo";
+  return `<span class="badge-match ${nivel}" title="Compatibilidade com o seu perfil">${m.score}% compatível</span>`;
+};
+
+export const card = (o, match) => {
   const id = o.id || o.idOportunidade;
   const tipo = o.tipo || 'vaga';
   return `<a class="card" href="detalhe.html?id=${Number(id)}" data-tipo="${esc(tipo)}">
     <div class="card-corpo">
       <span class="tag ${esc(tipo)}" data-tipo="${esc(tipo)}">${esc(TIPOS[tipo] || tipo)}</span>
+      ${badgeMatch(match)}
       <h3>${esc(o.titulo)}</h3>
       <p class="mut">${esc([o.empresaNome || 'Empresa', o.local].filter(Boolean).join(' | '))}</p>
       ${o.data ? `<p class="mut" style="font-size:0.85rem;">Data: ${esc(dataBR(o.data))}</p>` : ''}

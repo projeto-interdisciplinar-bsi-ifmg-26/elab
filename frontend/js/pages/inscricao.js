@@ -1,5 +1,5 @@
 import { $ } from '../core/dom.js';
-import { params, user } from '../core/state.js';
+import { params } from '../core/state.js';
 import { api } from '../core/api.js';
 import { enviar } from '../core/forms.js';
 import { TIPOS } from '../core/render.js';
@@ -26,19 +26,6 @@ export async function inscricao() {
       method: 'POST',
       body: { mensagem }
     });
-
-    const chaveHistorico = `elab_inscricoes_${user.id}`;
-    const historico = JSON.parse(localStorage.getItem(chaveHistorico) || '[]');
-    historico.unshift({
-      protocolo: r.protocolo,
-      oportunidadeId: o.id,
-      titulo: o.titulo,
-      tipo: o.tipo,
-      empresa: o.empresaNome,
-      mensagem,
-      dataRegistro: new Date().toLocaleDateString('pt-BR')
-    });
-    localStorage.setItem(chaveHistorico, JSON.stringify(historico));
 
     sessionStorage.setItem('elab_conf', JSON.stringify(r));
     location.href = 'confirmacao.html';

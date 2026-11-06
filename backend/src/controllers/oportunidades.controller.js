@@ -1,5 +1,6 @@
 const oportunidadeService = require('../services/oportunidade.service');
 const candidatosService = require('../services/candidatos.service');
+const inscricoesService = require('../services/inscricoes.service');
 const asyncHandler = require('../utils/asyncHandler');
 const { sucesso } = require('../utils/response');
 
@@ -33,4 +34,8 @@ const listarCandidatos = asyncHandler(async (req, res) => {
   sucesso(res, 200, candidatos);
 });
 
-module.exports = { listar, listarMinhas, obter, criar, inscrever, listarCandidatos };
+const listarMinhasInscricoes = asyncHandler(async (req, res) => {
+  sucesso(res, 200, await inscricoesService.listarMinhas(req.usuario.id));
+});
+
+module.exports = { listar, listarMinhas, obter, criar, inscrever, listarCandidatos, listarMinhasInscricoes };

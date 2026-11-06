@@ -10,6 +10,7 @@ const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt
 
 router.get('/', oportunidadesController.listar);
 router.get('/minhas', autenticar, permitir('empresa'), oportunidadesController.listarMinhas);
+router.get('/minhas-inscricoes', autenticar, permitir('colaboradora'), oportunidadesController.listarMinhasInscricoes);
 router.get('/:id', [idValido], validar, oportunidadesController.obter);
 
 router.post('/', autenticar, permitir('empresa'), [

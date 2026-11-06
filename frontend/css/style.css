@@ -3218,3 +3218,5 @@ body[data-page="index"] .landing-footer p {
     padding: 1.25rem
   }
 }
+.linha-unica { grid-template-columns: 1fr }
+.linha-senhas > label { display: flex; flex-direction: column; justify-content: flex-end }

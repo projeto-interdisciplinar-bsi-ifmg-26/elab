@@ -9,33 +9,47 @@ const { normalizarCnpj } = require('../utils/cnpj');
 const SALT_ROUNDS = 10;
 
 async function registrar({ email, senha, tipo, nome = '', cnpj }) {
-  return await withTransaction(async (conn) => {
-    const existente = await usuarioRepository.buscarPorEmail(email);
-    if (existente) throw new ApiError(409, 'E-mail já cadastrado');
-    if (tipo === 'entidade_parceira' && (await conn.execute('SELECT 1 FROM Entidades_Parceiras WHERE cnpj = ?', [normalizarCnpj(cnpj)]))[0].length) throw new ApiError(409, 'CNPJ já cadastrado');
+  try {
+    return await withTransaction(async (conn) => {
+      // Checagens dentro da mesma conexao da transacao.
+      const [usuarios] = await conn.execute('SELECT 1 FROM Usuarios WHERE email = ?', [email]);
+      if (usuarios.length) throw new ApiError(409, 'E-mail já cadastrado');
 
-    const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
+      if (tipo === 'entidade_parceira') {
+        const [empresas] = await conn.execute('SELECT 1 FROM Entidades_Parceiras WHERE cnpj = ?', [normalizarCnpj(cnpj)]);
+        if (empresas.length) throw new ApiError(409, 'CNPJ já cadastrado');
+      }
 
-    // Criar usuário
-    const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo }, conn);
-    const usuarioId = usuario.id;
+      const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
 
-    // Se for profissional, criar perfil básico automaticamente
-    if (tipo === 'profissional') {
-      await conn.execute(
-        'INSERT INTO Profissionais (Usuario_idUsuario, nome) VALUES (?, ?)',
-        [usuarioId, nome]
-      );
-    } else if (tipo === 'entidade_parceira') {
-      await conn.execute(
-        'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
-        [usuarioId, nome, normalizarCnpj(cnpj)]
-      );
+      // Criar usuário
+      const usuario = await usuarioRepository.criar({ email, senhaHash, tipo_usuario: tipo }, conn);
+      const usuarioId = usuario.id;
+
+      // Se for profissional, criar perfil básico automaticamente
+      if (tipo === 'profissional') {
+        await conn.execute(
+          'INSERT INTO Profissionais (Usuario_idUsuario, nome) VALUES (?, ?)',
+          [usuarioId, nome]
+        );
+      } else if (tipo === 'entidade_parceira') {
+        await conn.execute(
+          'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
+          [usuarioId, nome, normalizarCnpj(cnpj)]
+        );
+      }
+
+      // Nunca devolver o hash da senha.
+      return { id: usuarioId, email: usuario.email, tipo: tipo };
+    });
+  } catch (err) {
+    // Duas requisicoes simultaneas com o mesmo e-mail/CNPJ: o UNIQUE do banco barra a segunda.
+    if (err && err.code === 'ER_DUP_ENTRY') {
+      const campo = String(err.message).toLowerCase().includes('cnpj') ? 'CNPJ' : 'E-mail';
+      throw new ApiError(409, campo + ' já cadastrado');
     }
-
-    // Nunca devolver o hash da senha.
-    return { id: usuarioId, email: usuario.email, tipo: tipo };
-  });
+    throw err;
+  }
 }
 
 async function login({ email, senha }) {

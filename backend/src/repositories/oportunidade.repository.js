@@ -1,7 +1,29 @@
 const { query } = require('../../db/pool');
 
+// Anexa "habilidades" (lista de nomes) a cada oportunidade: requisitos novos + texto livre legado.
+async function anexarHabilidades(lista) {
+  if (lista.length === 0) return lista;
+  const ids = lista.map((o) => o.idOportunidade);
+  const marcas = ids.map(() => '?').join(', ');
+  const novos = await query(
+    'SELECT oh.Oportunidade_idOportunidade AS oid, h.nome_habilidade AS nome FROM Oportunidades_Habilidades oh JOIN Habilidades h ON h.idHabilidades = oh.Habilidade_idHabilidades WHERE oh.Oportunidade_idOportunidade IN (' + marcas + ') ORDER BY oh.importancia DESC',
+    ids
+  );
+  const legados = await query(
+    'SELECT oportunidadeId AS oid, habilidade AS nome FROM Habilidades_Oportunidade WHERE oportunidadeId IN (' + marcas + ')',
+    ids
+  );
+  const mapa = new Map(ids.map((i) => [i, []]));
+  for (const r of [...novos, ...legados]) {
+    const l = mapa.get(r.oid);
+    if (!l.includes(r.nome)) l.push(r.nome);
+  }
+  return lista.map((o) => ({ ...o, habilidades: mapa.get(o.idOportunidade) }));
+}
+
+
 async function listar({ tipo, status, empresaId } = {}) {
-  let sql = 'SELECT * FROM Oportunidades';
+  let sql = 'SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira';
   const params = [];
 
   if (tipo) {
@@ -17,12 +39,11 @@ async function listar({ tipo, status, empresaId } = {}) {
     params.push(empresaId);
   }
 
-  const rows = await query(sql, params);
-  return rows;
+  return anexarHabilidades(await query(sql, params));
 }
 
 async function buscarPorId(id) {
-  const rows = await query('SELECT * FROM Oportunidades WHERE idOportunidade = ?', [id]);
+  const rows = await anexarHabilidades(await query('SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira WHERE o.idOportunidade = ?', [id]));
   return rows[0] || null;
 }
 

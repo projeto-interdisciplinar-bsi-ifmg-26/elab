@@ -2,6 +2,8 @@ const ApiError = require('../utils/ApiError');
 const oportunidadeRepository = require('../repositories/oportunidade.repository');
 const usuarioRepository = require('../repositories/usuario.repository');
 const { query } = require('../../db/pool');
+const detalhesRepo = require('../repositories/oportunidadeDetalhes.repository');
+const perfilRepo = require('../repositories/perfilCompleto.repository');
 
 async function listar(filtros) {
   return oportunidadeRepository.listar(filtros);
@@ -40,7 +42,17 @@ async function criar(empresaId, dados) {
   const nomeEmpresa = empresa[0].nome_organizacao;
   const habilidades = (dados.habilidades || []).map(h => String(h).trim().slice(0, 30)).filter(Boolean);
 
-  return oportunidadeRepository.criar({ ...dados, habilidades, empresaId: idEntidade, empresaNome: nomeEmpresa });
+  const requisitos = [...new Map((dados.requisitos || []).map((r) => [r.habilidadeId, r])).values()];
+  if (dados.areaId && !(await perfilRepo.areasExistentes([dados.areaId])).length) {
+    throw new ApiError(400, 'Área inexistente');
+  }
+  const existem = new Set(await perfilRepo.habilidadesExistentes(requisitos.map((r) => r.habilidadeId)));
+  const invalidas = requisitos.filter((r) => !existem.has(r.habilidadeId)).map((r) => r.habilidadeId);
+  if (invalidas.length) throw new ApiError(400, 'Habilidades inexistentes: ' + invalidas.join(', '));
+
+  const criada = await oportunidadeRepository.criar({ ...dados, habilidades, empresaId: idEntidade, empresaNome: nomeEmpresa });
+  if (dados.tipo === 'vaga') await detalhesRepo.salvarDetalhes(criada.id, { ...dados, requisitos });
+  return criada;
 }
 
 // Serve tanto para candidatura (vaga) quanto para inscrição (demais tipos).

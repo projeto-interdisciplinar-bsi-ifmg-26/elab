@@ -20,7 +20,7 @@ router.put('/', [
   body('nome').trim().notEmpty().withMessage('Nome é obrigatório').isLength({ max: 80 }).withMessage('Nome muito longo'),
   body('area').optional().trim().isLength({ max: 80 }).withMessage('Área muito longa'),
   body('cidade').optional().trim().isLength({ max: 80 }).withMessage('Cidade muito longa'),
-  body('bio').optional().trim().isLength({ max: 500 }).withMessage('Bio deve ter no máximo 500 caracteres')
+  body('bio').optional().trim().isLength({ max: 255 }).withMessage('Bio deve ter no máximo 255 caracteres')
 ], validar, perfilController.atualizar);
 
 router.get('/completo', permitir('colaboradora'), perfilCompletoController.completo);

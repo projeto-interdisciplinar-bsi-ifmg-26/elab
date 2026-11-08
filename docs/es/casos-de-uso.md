@@ -120,7 +120,7 @@ flowchart LR
 - **Fluxo principal:**
   1. Abre o painel e escolhe o tipo (vaga, evento, palestra ou bolsa).
   2. Informa título e descrição; para vagas, também área, nível, modalidade, faixa salarial e requisitos com importância e obrigatoriedade.
-  3. O sistema valida, grava a publicação e a requisitos em uma transação, e a lista é atualizada.
+  3. O sistema valida, grava a publicação e os requisitos em uma transação, e a lista é atualizada.
 - **Fluxos alternativos:**
   - 3a. Salário máximo menor que o mínimo, nível ou modalidade inválidos, importância fora de 1 a 5: resposta 400, nada é gravado.
   - 3b. Área ou habilidade inexistente: resposta 400.

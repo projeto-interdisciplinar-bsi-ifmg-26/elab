@@ -23,7 +23,7 @@ db/
 | `007` a `019` | Perfil completo, catálogo de habilidades e áreas, grafo de habilidades, requisitos de vagas e ajustes de colunas |
 | `020_drop_tabelas_legadas.sql` | Remove `Eventos`, `Cadastros_Eventos` e `Habilidades_Oportunidade`, que nunca foram usadas ou foram substituídas |
 
-A ordem numérica respeita as dependências de chave estrangeira. Eventos, palestras e bolsas vivem em `Oportunidades` (coluna `tipo`) e as inscrições em `Cadastros_Oportunidades`. Modelo ER e dicionário de dados: ../../docs/bd/README.md.
+A ordem numérica respeita as dependências de chave estrangeira. Eventos, palestras e bolsas vivem em `Oportunidades` (coluna `tipo`) e as inscrições em `Cadastros_Oportunidades`. Modelo ER e dicionário de dados: [docs/bd](../../docs/bd/README.md).
 
 ## Como rodar
 

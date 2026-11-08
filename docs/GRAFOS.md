@@ -159,7 +159,7 @@ O serviço `grafo.service.js` carrega do banco as habilidades, as arestas e as �
 | Nota, trilha, ranking e alocação | `backend/src/graph/motorMatch.js` |
 | Cache do grafo | `backend/src/services/grafo.service.js` |
 | Rotas | `GET /match/vagas`, `GET /match/trilha/:vagaId`, `POST /match/alocacao` |
-| Experimento | `backend/scripts/experimento-baseline.js` |
+| Experimento | `backend/scripts/experimento-baseline.js` e `backend/scripts/experimento-sensibilidade.js` |
 
 ### 5.2 Testes
 
@@ -175,6 +175,7 @@ npm run migrate           # cria as tabelas
 npm run seed              # catálogo: áreas, habilidades e relações
 npm run seed:demo         # dados simulados (apaga usuários, exceto admin@elab.com)
 node scripts/experimento-baseline.js   # só leitura; precisa do MySQL, não do servidor
+node scripts/experimento-sensibilidade.js   # idem
 npm run dev               # em outro terminal, para rodar os testes de API
 npm test
 ```
@@ -228,12 +229,34 @@ Para cada par em que a candidata tem ao menos um requisito da vaga, esconde-se d
 
 Mostra que o grafo enxerga afinidades que a comparação por nome ignora e que sua nota é mais estável quando uma habilidade falta. **Não mostra** que o grafo "acerta mais", por três motivos: não há gabarito de relevância; o teste de habilidade oculta favorece o grafo por construção (ao esconder uma habilidade, as vizinhas continuam valendo, então a nota cair menos prova robustez, e não acerto); e os dados são sintéticos.
 
+### 7.5 Sensibilidade aos pesos
+
+> **Em palavras simples:** se mexermos um pouco nos números do modelo, o ranking de vagas de cada candidata muda muito ou pouco? Se mudar pouco, as conclusões não dependem do valor exato de cada peso.
+
+O script `backend/scripts/experimento-sensibilidade.js` (saída em `docs/experimento-sensibilidade-saida.txt`) perturba o modelo e compara o ranking resultante com o original, para as 100 candidatas e as 40 vagas. Cada configuração faz 30 tentativas com sementes fixas. Há dois tipos de perturbação:
+
+- **Pesos das arestas:** cada aresta do grafo de habilidades ganha ou perde um valor fixo, sorteado aresta a aresta, com o peso limitado ao intervalo de 0,1 a 1. Como os pesos originais variam em passos de 0,1, a perturbação de 0,10 equivale a deslocar cada relação para um nível vizinho da escala, e a de 0,20, a dois níveis.
+- **Pesos do score (55/20/15/10):** cada peso é multiplicado por um fator sorteado entre 0,8 e 1,2; o motor normaliza pela soma.
+
+A métrica é a sobreposição do top-5 de vagas de cada candidata com o top-5 original (100% significa ranking igual) e a fração de candidatas cuja vaga em primeiro lugar não muda. Ao acaso, a sobreposição esperada do top-5 entre 40 vagas é de 12,5%.
+
+| Perturbação | Top-5 médio (desvio padrão) | Pior tentativa | Mesma vaga em 1º lugar (média) |
+|---|---|---|---|
+| Arestas ±0,05 | 94,8% (1,1) | 92,6% | 96,9% |
+| Arestas ±0,10 | 90,5% (1,4) | 88,0% | 94,5% |
+| Arestas ±0,20 | 84,9% (1,8) | 80,2% | 92,4% |
+| Pesos do score ±20% | 97,9% (0,7) | 96,4% | 96,5% |
+
+Mesmo deslocando todas as arestas em até dois níveis da escala, o top-5 médio mantém 84,9% de sobreposição e a pior das 30 tentativas fica em 80,2%, muito acima do acaso (12,5%). Variar os pesos do score em 20% muda ainda menos o ranking. Dentro dessas faixas, o ranking não depende do valor exato de cada peso.
+
+**Limites.** O teste mede a estabilidade do ranking em relação ao próprio ranking original, e não a correção das relações: um modelo pode ser estável e estar errado. As perturbações são aleatórias e simétricas, então não cobrem erro sistemático (por exemplo, todos os pesos de uma categoria altos demais) nem mudança de estrutura (adicionar ou remover relações). O corte de 0,25, o fator 0,7 e o decaimento de 0,7^distância não foram variados. Só o ranking da nota final foi reavaliado; as medidas das seções 7.1 a 7.3 não foram refeitas sob perturbação. São 30 tentativas por configuração, sobre dados simulados, e os empates da nota inteira são desempatados pelo índice da vaga.
+
 ## 8. Ameaças à validade e limitações
 
 ### 8.1 Ameaças à validade
 
 - **Construto:** a nota de compatibilidade não foi validada contra nenhum resultado real (contratação, desempenho, satisfação).
-- **Interna:** as arestas e os pesos foram definidos a priori; mudar a escala pode mudar rankings. A análise de sensibilidade dos pesos ainda não foi feita.
+- **Interna:** as arestas e os pesos foram definidos a priori; mudar a escala pode mudar rankings. A sensibilidade a perturbações aleatórias dos pesos foi testada (seção 7.5), mas só mede a estabilidade do ranking, e não a correção das relações.
 - **Externa:** os dados são simulados por uma semente fixa, com 100 candidatas e 40 vagas; a distribuição de habilidades não reflete o mercado real, e os percentuais da seção 7 dependem dela.
 - **Conclusão:** a execução é determinística e não há repetição com intervalos de confiança nem testes estatísticos. Só o componente de habilidades foi compar도; área, nível e preferências não entram no experimento.
 
@@ -251,7 +274,7 @@ Mostra que o grafo enxerga afinidades que a comparação por nome ignora e que s
 
 ### 8.3 Trabalhos futuros
 
-- Análise de sensibilidade: variar os pesos das arestas e dos componentes e medir a estabilidade dos rankings.
+- Ampliar a análise de sensibilidade: variar também o corte 0,25, o fator 0,7 e o decaimento 0,7^distância, e alterar a estrutura do grafo (adicionar e remover relações), e não só os pesos.
 - Estimar pesos a partir de dados reais (co-ocorrência de habilidades em currículos e vagas) e validar contra um gabarito.
 - Ligar os dois componentes do grafo de habilidades.
 - Corrigir o filtro `minimo`, zerando as notas abaixo do mínimo antes de otimizar.

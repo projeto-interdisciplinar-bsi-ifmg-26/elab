@@ -1,0 +1,12 @@
+=== SENSIBILIDADE: ranking de vagas (nota final) sob perturbacao dos pesos ===
+Candidatas: 100 | Vagas: 40 | Tentativas por configuracao: 30 | Semente fixa
+Referencia: sobreposicao esperada do top-5 ao acaso = 12.5%
+
+configuracao           | top-5 medio (dp)  | pior tentativa | top-1 igual (medio)
+arestas +-0,05         | 94.8% (1.1)    |          92.6% | 96.9%
+arestas +-0,10         | 90.5% (1.4)    |          88.0% | 94.5%
+arestas +-0,20         | 84.9% (1.8)    |          80.2% | 92.4%
+pesos do score +-20%   | 97.9% (0.7)    |          96.4% | 96.5%
+
+Leitura: 100% = ranking identico ao original. dp = desvio padrao entre as tentativas.
+LIMITES: dados sinteticos; mede estabilidade do ranking, nao acerto; empates do score inteiro sao desempatados pelo indice.

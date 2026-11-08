@@ -60,11 +60,13 @@ Ele roda `pdflatex` e `bibtex` quantas vezes forem necessárias.
 São quatro passos, nesta ordem:
 
 ```bash
-pdflatex artigo
+pdflatex -interaction=nonstopmode -halt-on-error artigo
 bibtex artigo
-pdflatex artigo
-pdflatex artigo
+pdflatex -interaction=nonstopmode -halt-on-error artigo
+pdflatex -interaction=nonstopmode -halt-on-error artigo
 ```
+
+As opções `-interaction=nonstopmode -halt-on-error` evitam que o `pdflatex` pare num `?` esperando você digitar algo (e tente abrir o `vi`). Se der erro, ele para e mostra o problema.
 
 O `bibtex` lê o `artigo.aux` gerado pelo primeiro `pdflatex` e monta a lista de referências. Os dois últimos `pdflatex` resolvem as citações e a numeração. Pular qualquer passo deixa `[?]` no texto.
 
@@ -103,6 +105,7 @@ Isso não apaga o `artigo.pdf` nem os arquivos de entrada.
 | `I couldn't open database file referencias.bib` | O `referencias.bib` não está na mesma pasta do `artigo.tex`. |
 | Citações aparecem como `[?]` | Rode a sequência completa: `pdflatex`, `bibtex`, `pdflatex`, `pdflatex`. |
 | Acentos errados ou `babel` reclamando do idioma | Falta o pacote de português (`texlive-langportuguese` no Arch, `texlive-lang-portuguese` no Debian). |
+| `Environment psmallmatrix undefined` | Falta `\usepackage{mathtools}` no `artigo.tex` (o `psmallmatrix` não vem do `amsmath`). |
 | Erro nunca aparece e o PDF não muda | Confira se salvou o `artigo.tex` e se está compilando na pasta certa. |
 
 Quando houver erro, o primeiro problema está no `artigo.log`. Procure por ele com:

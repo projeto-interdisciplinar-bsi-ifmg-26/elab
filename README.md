@@ -184,6 +184,16 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 
 ---
 
+## 📚 Documentação
+
+| Pasta ou arquivo | Conteúdo |
+|---|---|
+| [`docs/es/`](docs/es/README.md) | Engenharia de software: requisitos, histórias de usuário, casos de uso, arquitetura e testes |
+| [`docs/bd/`](docs/bd/README.md) | Banco de dados: modelo ER, dicionário de dados, normalização, índices e consultas |
+| [`docs/GRAFOS.md`](docs/GRAFOS.md) | Teoria de grafos no projeto e experimento contra baselines |
+| [`backend/db/README.md`](backend/db/README.md) | Migrations, runner e segurança do banco |
+
+---
 ## 🎨 Identidade visual
 Paleta em tons de roxo, rosa e lilás, pensada para criar um ambiente acolhedor para a comunidade feminina de tecnologia.
 

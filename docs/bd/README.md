@@ -116,7 +116,7 @@ Perfil da empresa, 1:1 com `Usuarios`.
 | descricao | varchar(255) | |
 | cnpj | varchar(14) | NN, UQ (dígitos validados na API) |
 | tipo_entidade | varchar(45) | |
-| status_aprovacao | enum | NN, padrão `pendente` (`pendente`, `aprovada`, `rejeitada`) |
+| status_aprovacao | enum | NN, padrão `pendente` (`pendente`, `aprovada`, `rejeitada`). Não é usado pela API: só o seed:demo o preenche. |
 
 ### Areas_Atuacao
 Árvore de áreas.

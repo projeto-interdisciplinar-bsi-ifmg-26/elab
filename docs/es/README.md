@@ -11,7 +11,8 @@ Documentação de engenharia de software do projeto interdisciplinar (Programaç
 | [casos-de-uso.md](casos-de-uso.md) | Casos de uso em texto e diagrama |
 | [arquitetura.md](arquitetura.md) | Camadas, componentes e decisões de projeto |
 | [testes.md](testes.md) | Estratégia de testes e o que ficou sem cobertura |
-| [../../backend/db/README.md](../../backend/db/README.md) | Banco de dados: migrations e segurança |
+| [../bd/README.md](../bd/README.md) | Banco de dados: modelo ER e dicionário de dados |
+| [../../backend/db/README.md](../../backend/db/README.md) | Migrations e segurança do banco |
 | [../GRAFOS.md](../GRAFOS.md) | Motor de grafos e experimento |
 
 ## Escopo
@@ -38,30 +39,9 @@ O ELAB é uma rede profissional que conecta mulheres em tecnologia (colaboradora
 
 Caio Vitor, David Rodrigues, Jonathan Alexandre, Igor Barbosa, Isabelle Pascini e Mateus Batista.
 
-### Papéis e divisão de tarefas
+## Práticas de desenvolvimento
 
-> Preencher pelo grupo. Não foi inferido do repositório para não registrar algo que não aconteceu.
-
-| Integrante | Papel | Principais entregas |
-|---|---|---|
-| Caio Vitor | | |
-| David Rodrigues | | |
-| Jonathan Alexandre | | |
-| Igor Barbosa | | |
-| Isabelle Pascini | | |
-| Mateus Batista | | |
-
-### Contribuições registradas no Git
-
-Contagem de commits por autor (`git shortlog -sn --all`), para referência. Contribuições que não passam pelo Git (pesquisa, design, documentação, testes manuais) não aparecem aqui.
-
-> Colar a saída do comando e ajustar nomes duplicados (o mesmo integrante pode ter commitado com mais de um nome).
-
-## Processo de desenvolvimento
-
-> Preencher pelo grupo: metodologia adotada (Scrum, Kanban ou outra), duração e quantidade de iterações, cerimônias realizadas, ferramenta de backlog e como as tarefas foram divididas.
-
-Práticas que o repositório evidencia:
+O que o repositório evidencia:
 
 - Commits semânticos (`feat`, `fix`, `docs`, `chore`) e histórico linear na branch `main`.
 - Mudanças de banco sempre por migration nova, nunca editando migration aplicada.

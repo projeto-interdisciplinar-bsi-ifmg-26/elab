@@ -1,0 +1,332 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{graphicx,url}
+\usepackage{amsmath}
+
+\sloppy
+
+\title{Compatibilidade entre candidatas e vagas com Teoria dos Grafos: caminhos m\'inimos, ancestral comum e emparelhamento no ELAB}
+
+\author{Caio Vitor\inst{1}, David Rodrigues\inst{1}, Jonathan Alexandre\inst{1}\\
+Igor Barbosa\inst{1}, Isabelle Pascini\inst{1}, Mateus Batista\inst{1}}
+
+\address{Instituto Federal de Minas Gerais (IFMG) -- Campus Sabar\'a\\
+Sabar\'a -- MG -- Brasil}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents the graph-theoretic core of ELAB, a platform that connects women in technology to job openings. Skills are modeled as a weighted undirected graph and areas as a tree. A multi-source Dijkstra search with edge cost $-\ln w$ measures skill similarity, a nearest-common-ancestor query measures area affinity, and the Hungarian method allocates candidates to openings through maximum-weight matching in a bipartite graph. On simulated data (100 candidates, 40 openings), the graph recognizes affinity in 68.5\% of the 2,286 candidate--opening pairs that share no skill by name, and the ranking of openings stays stable under random perturbation of the weights. The weights are design choices and were not calibrated, and the experiments measure robustness, not accuracy.
+\end{abstract}
+
+\begin{resumo}
+Este trabalho apresenta o núcleo de Teoria dos Grafos do ELAB, uma plataforma que conecta mulheres em tecnologia a vagas de emprego. As habilidades são modeladas como um grafo não direcionado e ponderado, e as áreas de atuação como uma árvore. Uma busca de Dijkstra multi-origem com custo de aresta $-\ln w$ mede a similaridade entre habilidades, o ancestral comum mais próximo mede a afinidade entre áreas, e o método húngaro distribui candidatas entre vagas por emparelhamento de peso máximo em um grafo bipartido. Em dados simulados (100 candidatas e 40 vagas), o grafo reconhece afinidade em 68,5\% dos 2.286 pares candidata-vaga que não têm nenhuma habilidade em comum pelo nome, e o ranking de vagas se mantém estável sob perturbação aleatória dos pesos. Os pesos são escolhas de projeto, sem calibração, e os experimentos medem robustez, e não acerto.
+\end{resumo}
+
+\section{Introdução}
+
+O ELAB é uma rede profissional que conecta colaboradoras (mulheres em tecnologia) a empresas que publicam vagas. O projeto nasceu no curso de Sistemas de Informação do IFMG, campus Sabará, e a empresa fictícia dos dados de demonstração se chama Tech Sabará. A plataforma usa Teoria dos Grafos para responder a duas perguntas:
+
+\begin{enumerate}
+\item \textbf{Compatibilidade:} quanto o perfil de uma candidata combina com uma vaga? A vaga lista habilidades (cada uma com importância de 1 a 5 e a marca de obrigatória), área, nível, modalidade e faixa salarial.
+\item \textbf{Alocação:} dadas várias candidatas e várias vagas, quem deve ficar com qual vaga para que o resultado total seja o melhor possível, com cada candidata em no máximo uma vaga e cada vaga com no máximo uma candidata?
+\end{enumerate}
+
+Comparar habilidades pelo nome falha em casos óbvios: quem sabe TypeScript recebe nota zero numa vaga que pede JavaScript, embora as duas sejam muito próximas. Nos dados de demonstração, 57,1\% dos pares candidata-vaga não têm nenhuma habilidade em comum (Seção~\ref{sec:exp}), e a comparação por nome daria zero para todos eles. Um grafo de habilidades permite medir proximidade, e não só igualdade.
+
+Intuitivamente, imagine um mapa em que cada habilidade é uma cidade e cada relação entre duas habilidades é uma estrada. Estradas fortes (JavaScript e TypeScript) são curtas e estradas fracas são longas. Para saber se alguém está perto de uma exigência da vaga, procuramos o caminho mais curto entre o que ela já sabe e o que a vaga pede.
+
+O trabalho integra algoritmos clássicos (Dijkstra, ancestral comum em árvore e método húngaro) num problema de recomendação; não propõe algoritmo novo. Os dados são simulados e os pesos do modelo são escolhas de projeto, sem calibração. O contexto de Sabará aparece na motivação; o problema não depende de geografia, e não se modelou distância entre cidades. A Seção~\ref{sec:rel} apresenta o trabalho relacionado, a Seção~\ref{sec:mod} a modelagem, a Seção~\ref{sec:alg} os algoritmos, a Seção~\ref{sec:impl} a implementação e os dados, a Seção~\ref{sec:exp} os experimentos, a Seção~\ref{sec:lim} as limitações, a Seção~\ref{sec:etica} a ética e a Seção~\ref{sec:conc} conclui.
+
+\section{Trabalho relacionado}
+\label{sec:rel}
+
+\subsection{Grafos em redes sociais e recomendação}
+
+A análise de redes sociais como ferramenta para ligar relações entre indivíduos a fenômenos em larga escala, com a distinção entre laços fortes e fracos, é um marco clássico \cite{granovetter1973}. No ELAB, a escala de pesos de 0,3 a 0,9 também expressa intensidade de relação, mas entre habilidades, e não entre pessoas. A previsão de ligações em redes sociais mede a proximidade entre dois nós apenas pela topologia do grafo \cite{liben2007}; a similaridade entre habilidades do ELAB segue a mesma ideia, pois depende só da estrutura do grafo e dos pesos das arestas. Em sistemas reais, o serviço \textit{Who To Follow} do Twitter recomenda a partir do grafo inteiro mantido na memória de um único servidor \cite{gupta2013}, estratégia análoga à do cache em memória do ELAB, em escala muito menor. Para recomendação em escala de web, passeios aleatórios e convoluções em grafos aprendem a representação a partir dos dados \cite{ying2018}; aqui, ao contrário, os pesos são definidos manualmente.
+
+\subsection{Similaridade em hierarquias e ancestral comum}
+
+A similaridade conceitual entre dois conceitos de uma rede semântica hierárquica pode ser medida pela distância entre eles na hierarquia \cite{rada1989}, noção usada na árvore de áreas (Seção~\ref{sec:lca}). O decaimento $0{,}7^{d}$, que converte distância em afinidade, é uma escolha do grupo e não vem desse trabalho. Há medidas alternativas, baseadas no conteúdo de informação do ancestral comum \cite{resnik1995} ou em sua profundidade \cite{wu1994}. Para achar o ancestral comum mais próximo existem algoritmos que respondem em tempo constante após um pré-processamento \cite{harel1984,bender2000}; com 33 áreas e altura 2, uma subida simples pela árvore basta.
+
+\subsection{Caminhos mínimos e atribuição}
+
+O algoritmo de Dijkstra resolve caminhos mínimos com custos não negativos \cite{dijkstra1959}. O desempenho depende da fila de prioridade: com heap de Fibonacci chega-se a $O(E + V \log V)$ \cite{fredman1987}, mas o ELAB usa um heap binário, mais simples e suficiente para o tamanho do grafo. O método húngaro resolve o problema de atribuição \cite{kuhn1955,munkres1957}. Técnicas de caminhos mínimos para transporte e fluxo de custo mínimo aparecem em \cite{tomizawa1971,edmonds1972}; o resumo do primeiro informa um limite de $n^3$ operações para a atribuição $n \times n$.
+
+\subsection{Emparelhamento em mercados de trabalho e viés}
+
+O emparelhamento estável, em que nenhum par prefere mutuamente ficar junto a manter o que recebeu, foi definido por Gale e Shapley \cite{gale1962}, e o mercado de médicos residentes é um estudo de caso de sua aplicação real \cite{roth1984}. O ELAB adota outro critério: maximiza a soma das notas (emparelhamento de peso máximo), porque a plataforma tem uma nota única e comum, sem listas de preferência dos dois lados. A consequência é que o resultado não garante estabilidade. Sobre viés, há uma análise do que as empresas que vendem algoritmos de triagem de candidatos declaram sobre desenvolvimento, validação e mitigação de viés \cite{raghavan2019}; ela motiva as decisões da Seção~\ref{sec:etica}.
+
+\section{Modelagem}
+\label{sec:mod}
+
+O motor usa três estruturas, resumidas na Tabela~\ref{tab:estruturas}.
+
+\begin{table}[ht]
+\centering
+\caption{Estruturas do modelo e tamanho nos dados.}
+\label{tab:estruturas}
+\begin{tabular}{p{3.6cm}p{2.2cm}p{3.2cm}p{3.8cm}}
+\hline
+Estrutura & Vértices & Arestas & Tamanho \\
+\hline
+Grafo de habilidades & habilidades & similaridade em $(0,1]$ & 142 vértices, 252 arestas \\
+Árvore de áreas & áreas & pai-filho & 33 vértices, altura 2 \\
+Grafo bipartido & candidatas e vagas & nota de 0 a 100 & 100 $\times$ 40 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Grafo de habilidades}
+
+É um grafo não direcionado e ponderado, em que o peso de uma aresta é a similaridade entre as duas habilidades. Os dados têm 142 vértices e 252 arestas, grau médio de 3,5 e densidade de 2,5\% (252 de 10.011 pares possíveis). Os maiores graus são os de Python e SQL (14), React (12), JavaScript e Node (10). Cada par é gravado uma única vez, sem laços, e a estrutura de dados simetriza as arestas ao carregar. Os pesos assumem só sete valores (Tabela~\ref{tab:pesos}), com média de 0,60.
+
+\begin{table}[ht]
+\centering
+\caption{Distribuição dos pesos das 252 arestas.}
+\label{tab:pesos}
+\begin{tabular}{lccccccc}
+\hline
+Peso & 0,3 & 0,4 & 0,5 & 0,6 & 0,7 & 0,8 & 0,9 \\
+\hline
+Arestas & 15 & 43 & 52 & 31 & 51 & 42 & 18 \\
+\hline
+\end{tabular}
+\end{table}
+
+A escala adotada é: 0,9 para habilidades quase intercambiáveis (JavaScript e TypeScript); 0,7 para o mesmo ecossistema (JavaScript com React e com Node); 0,5 e 0,6 para alternativas da mesma categoria (JavaScript com Vue, 0,6; com Angular e Svelte, 0,5); e 0,3 e 0,4 para relações fracas.
+
+\textbf{Origem dos pesos.} As relações e os pesos foram definidos a priori, por julgamento de plausibilidade; não foram estimados a partir de dados de uso (por exemplo, co-ocorrência de habilidades em currículos ou vagas) nem calibrados. É a premissa mais forte do modelo e é discutida na Seção~\ref{sec:lim}.
+
+\textbf{Dois componentes conexos.} O grafo tem 131 vértices num componente e 11 em outro (habilidades de gestão e comunicação, como Scrum, liderança, inglês e Jira). Não há aresta entre os dois, então a afinidade entre uma habilidade de gestão e uma habilidade técnica é sempre zero.
+
+\subsection{Árvore de áreas}
+
+A hierarquia de áreas de atuação tem 33 nós: uma raiz (Tecnologia da Informação), 13 filhas (por exemplo, Backend, Frontend e Dados) e 19 netas (por exemplo, Backend Node.js e Frontend React), portanto altura 2.
+
+\subsection{Grafo bipartido de alocação}
+
+De um lado ficam as candidatas, do outro as vagas, e cada aresta tem como peso a nota de compatibilidade (inteiro de 0 a 100). Um emparelhamento é um conjunto de arestas em que nenhum vértice aparece duas vezes.
+
+\section{Algoritmos}
+\label{sec:alg}
+
+\subsection{Similaridade entre habilidades: Dijkstra}
+
+Intuitivamente, é o GPS do mapa de habilidades: colocamos a candidata em todas as habilidades que ela já tem e andamos primeiro pelas estradas mais fortes.
+
+O algoritmo de Dijkstra soma custos e busca o menor total, mas queremos o caminho de maior similaridade, que se obtém multiplicando pesos. A ponte entre as duas coisas é o custo de aresta
+\begin{equation}
+c(w) = -\ln w, \qquad w \in (0,1].
+\end{equation}
+Seja um caminho com arestas de pesos $w_1,\dots,w_k \in (0,1]$. Sua similaridade é $\prod_i w_i$. Como o logaritmo é estritamente crescente, maximizar o produto equivale a minimizar $\sum_i -\ln w_i$. Como cada $w_i \le 1$, cada custo $c(w_i)$ é maior ou igual a zero, que é a condição exigida por Dijkstra. Logo, o caminho de menor custo é o de maior produto de pesos, e a similaridade entre duas habilidades é
+\begin{equation}
+\mathrm{sim}(u,v) = e^{-d(u,v)},
+\end{equation}
+em que $d$ é a distância de menor custo. Por exemplo, de TypeScript a React passando por JavaScript (pesos 0,9 e 0,7), os custos são $0{,}105 + 0{,}357 = 0{,}462$ e a similaridade é $e^{-0{,}462} = 0{,}63 = 0{,}9 \times 0{,}7$.
+
+Todas as habilidades que a candidata já tem entram como origens com distância 0, então uma única execução por candidata serve para todas as vagas. Habilidade que ela tem vale 1; habilidade fora do alcance vale 0. O corte de similaridade mínima 0,25 equivale a um custo máximo de $-\ln 0{,}25 \approx 1{,}386$, e vértices além dele são descartados. Como o menor peso do grafo é 0,3, toda aresta direta passa no corte; um caminho de duas arestas só passa se o produto for pelo menos 0,25 (0,5 e 0,5 passa; 0,3 e 0,8 não).
+
+A complexidade é $O((V+E)\log V)$ por execução, com um heap binário próprio. A implementação não tem a operação de diminuir chave: insere entradas repetidas e descarta as obsoletas ao retirá-las. Aqui $V = 142$ e $E = 252$. Uma consequência do modelo é que só a habilidade mais próxima conta; várias habilidades vizinhas não somam evidências.
+
+\subsection{Afinidade entre áreas: ancestral comum mais próximo}
+\label{sec:lca}
+
+Intuitivamente, é um organograma: para saber quão perto estão duas áreas, contamos quantos passos é preciso subir até um ancestral comum e descer de novo.
+
+Para cada área monta-se a lista de ancestrais até a raiz. O primeiro ancestral da área A que também aparece na lista de B é o ancestral comum mais próximo, e a distância $d$ é a posição dele na lista de A somada à posição na lista de B. A afinidade é $0{,}7^{d}$, que vale 1 para a mesma área e 0 se não houver ancestral comum (Tabela~\ref{tab:afin}). É uma subida simples, de custo $O(h)$ por consulta, com $h$ a altura da árvore (aqui, 2). Por exemplo, Backend Node.js e Backend têm distância 1; Backend Node.js e Backend Java, 2; Backend Node.js e Frontend React, 4, a maior distância possível nesta árvore.
+
+\begin{table}[ht]
+\centering
+\caption{Afinidade de área em função da distância na árvore.}
+\label{tab:afin}
+\begin{tabular}{lccccc}
+\hline
+Distância $d$ & 0 & 1 & 2 & 3 & 4 \\
+\hline
+Afinidade $0{,}7^{d}$ & 1,00 & 0,70 & 0,49 & 0,34 & 0,24 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Nota de compatibilidade}
+
+A nota combina quatro componentes entre 0 e 1: habilidades ($H$), área ($A$), nível ($N$) e preferências ($P$):
+\begin{equation}
+S = 100 \cdot \lambda \cdot (0{,}55\,H + 0{,}20\,A + 0{,}15\,N + 0{,}10\,P),
+\end{equation}
+em que $\lambda = 0{,}7$ se algum requisito obrigatório tiver similaridade menor que 0,5, e $\lambda = 1$ caso contrário. Os pesos somam 1 e a nota é arredondada para inteiro. A Tabela~\ref{tab:comp} resume cada componente.
+
+\begin{table}[ht]
+\centering
+\caption{Componentes da nota de compatibilidade.}
+\label{tab:comp}
+\begin{tabular}{p{2.5cm}p{1.1cm}p{10.2cm}}
+\hline
+Componente & Peso & Cálculo \\
+\hline
+Habilidades & 55\% & Média das similaridades dos requisitos, ponderada pela importância (padrão 3). Vaga sem requisitos: 0,5. \\
+Área & 20\% & Vaga sem área: 0,5. Candidata sem área: 0,4. Senão, o máximo, entre as áreas da candidata, de afinidade $\times\,(0{,}6 + 0{,}4 \cdot \text{interesse}/5)$. \\
+Nível & 15\% & Escala estágio, júnior, pleno, sênior, especialista. Igual: 1. Candidata acima da vaga: $\max(0{,}5;\ 1 - 0{,}15\,d)$. Abaixo: $\max(0;\ 1 - 0{,}4\,d)$, com $d$ a diferença de níveis. \\
+Preferências & 10\% & Média entre modalidade (incompatível vale 0, ou 0,5 se um dos lados é híbrido) e salário ($\min(1,\ \text{salário máximo}/\text{pretensão})$). \\
+\hline
+\end{tabular}
+\end{table}
+
+Os pesos 55/20/15/10, o fator 0,7, o corte 0,25 e as fórmulas de nível e preferências são escolhas de projeto, sem calibração. O requisito chamado eliminatório no código só aciona o fator $\lambda$; não exclui ninguém.
+
+\subsection{Trilha de aprendizado}
+
+Intuitivamente, é um GPS de estudo: para cada habilidade que a vaga pede e a candidata ainda não domina, mostra o caminho a partir de uma habilidade que ela já tem, passando por habilidades intermediárias. A trilha reaproveita o resultado do Dijkstra: para cada requisito com similaridade menor que 1, reconstrói o caminho pelos predecessores. Os itens são ordenados por importância e, em empate, por similaridade, e a lista devolve no máximo 5. Um alvo fora do corte de 0,25 aparece como não alcançável.
+
+\subsection{Alocação ótima: método húngaro}
+
+Escolher sempre a melhor nota disponível pode estragar o conjunto. Com as notas $\begin{psmallmatrix}90 & 80\\ 85 & 20\end{psmallmatrix}$, pegar primeiro o 90 obriga a segunda candidata a ficar com o 20, total 110; trocar as duas (80 + 85) dá 165. O método húngaro encontra o melhor total \cite{kuhn1955,munkres1957}.
+
+O problema é um emparelhamento de peso máximo no grafo bipartido de candidatas e vagas. O método resolve a atribuição minimizando custos; o ELAB maximiza as notas passando seus negativos. A versão implementada usa potenciais (variáveis duais) e caminhos aumentantes de custo mínimo, da família de técnicas de \cite{tomizawa1971,edmonds1972}, com custo $O(n^2 m)$ para $n$ linhas e $m$ colunas, $n \le m$. Para matriz retangular, transpõe quando há mais linhas que colunas, e o custo passa a ser $O(\min^2 \times \max)$; com 100 candidatas e 40 vagas são cerca de 160 mil operações elementares. O parâmetro de nota mínima (40 na alocação) descarta, \emph{depois} de otimizar, os pares com nota abaixo dele (ver Seção~\ref{sec:lim}).
+
+\subsection{Cache do grafo}
+
+O grafo, as áreas e o motor são montados uma vez a partir do banco e mantidos em memória por processo, de modo que requisições simultâneas não carregam o grafo duas vezes. Uma função de invalidação força a recarga depois de alterar habilidades, arestas ou áreas, e uma habilidade ou aresta nova entra no cálculo sem mudar código.
+
+\section{Implementação, dados e reprodução}
+\label{sec:impl}
+
+O backend é em Node.js, com MySQL, e o código dos grafos fica em um diretório próprio (Tabela~\ref{tab:codigo}).
+
+\begin{table}[ht]
+\centering
+\caption{Conceito e arquivo correspondente.}
+\label{tab:codigo}
+\begin{tabular}{p{7.2cm}p{6.8cm}}
+\hline
+Conceito & Arquivo \\
+\hline
+Grafo não direcionado e ponderado & \texttt{graph/Grafo.js} \\
+Fila de prioridade (heap binário) & \texttt{graph/MinHeap.js} \\
+Dijkstra multi-origem com poda & \texttt{graph/dijkstra.js} \\
+Árvore e ancestral comum & \texttt{graph/arvoreAreas.js} \\
+Método húngaro & \texttt{graph/hungaro.js} \\
+Nota, trilha, ranking e alocação & \texttt{graph/motorMatch.js} \\
+Cache do grafo & \texttt{services/grafo.service.js} \\
+\hline
+\end{tabular}
+\end{table}
+
+Os testes automatizados fazem 13 verificações em grafos pequenos de resposta conhecida: heap, simetria do grafo, Dijkstra (maior produto de pesos, multi-origem e poda), ancestral comum e afinidade, método húngaro (igual à força bruta em 200 matrizes aleatórias retangulares) e o motor de nota. Eles mostram que as implementações acertam nesses casos; não provam a utilidade das notas.
+
+\textbf{Dados.} O catálogo (33 áreas, 142 habilidades e 252 relações com peso) fica em três arquivos JSON elaborados para o projeto. Os dados de demonstração são \textbf{simulados}, gerados com semente fixa: 8 empresas, 40 vagas, 100 colaboradoras e 429 candidaturas. Não há pessoas reais, e a mesma semente produz sempre o mesmo resultado. O experimento usa 100 candidatas com habilidades, 40 vagas ativas com requisitos e 4.000 pares.
+
+\textbf{Reprodução.} Com MySQL ou MariaDB rodando, um banco chamado \texttt{elab} e Node.js instalado, no diretório do backend:
+
+\begin{verbatim}
+npm install
+cp .env.example .env
+npm run migrate
+npm run seed
+npm run seed:demo
+node scripts/experimento-baseline.js
+node scripts/experimento-sensibilidade.js
+\end{verbatim}
+
+Os dois scripts de experimento só leem o banco e não precisam do servidor web. O pacote de entrega traz as instruções completas.
+
+\section{Experimentos}
+\label{sec:exp}
+
+Não há gabarito de relevância (registro de quem deveria ficar com cada vaga), então os experimentos medem efeitos observáveis: a cobertura (quanta afinidade o grafo enxerga onde a comparação por nome vê zero) e a robustez (como a nota reage quando uma habilidade some do perfil ou quando os pesos mudam). A comparação é feita só no componente de habilidades, que é onde o grafo atua, contra dois baselines sem grafo: a \emph{cobertura ponderada} (soma das importâncias dos requisitos que a candidata tem, dividida pela soma total) e o índice de Jaccard \cite{jaccard1901} entre o conjunto de habilidades da candidata e o de requisitos da vaga, que ignora importâncias.
+
+\subsection{Resgate e divergência de ranking}
+
+Dos 4.000 pares, 2.286 (57,1\%) não têm nenhuma habilidade em comum, e nesses a cobertura e o Jaccard dão zero. Nesses mesmos pares, o grafo reconhece alguma afinidade em 1.566 (68,5\%), com nota média de habilidades de 19,7 em 100. Exemplos de afinidades que os baselines não enxergam: TypeScript e JavaScript, MySQL e SQL, SQL e PostgreSQL (todas com 0,90). A sobreposição média do top-5 de vagas por candidata é de 76,6\% entre grafo e cobertura e de 71,0\% entre grafo e Jaccard, ou seja, o grafo muda entre 23\% e 29\% das cinco primeiras vagas.
+
+\subsection{Habilidade oculta}
+
+Para cada par em que a candidata tem ao menos um requisito da vaga, esconde-se do perfil a habilidade de maior importância que ela tem e a vaga pede, e mede-se o que acontece com aquela vaga no ranking das 40 vagas. São 1.714 casos (Tabela~\ref{tab:oculta}).
+
+\begin{table}[ht]
+\centering
+\caption{Habilidade oculta (1.714 casos).}
+\label{tab:oculta}
+\begin{tabular}{lccc}
+\hline
+Método & Piora média no ranking & Nota retida & Continua no top-10 \\
+\hline
+Grafo & 4,29 & 66,6\% & 67,5\% \\
+Cobertura & 8,81 & 25,8\% & 49,8\% \\
+Jaccard & 8,43 & 28,8\% & 55,8\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Sensibilidade aos pesos}
+
+Se mexermos um pouco nos números do modelo, o ranking de vagas muda muito ou pouco? Cada configuração faz 30 tentativas com sementes fixas, para as 100 candidatas e as 40 vagas. Nas perturbações das arestas, cada aresta ganha ou perde um valor fixo, sorteado aresta a aresta, com o peso limitado a $[0{,}1;\,1]$; como os pesos originais variam em passos de 0,1, a perturbação de 0,10 desloca cada relação para um nível vizinho da escala. Na perturbação dos pesos do score, cada peso é multiplicado por um fator sorteado entre 0,8 e 1,2. A métrica é a sobreposição do top-5 de vagas de cada candidata com o top-5 original; ao acaso, a sobreposição esperada entre 40 vagas é de 12,5\%.
+
+\begin{table}[ht]
+\centering
+\caption{Estabilidade do ranking sob perturbação dos pesos (30 tentativas).}
+\label{tab:sens}
+\begin{tabular}{lccc}
+\hline
+Perturbação & Top-5 médio (dp) & Pior tentativa & Mesma vaga em 1º \\
+\hline
+Arestas $\pm 0{,}05$ & 94,8\% (1,1) & 92,6\% & 96,9\% \\
+Arestas $\pm 0{,}10$ & 90,5\% (1,4) & 88,0\% & 94,5\% \\
+Arestas $\pm 0{,}20$ & 84,9\% (1,8) & 80,2\% & 92,4\% \\
+Pesos do score $\pm 20\%$ & 97,9\% (0,7) & 96,4\% & 96,5\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Mesmo deslocando todas as arestas em até dois níveis da escala, o top-5 médio mantém 84,9\% de sobreposição, e a pior tentativa fica em 80,2\%, muito acima do acaso. Variar os pesos do score em 20\% muda ainda menos o ranking.
+
+\subsection{O que os experimentos mostram}
+
+Mostram que o grafo enxerga afinidades que a comparação por nome ignora, que sua nota é mais estável quando uma habilidade falta e que o ranking não depende do valor exato de cada peso dentro das faixas testadas. \textbf{Não mostram} que o grafo acerta mais, por três motivos: não há gabarito de relevância; o teste de habilidade oculta favorece o grafo por construção (ao esconder uma habilidade, as vizinhas continuam valendo, então a nota cair menos prova robustez, e não acerto); e os dados são sintéticos.
+
+\section{Ameaças à validade e limitações}
+\label{sec:lim}
+
+\textbf{Construto.} A nota de compatibilidade não foi validada contra nenhum resultado real (contratação, desempenho, satisfação).
+
+\textbf{Interna.} As arestas e os pesos foram definidos a priori. A sensibilidade a perturbações aleatórias foi testada, mas só mede a estabilidade do ranking em relação a ele mesmo, e não a correção das relações; as perturbações são simétricas e não cobrem erro sistemático nem mudança de estrutura, e o corte 0,25, o fator 0,7 e o decaimento $0{,}7^{d}$ não foram variados.
+
+\textbf{Externa.} Os dados são simulados por uma semente fixa, com 100 candidatas e 40 vagas; a distribuição de habilidades não reflete o mercado real, e os percentuais da Seção~\ref{sec:exp} dependem dela.
+
+\textbf{Conclusão.} A execução é determinística e não há intervalos de confiança nem testes estatísticos. Só o componente de habilidades foi comparado.
+
+\textbf{Limitações do modelo.}
+\begin{itemize}
+\item Os pesos 55/20/15/10, o fator 0,7, o corte 0,25 e o decaimento $0{,}7^{d}$ são escolhas de projeto, sem calibração.
+\item As 11 habilidades de gestão e comunicação nunca têm afinidade com as técnicas, pois formam um componente isolado.
+\item Só a habilidade mais próxima conta; os anos de experiência não entram no cálculo.
+\item A nota mínima da alocação é aplicada depois da otimização, então o resultado não é o melhor possível sujeito ao mínimo. Com a matriz $\begin{psmallmatrix}70 & 60\\ 45 & 39\end{psmallmatrix}$ e mínimo 40, o método húngaro escolhe $70 + 39 = 109$ e o par de 39 é descartado, sobrando 70; a alternativa $60 + 45 = 105$ teria os dois pares válidos.
+\item As notas são arredondadas para inteiros antes da alocação, o que cria empates, e o emparelhamento de peso máximo não garante estabilidade.
+\item O cache é por processo e a invalidação é manual.
+\end{itemize}
+
+\textbf{Trabalhos futuros.} Estimar os pesos a partir de dados reais (co-ocorrência de habilidades em currículos e vagas) e validar contra um gabarito; ligar os dois componentes do grafo de habilidades; corrigir o filtro de nota mínima zerando as notas abaixo do mínimo antes de otimizar; ampliar a sensibilidade para o corte, o fator 0,7, o decaimento e a estrutura do grafo; e comparar a alocação de peso máximo com o emparelhamento estável \cite{gale1962}.
+
+\section{Ética e transparência}
+\label{sec:etica}
+
+A nota é apoio, e não filtro: a plataforma mostra, para cada vaga, de onde vem a nota (habilidades, área, nível e preferências) e a situação de cada requisito, e o fator 0,7 do requisito obrigatório reduz a nota, mas não elimina a candidata. A recomendação de uso é não decidir por corte automático de nota. Cada componente e o caminho no grafo que justifica uma afinidade são devolvidos pela API, o que permite conferir o cálculo; a literatura sobre triagem algorítmica aponta a falta de transparência e de validação como problemas centrais \cite{raghavan2019}.
+
+O componente de preferências compara a pretensão salarial com o salário máximo da vaga. Pretensões salariais podem refletir desigualdades históricas de remuneração, algo especialmente relevante numa plataforma voltada a mulheres; por isso o peso desse componente é pequeno (10\%) e deve ser revisto antes de uso real. O modelo não usa gênero nem outros atributos protegidos no cálculo da nota, e todos os dados dos experimentos são simulados.
+
+\section{Conclusão}
+\label{sec:conc}
+
+O trabalho modelou habilidades como um grafo ponderado, áreas como uma árvore e a alocação como um emparelhamento bipartido, e resolveu cada parte com um algoritmo clássico cuja complexidade e cuja implementação foram descritas. A transformação $-\ln w$ permite usar Dijkstra para maximizar um produto de similaridades. Em dados simulados, o grafo reconhece afinidades que a comparação por nome ignora e produz rankings estáveis sob perturbação dos pesos. A principal limitação é que os pesos foram definidos a priori e as medidas disponíveis não comprovam acerto; o próximo passo natural é estimar os pesos a partir de dados reais e validar a nota contra um gabarito.
+
+\bibliographystyle{sbc}
+\bibliography{referencias}
+
+\end{document}

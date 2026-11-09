@@ -76,6 +76,27 @@ O código fica em `backend/src/graph/`. O grafo de habilidades e a árvore de á
 
 ## 🚀 Como executar
 
+### ⚡ Rodar tudo localmente (banco + back + front)
+
+O frontend **não tem servidor próprio**: o mesmo Express do backend serve os arquivos da pasta `frontend/`. Então subir o backend já entrega o front. Fluxo completo:
+
+```bash
+# 1. Banco (uma vez só; depois use docker start/stop)
+docker run -d --name elab-mysql -p 3306:3306 \
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_DATABASE=elab mysql:8
+
+# 2. Backend + frontend
+cd backend
+npm install
+cp .env.example .env            # ajuste o JWT_SECRET
+npm run migrate                 # cria as tabelas
+npm run seed                    # catálogo (áreas, habilidades)
+npm run seed:demo               # opcional: dados de demonstração
+npm run dev                     # sobe back + front em http://localhost:3000
+```
+
+Abra `http://localhost:3000` no navegador. Backend e frontend rodam no mesmo processo e na mesma porta. Os passos detalhados estão abaixo.
+
 ### 📋 Pré-requisitos
 - Node.js
 - Docker (recomendado) para subir o banco, ou um MySQL/MariaDB instalado na máquina
@@ -135,7 +156,7 @@ Cria 8 empresas, 40 vagas, 8 eventos, palestras e bolsas, 100 colaboradoras e 42
 `empresa1` e `empresa2` recebem de 10 a 16 candidatas por vaga. `colab1` e `colab2` têm perfil completo e candidaturas, ideais para demonstrar o match.
 
 ### 🖥️ Frontend
-O próprio Express serve a pasta `frontend/`. Com o servidor rodando, abra `http://localhost:3000`.
+Não há passo separado nem build: o próprio Express serve a pasta `frontend/` (via `express.static` no `server.js`). Com o `npm run dev` do backend rodando, o front já está no ar — abra `http://localhost:3000`.
 
 ### 🧪 Testes
 Com o servidor rodando:

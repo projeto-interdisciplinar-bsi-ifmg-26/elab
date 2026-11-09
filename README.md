@@ -239,6 +239,7 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 | [`docs/bd/`](docs/bd/README.md) | Banco de dados: modelo ER, dicionário de dados, normalização, índices e consultas |
 | [`docs/GRAFOS.md`](docs/GRAFOS.md) | Teoria de grafos no projeto e experimento contra baselines |
 | [`backend/db/README.md`](backend/db/README.md) | Migrations, runner e segurança do banco |
+| [`docs/deploy-railway.md`](docs/deploy-railway.md) | Passo a passo de deploy gratuito no Railway (back + front + MySQL) |
 
 ---
 ## 🎨 Identidade visual

@@ -78,14 +78,39 @@ O código fica em `backend/src/graph/`. O grafo de habilidades e a árvore de á
 
 ### 📋 Pré-requisitos
 - Node.js
-- MySQL ou MariaDB rodando, com um banco chamado `elab`
+- Docker (recomendado) para subir o banco, ou um MySQL/MariaDB instalado na máquina
+
+### 🐳 Banco via Docker (recomendado)
+
+O jeito mais rápido de ter o banco no ar, sem instalar MySQL no sistema. **Rode o `docker run` só uma vez:**
+
+```bash
+docker run -d --name elab-mysql -p 3306:3306 \
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+  -e MYSQL_DATABASE=elab \
+  mysql:8
+```
+
+Isso cria o container, publica a porta `3306` na sua máquina e já cria o banco `elab`, batendo com o `.env.example`. O primeiro boot do MySQL leva alguns segundos; espere a mensagem `ready for connections` antes de rodar o migrate.
+
+No dia a dia você só liga e desliga o container (os dados são preservados):
+
+```bash
+docker start elab-mysql   # liga o banco
+docker stop elab-mysql    # desliga quando terminar
+```
+
+> Use `docker start`/`stop` no dia a dia. `docker rm elab-mysql` **destrói** o container e os dados; aí seria preciso recriar com `docker run` e rodar migrate/seed de novo.
+
+Detalhes e a alternativa com MySQL nativo: [`backend/db/README.md`](backend/db/README.md).
 
 ### ⚙️ Backend
+Com o banco no ar (container ligado):
 ```bash
 cd backend
 npm install
 cp .env.example .env
-# edite o .env com as credenciais do MySQL e o segredo do JWT
+# edite o .env com o segredo do JWT (as credenciais do banco já batem com o Docker acima)
 npm run migrate   # cria e atualiza as tabelas (migrations 001 a 020)
 npm run seed      # carrega o catálogo: áreas, habilidades e relações entre habilidades
 npm run dev       # servidor em http://localhost:3000
@@ -94,6 +119,7 @@ npm run dev       # servidor em http://localhost:3000
 O seed carrega **apenas dados de referência**, sem usuárias, vagas ou inscrições falsas. Ele é idempotente e lê `backend/db/seeds/seeds.config.json` e os JSONs em `backend/db/seeds/data/`.
 
 ### 🎭 Dados de demonstração (opcional)
+Com o banco no ar (container ligado):
 ```bash
 npm run seed:demo
 ```

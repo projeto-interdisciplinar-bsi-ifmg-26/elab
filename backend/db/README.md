@@ -27,22 +27,93 @@ A ordem numérica respeita as dependências de chave estrangeira. Eventos, pales
 
 ## Como rodar
 
-1. Suba um MySQL e crie o schema vazio:
+O runner de migrations **não sobe o banco**: ele conecta num MySQL que já precisa estar no ar. Se o banco não estiver rodando, `npm run migrate` falha com `ECONNREFUSED`. Suba o banco primeiro (Docker, recomendado) e só então rode migrate/seed.
 
-   ```sql
-   CREATE DATABASE elab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
+### Opção A — Docker (recomendado)
 
-2. Configure o `.env` (veja `.env.example`): `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`.
+Não instala MySQL no sistema e deixa o ambiente igual para todo mundo. **Rode o `docker run` uma única vez:**
 
-3. Instale a dependência e rode:
+```bash
+docker run -d --name elab-mysql -p 3306:3306 \
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+  -e MYSQL_DATABASE=elab \
+  mysql:8
+```
 
-   ```bash
-   npm install
-   npm run migrate
-   ```
+O que cada parte faz:
+
+- `-d` roda em background; `--name elab-mysql` dá um nome fixo para usar com `start`/`stop`.
+- `-p 3306:3306` publica a porta do container na máquina, que é o que faz o `DB_HOST=localhost` do `.env` encontrar o banco.
+- `MYSQL_ALLOW_EMPTY_PASSWORD=yes` deixa o root sem senha, casando com `DB_PASSWORD=` (vazio) do `.env.example`.
+- `MYSQL_DATABASE=elab` já cria o banco no primeiro boot (faz o papel do `CREATE DATABASE`).
+
+O primeiro boot leva alguns segundos e derruba conexões ao final do setup inicial; espere a mensagem `ready for connections` nos logs (`docker logs elab-mysql`) antes de rodar o migrate. Então:
+
+```bash
+npm install
+npm run migrate
+npm run seed
+```
+
+> MySQL 8 usa `utf8mb4` por padrão. Se quiser garantir o collation `utf8mb4_unicode_ci` (igual ao `CREATE DATABASE` abaixo), passe `--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci` no fim do `docker run`.
+
+### Uso no dia a dia
+
+Criar o container é uma vez só. Depois é só ligar e desligar (os dados ficam preservados):
+
+```bash
+docker start elab-mysql   # liga o banco (antes de usar o sistema ou o DBeaver)
+docker stop elab-mysql    # desliga quando terminar
+```
+
+- **Mexer só no banco** (ex.: DBeaver): basta o container ligado.
+- **Rodar o sistema web**: container ligado **e** `npm run dev` na pasta `backend`. O Docker sobe o banco, não a aplicação.
+
+> `docker start`/`stop` preservam os dados. `docker rm elab-mysql` **destrói** o container e tudo nele — aí é preciso recriar com `docker run` e rodar migrate/seed novamente.
+
+### Acesso por cliente gráfico (DBeaver, Workbench, etc.)
+
+Com o container ligado, crie uma conexão MySQL com:
+
+| Campo | Valor |
+| --- | --- |
+| Host | `localhost` |
+| Porta | `3306` |
+| Database | `elab` |
+| Usuário | `root` |
+| Senha | (em branco) |
+
+Com root sem senha, o MySQL 8 pode recusar a conexão com "Public Key Retrieval is not allowed". Em "Driver properties", ajuste `allowPublicKeyRetrieval=true` e `useSSL=false`.
+
+### Opção B — MySQL nativo
+
+Se preferir instalar o MySQL/MariaDB direto no sistema, crie o schema vazio:
+
+```sql
+CREATE DATABASE elab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Depois configure o `.env` (veja `.env.example`: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) e rode:
+
+```bash
+npm install
+npm run migrate
+```
 
 O runner cria a tabela de controle `schema_migrations` e aplica apenas o que ainda não foi aplicado. Rodar de novo é seguro (idempotente).
+
+## Seeds
+
+São dois comandos distintos. Rode sempre com o banco no ar e as migrations já aplicadas.
+
+| Comando | O que faz | Destrutivo? |
+| --- | --- | --- |
+| `npm run seed` | Carrega o **catálogo** (dados de referência): áreas, habilidades e as relações entre habilidades. Não cria usuários, vagas nem candidaturas. | Não. Faz upsert, é idempotente — pode rodar quantas vezes quiser. |
+| `npm run seed:demo` | Popula **dados fictícios de demonstração**: 8 empresas, 40 vagas, eventos/palestras/bolsas, 100 colaboradoras e as candidaturas. Semente fixa (resultado sempre igual). | **Sim.** Apaga todos os usuários exceto `admin` (e, por cascata, vagas e candidaturas) antes de recriar. |
+
+- O `seed` é o mínimo para o sistema funcionar: o motor de match depende do grafo de habilidades e da árvore de áreas estarem no banco.
+- O `seed:demo` **depende do catálogo**: ele busca os IDs de habilidades e áreas para montar vagas e perfis. Ordem correta: `migrate` → `seed` → `seed:demo`.
+- Contas criadas pelo demo: `empresa1@elab.com` a `empresa8@elab.com` e `colab1@elab.com` a `colab100@elab.com`, senha `demo12345`.
 
 ## Escalabilidade (deploy)
 

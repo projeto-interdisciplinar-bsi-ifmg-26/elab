@@ -12,7 +12,7 @@ async function idEmpresaPorUsuario(usuarioId) {
 // Inscritos numa oportunidade, com o id da profissional (necessario para pontuar no motor).
 async function listarInscritos(oportunidadeId) {
   return query(
-    'SELECT p.idProfissionais AS profissionalId, p.nome, u.email, c.mensagem, c.data_aplicacao AS data_inscricao ' +
+    'SELECT p.idProfissionais AS profissionalId, p.nome, u.email, u.foto_arquivo, c.mensagem, c.data_aplicacao AS data_inscricao ' +
       'FROM Cadastros_Oportunidades c ' +
       'JOIN Profissionais p ON c.Profissionais_idProfissionais = p.idProfissionais ' +
       'JOIN Usuarios u ON p.Usuario_idUsuario = u.idUsuario ' +

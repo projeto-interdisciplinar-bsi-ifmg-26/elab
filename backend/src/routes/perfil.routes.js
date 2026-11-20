@@ -6,6 +6,9 @@ const perfilController = require('../controllers/perfil.controller');
 const { autenticar, permitir } = require('../middlewares/auth.middleware');
 const validar = require('../middlewares/validate');
 const perfilCompletoController = require('../controllers/perfilCompleto.controller');
+const fotoController = require('../controllers/foto.controller');
+const { receberFoto } = require('../middlewares/uploadImagem');
+const { uploadLimiter } = require('../middlewares/rateLimiter');
 const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 const NIVEIS = ['estagio', 'junior', 'pleno', 'senior', 'especialista'];
 const DISPONIBILIDADES = ['imediata', '15_dias', '30_dias', 'empregada_aberta', 'nao_procurando'];
@@ -61,6 +64,9 @@ router.put('/habilidades', permitir('colaboradora'), [
   body('habilidades.*.habilidadeId').isInt({ min: 1 }).withMessage('ID de habilidade inválido').toInt(),
   body('habilidades.*.anos').optional(opt).isInt({ min: 0, max: 50 }).withMessage('Anos inválidos').toInt()
 ], validar, perfilCompletoController.substituirHabilidades);
+
+router.post('/foto', uploadLimiter, receberFoto, fotoController.enviar);
+router.delete('/foto', uploadLimiter, fotoController.excluir);
 
 router.use(require('./perfilExtras.routes'));
 module.exports = router;

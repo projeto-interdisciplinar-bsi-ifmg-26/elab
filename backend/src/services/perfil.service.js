@@ -44,6 +44,8 @@ async function obter(id) {
     }
   }
 
+  const [foto] = await query('SELECT foto_arquivo FROM Usuarios WHERE idUsuario = ?', [id]);
+
   return {
     id: u.id,
     nome,
@@ -53,7 +55,8 @@ async function obter(id) {
     cidade,
     bio,
     entidadeId: entidadeId,
-    curriculo
+    curriculo,
+    fotoUrl: foto && foto.foto_arquivo ? '/media/fotos/' + foto.foto_arquivo : null
   };
 }
 

@@ -27,6 +27,12 @@ app.use('/api/v1/catalogo', catalogoRoutes);
 app.use('/api/v1/match', matchRoutes);
 app.get('/api/v1/status', (req, res) => res.json({ status: 'ELAB API rodando' }));
 
+// Imagens publicas (foto de perfil e banner de postagem). Apenas estas duas pastas:
+// uploads/curriculos NUNCA e servido como estatico.
+const OPCOES_MEDIA = { index: false, dotfiles: 'deny' };
+app.use('/media/fotos', express.static(path.join(__dirname, 'uploads', 'fotos'), OPCOES_MEDIA));
+app.use('/media/postagens', express.static(path.join(__dirname, 'uploads', 'postagens'), OPCOES_MEDIA));
+
 // Front servido pelo próprio Express: mesma origem, sem CORS. Com o CSP padrão do helmet,
 // o front não pode usar scripts/handlers inline (todo JS fica em frontend/js).
 app.use(express.static(path.join(__dirname, '..', 'frontend')));

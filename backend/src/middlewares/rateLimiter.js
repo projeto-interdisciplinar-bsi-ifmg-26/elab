@@ -9,4 +9,13 @@ const authLimiter = rateLimit({
   legacyHeaders: false
 });
 
-module.exports = { authLimiter };
+// Uploads reprocessam imagem (CPU): limita por IP para nao virar alvo de abuso.
+const uploadLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 min
+  max: Number(process.env.UPLOAD_RATE_LIMIT_MAX) || 30,
+  message: { sucesso: false, erro: 'Muitos envios de arquivo. Aguarde um pouco.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+module.exports = { authLimiter, uploadLimiter };

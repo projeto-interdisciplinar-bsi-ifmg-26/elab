@@ -15,7 +15,9 @@ async function listarRanqueados(usuarioId, oportunidadeId) {
     throw new ApiError(403, 'Esta oportunidade não pertence à sua empresa');
   }
 
-  const inscritos = await candidatosRepo.listarInscritos(oportunidadeId);
+  const inscritos = (await candidatosRepo.listarInscritos(oportunidadeId)).map(
+    ({ foto_arquivo, ...resto }) => ({ ...resto, fotoUrl: foto_arquivo ? '/media/fotos/' + foto_arquivo : null })
+  );
   const vaga = await matchRepo.buscarVaga(oportunidadeId);
 
   // Eventos, palestras e bolsas nao tem requisitos: devolve sem score, por data de inscricao.

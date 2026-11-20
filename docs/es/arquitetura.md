@@ -74,7 +74,7 @@ Detalhes em [../../backend/db/README.md](../../backend/db/README.md). Pontos de 
 
 - Currículo: PDF ou DOCX até 5 MB, tipo conferido pela assinatura real dos bytes, guardado em `uploads/curriculos` e servido **apenas** pela rota autenticada de download (nunca por `/media`).
 - Foto de perfil e banner: JPEG, PNG ou WebP até 2 MB, validados pela assinatura e reprocessados com **sharp** (rotação pelo EXIF, redimensionamento, WebP q80, metadados removidos). Arquivos recebem nome aleatório e ficam em `uploads/fotos` e `uploads/postagens`.
-- `server.js` expõe somente `/media/fotos` e `/media/postagens`, com `dotfiles: 'deny'`; trocar ou remover uma imagem apaga o arquivo antigo.
+- `server.js` expõe somente `/media/fotos` e `/media/postagens`, com `dotfiles: 'deny'`; trocar ou remover uma imagem apaga o arquivo antigo. A troca do ponteiro no banco acontece sob a trava da linha (`SELECT ... FOR UPDATE` em `withTransaction`), de modo que dois envios simultâneos elegem um arquivo só e o perdedor não fica órfão em `/media`; se o `UPDATE` falhar, o arquivo recém-gravado é apagado.
 
 ## 6. Frontend
 

@@ -65,10 +65,11 @@ Formato: **Como** (papel), **quero** (ação), **para** (benefício). Cada hist�
 - Requisitos: RF19.
 
 ### HU14. Usar foto de perfil
-**Como** colaboradora, **quero** enviar uma foto de perfil, **para** que meu rosto apareça no shell e na lista de candidatas da empresa.
+**Como** colaboradora ou empresa, **quero** enviar uma foto de perfil, **para** que minha imagem apareça no shell e, no caso da colaboradora, também na lista de candidatas.
 - Aceite: aceita JPEG, PNG ou WebP de até 2 MB; o servidor reprocessa e guarda em WebP, sem metadados.
-- Aceite: arquivo falso é rejeitado e a imagem antiga é apagada ao trocar.
+- Aceite: arquivo falso é rejeitado e a imagem antiga é apagada ao trocar; dois envios simultâneos deixam uma foto só.
 - Aceite: a foto aparece no cabeçalho e nas candidatas; removê-la volta ao avatar padrão.
+- Aceite: enviar e remover valem para qualquer papel autenticado.
 - Requisitos: RF34, RNF15, RNF16.
 
 ## Empresa

@@ -10,6 +10,7 @@ const oportunidadesRoutes = require('./src/routes/oportunidades.routes');
 const perfilRoutes = require('./src/routes/perfil.routes');
 const catalogoRoutes = require('./src/routes/catalogo.routes');
 const matchRoutes = require('./src/routes/match.routes');
+const adminRoutes = require('./src/routes/admin.routes');
 const tratarErros = require('./src/middlewares/error.middleware');
 const { port, nodeEnv } = require('./src/config/env');
 
@@ -25,6 +26,7 @@ app.use('/api/v1/oportunidades', oportunidadesRoutes);
 app.use('/api/v1/perfil', perfilRoutes);
 app.use('/api/v1/catalogo', catalogoRoutes);
 app.use('/api/v1/match', matchRoutes);
+app.use('/api/v1/admin', adminRoutes);
 app.get('/api/v1/status', (req, res) => res.json({ status: 'ELAB API rodando' }));
 
 // Imagens publicas (foto de perfil e banner de postagem). Apenas estas duas pastas:

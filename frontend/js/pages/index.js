@@ -9,5 +9,6 @@ import { confirmacao } from './confirmacao.js';
 import { perfil } from './perfil.js';
 import { editar } from './editar.js';
 import { empresa } from './empresa.js';
+import { admin } from './admin.js';
 
-export const paginas = { login, registro, feed, vagas, oportunidades, detalhe, inscricao, confirmacao, perfil, editar, empresa };
+export const paginas = { login, registro, feed, vagas, oportunidades, detalhe, inscricao, confirmacao, perfil, editar, empresa, admin };

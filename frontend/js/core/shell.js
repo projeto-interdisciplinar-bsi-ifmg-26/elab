@@ -16,6 +16,10 @@ export function shell() {
     itens.push(['painel-empresa.html', 'Publicações da empresa', 'empresa', '<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/>']);
   }
 
+  if (user && user.tipo === 'admin') {
+    itens.push(['admin.html', 'Administração', 'admin', '<path d="M12 3l8 4v6c0 4.5-3.4 7.6-8 8-4.6-.4-8-3.5-8-8V7z"/><path d="m9 12 2 2 4-4"/>']);
+  }
+
   const main = $('main');
   if (!main) return;
 

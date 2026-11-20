@@ -18,6 +18,8 @@ async function obter(id) {
   let bio = '';
   let entidadeId = null;
   let curriculo = null;
+  let statusAprovacao = null;
+  let motivoRejeicao = null;
 
   if (u.tipo_usuario === 'profissional') {
     const rows = await query(
@@ -36,11 +38,13 @@ async function obter(id) {
     }
   } else if (u.tipo_usuario === 'entidade_parceira') {
     const rows = await query(
-      'SELECT idEntidade_Parceira as id, nome_organizacao, descricao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?', [id]);
+      'SELECT idEntidade_Parceira as id, nome_organizacao, descricao, status_aprovacao, motivo_rejeicao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?', [id]);
     if (rows[0]) {
       nome = rows[0].nome_organizacao;
       bio = rows[0].descricao || '';
       entidadeId = rows[0].id;
+      statusAprovacao = rows[0].status_aprovacao || null;
+      motivoRejeicao = rows[0].motivo_rejeicao || null;
     }
   }
 
@@ -55,6 +59,8 @@ async function obter(id) {
     cidade,
     bio,
     entidadeId: entidadeId,
+    statusAprovacao,
+    motivoRejeicao,
     curriculo,
     fotoUrl: foto && foto.foto_arquivo ? '/media/fotos/' + foto.foto_arquivo : null
   };

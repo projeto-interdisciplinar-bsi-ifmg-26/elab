@@ -11,8 +11,23 @@ const CAMPOS_VAGA = ['areaId', 'nivel', 'modalidade', 'salario_min', 'salario_ma
 export async function empresa() {
   if (user.tipo !== 'empresa') return void (location.href = 'feed.html');
 
-  const f = $('main form');
+  const f = $('#form-publicacao') || $('main form');
   const blocoEl = $('#bloco-vaga');
+
+  // Enquanto o cadastro não for aprovado pelo admin, o envio fica bloqueado.
+  const status = user.statusAprovacao || 'pendente';
+  const aviso = $('#aviso-aprovacao');
+  if (status !== 'aprovada') {
+    const texto = status === 'rejeitada'
+      ? 'Cadastro rejeitado' + (user.motivoRejeicao ? ': ' + user.motivoRejeicao : '.') + ' Procure o administrador para corrigir.'
+      : 'Cadastro em análise. Você poderá publicar assim que o administrador aprovar a empresa.';
+    if (aviso) {
+      aviso.textContent = texto;
+      aviso.classList.add(status === 'rejeitada' ? 'rejeitada' : 'pendente');
+      aviso.hidden = false;
+    }
+    for (const campo of f.querySelectorAll('input, select, textarea, button')) campo.disabled = true;
+  }
 
   let bloco = null;
   try {

@@ -30,12 +30,16 @@ async function obter(id) {
 
 async function criar(empresaId, dados) {
   const empresa = await query(
-    'SELECT idEntidade_Parceira, nome_organizacao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
+    'SELECT idEntidade_Parceira, nome_organizacao, status_aprovacao FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
     [empresaId]
   );
 
   if (!empresa || empresa.length === 0) {
     throw new ApiError(400, 'Perfil de empresa não encontrado.');
+  }
+
+  if (empresa[0].status_aprovacao !== 'aprovada') {
+    throw new ApiError(403, 'Sua empresa ainda não foi aprovada');
   }
 
   const idEntidade = empresa[0].idEntidade_Parceira;

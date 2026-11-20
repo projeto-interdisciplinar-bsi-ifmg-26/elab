@@ -61,6 +61,6 @@ export function login() {
   enviar($('#form-login'), async d => {
     const r = await api('/auth/login', { method: 'POST', body: d, auth: false });
     localStorage.setItem('elab_token', r.token);
-    location.href = 'feed.html';
+    location.href = r.tipo === 'admin' ? 'admin.html' : 'feed.html';
   });
 }

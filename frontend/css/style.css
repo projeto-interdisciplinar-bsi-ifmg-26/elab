@@ -3250,3 +3250,11 @@ body[data-page="index"] .landing-footer p {
 .avatar-img img,
 .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block }
 .cand-avatar { width: 2.2rem; height: 2.2rem; flex: 0 0 auto; margin-left: 0; font-size: 0.95rem }
+
+/* Estado de aprovacao da empresa no painel de publicacoes. */
+.aviso-aprovacao { border-radius: var(--r); padding: 0.85rem 1.1rem; margin: 0 0 1.5rem; font-size: 0.92rem; font-weight: 600 }
+.aviso-aprovacao.pendente { background: #fff8e1; color: #8d6e00; border-left: 4px solid #b58900 }
+.aviso-aprovacao.rejeitada { background: #fde8ed; color: #b51242; border-left: 4px solid #b51242 }
+.status-badge.status-aprovada { background: var(--verde-bg); color: var(--verde) }
+.status-badge.status-pendente { background: #fff8e1; color: #8d6e00 }
+.status-badge.status-rejeitada { background: #fde8ed; color: #b51242 }

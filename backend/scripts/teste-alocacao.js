@@ -107,6 +107,24 @@ async function main() {
   conferir('total supera o da escolha gulosa (so X na V1)', aloc.total > sx1, { total: aloc.total, gulosa: sx1 });
   conferir('total e a soma dos scores dos pares', aloc.total === aloc.pares.reduce((a, p) => a + p.score, 0), aloc);
 
+  // ---- Empresa desativada nao aloca nem aparece no ranking ----
+  await query(
+    "UPDATE Entidades_Parceiras e JOIN Usuarios u ON u.idUsuario = e.Usuario_idUsuario SET e.status_aprovacao = 'rejeitada', e.motivo_rejeicao = 'desativada no teste' WHERE u.email = ?",
+    [E.e1]
+  );
+  r = await chamar('POST', '/match/alocacao', null, tokE1);
+  conferir('empresa desativada nao aloca nenhum par', r.status === 200 && dadosDe(r).pares.length === 0, r);
+  r = await chamar('GET', '/match/vagas', null, tokX);
+  conferir(
+    'vagas de empresa desativada somem do ranking',
+    r.status === 200 && !(dadosDe(r) || []).some((i) => i.vagaId === v1 || i.vagaId === v2),
+    r.status
+  );
+  await query(
+    "UPDATE Entidades_Parceiras e JOIN Usuarios u ON u.idUsuario = e.Usuario_idUsuario SET e.status_aprovacao = 'aprovada' WHERE u.email = ?",
+    [E.e1]
+  );
+
   r = await chamar('POST', '/match/alocacao', null, tokE2);
   conferir('empresa sem vagas recebe 200 e nenhuma alocacao', r.status === 200 && dadosDe(r).pares.length === 0, r);
   r = await chamar('POST', '/match/alocacao', null, tokX);

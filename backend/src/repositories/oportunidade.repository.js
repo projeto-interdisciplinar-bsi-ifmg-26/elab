@@ -18,7 +18,7 @@ async function anexarHabilidades(lista) {
 }
 
 
-async function listar({ tipo, status, empresaId, moderacao } = {}) {
+async function listar({ tipo, status, empresaId, moderacao, empresaAprovada } = {}) {
   let sql = 'SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira';
   const params = [];
   const filtro = (coluna, valor) => {
@@ -30,12 +30,14 @@ async function listar({ tipo, status, empresaId, moderacao } = {}) {
   if (status) filtro('status', status);
   if (empresaId) filtro('Entidade_Parceira_idEntidade_Parceira', empresaId);
   if (moderacao) filtro('status_moderacao', moderacao);
+  // Empresa desativada (pendente ou rejeitada) oculta automaticamente tudo o que publicou.
+  if (empresaAprovada) filtro('e.status_aprovacao', 'aprovada');
 
   return anexarHabilidades(await query(sql, params));
 }
 
 async function buscarPorId(id) {
-  const rows = await anexarHabilidades(await query('SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira WHERE o.idOportunidade = ?', [id]));
+  const rows = await anexarHabilidades(await query('SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome, e.status_aprovacao AS empresa_status_aprovacao FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira WHERE o.idOportunidade = ?', [id]));
   return rows[0] || null;
 }
 

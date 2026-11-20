@@ -33,6 +33,8 @@ async function listar(filtros = {}, usuario) {
     if (filtros.moderacao) params.moderacao = filtros.moderacao;
   } else {
     params.moderacao = 'aprovada';
+    // Empresa desativada (pendente ou rejeitada) nao expoe nada no catalogo.
+    params.empresaAprovada = true;
   }
 
   return listaComImagem(await oportunidadeRepository.listar(params));
@@ -47,16 +49,21 @@ async function listarPorEmpresa(usuarioId) {
 
 // Visibilidade da publicacao: aprovada para todos; qualquer estado para o admin
 // e para a empresa dona; para os demais, 404 (nao revela que existe).
+// Empresa desativada oculta tudo o que publicou: so admin e a dona enxergam.
 async function obter(id, usuario) {
   const o = await oportunidadeRepository.buscarPorId(id);
   if (!o) throw new ApiError(404, 'Oportunidade não encontrada');
-  if (o.status_moderacao === 'aprovada') return comImagem(o);
-  if (ehAdmin(usuario)) return comImagem(o);
+  const admin = ehAdmin(usuario);
+  const empresaDona =
+    usuario?.tipo === 'entidade_parceira' &&
+    (await idEmpresaDoUsuario(usuario.id)) === o.Entidade_Parceira_idEntidade_Parceira;
 
-  if (usuario?.tipo === 'entidade_parceira') {
-    const empresaId = await idEmpresaDoUsuario(usuario.id);
-    if (empresaId && empresaId === o.Entidade_Parceira_idEntidade_Parceira) return comImagem(o);
+  if (o.empresa_status_aprovacao !== 'aprovada' && !admin && !empresaDona) {
+    throw new ApiError(404, 'Oportunidade não encontrada');
   }
+
+  if (o.status_moderacao === 'aprovada') return comImagem(o);
+  if (admin || empresaDona) return comImagem(o);
 
   throw new ApiError(404, 'Oportunidade não encontrada');
 }
@@ -95,8 +102,8 @@ async function criar(empresaId, dados) {
 async function inscrever(usuarioId, oportunidadeId, mensagem) {
   const o = await oportunidadeRepository.buscarPorId(oportunidadeId);
 
-  // Publicacao pendente ou rejeitada nao existe para a colaboradora.
-  if (!o || o.status_moderacao !== 'aprovada') {
+  // Publicacao pendente/rejeitada ou de empresa desativada nao existe para a colaboradora.
+  if (!o || o.status_moderacao !== 'aprovada' || o.empresa_status_aprovacao !== 'aprovada') {
     throw new ApiError(404, 'Oportunidade não encontrada');
   }
 

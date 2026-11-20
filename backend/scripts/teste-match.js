@@ -172,6 +172,25 @@ async function main() {
   r = await chamar('GET', '/match/trilha/abc');
   conferir('trilha com id invalido retorna 400', r.status === 400, r);
 
+  // ---- Empresa desativada some do ranking e da trilha ----
+  await query(
+    "UPDATE Entidades_Parceiras SET status_aprovacao = 'rejeitada', motivo_rejeicao = 'desativada no teste' WHERE idEntidade_Parceira = ?",
+    [e.insertId]
+  );
+  r = await chamar('GET', '/match/vagas');
+  const rankOff = dadosDe(r) || [];
+  conferir(
+    'empresa desativada some do ranking',
+    r.status === 200 && ![idA, idB, idC].some((v) => rankOff.some((x) => x.vagaId === v)),
+    rankOff.map((x) => x.vagaId)
+  );
+  r = await chamar('GET', '/match/trilha/' + idA);
+  conferir('trilha de vaga de empresa desativada retorna 404', r.status === 404, r);
+  await query(
+    "UPDATE Entidades_Parceiras SET status_aprovacao = 'aprovada' WHERE idEntidade_Parceira = ?",
+    [e.insertId]
+  );
+
   r = await chamar('POST', '/auth/login', { email: emailEmp, senha: SENHA });
   const tokenEmp = dadosDe(r) && dadosDe(r).token;
   token = tokenEmp || '';

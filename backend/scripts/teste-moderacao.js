@@ -55,7 +55,7 @@ async function login(email) {
 
 async function main() {
   await usuario(emailAdmin, 'admin');
-  await empresa(emailDona, 'Empresa Dona Mod', String(stamp).padStart(14, '0').slice(-14), true);
+  const empresaDonaId = await empresa(emailDona, 'Empresa Dona Mod', String(stamp).padStart(14, '0').slice(-14), true);
   await empresa(emailOutra, 'Empresa Outra Mod', String(stamp + 3).padStart(14, '0').slice(-14), true);
 
   const tokAdmin = await login(emailAdmin);
@@ -127,6 +127,30 @@ async function main() {
   conferir('moderar publicacao inexistente retorna 404', r.status === 404, r);
   r = await chamar('PUT', '/admin/oportunidades/' + id + '/moderacao', { status: 'pendente' }, tokAdmin);
   conferir('status pendente nao e aceito na moderacao (400)', r.status === 400, r);
+
+  // ---- Empresa desativada oculta tudo o que ela publicou ----
+  r = await chamar('PUT', '/admin/empresas/' + empresaDonaId + '/status', { status: 'rejeitada', motivo: 'Desativada no teste' }, tokAdmin);
+  conferir('admin desativa a empresa dona', r.status === 200 && dadosDe(r).statusAprovacao === 'rejeitada', r);
+
+  r = await chamar('GET', '/oportunidades');
+  conferir('publicacao de empresa desativada some do feed', Array.isArray(dadosDe(r)) && !dadosDe(r).some((o) => o.id === id), r.status);
+  r = await chamar('GET', '/oportunidades/' + id);
+  conferir('visita anonima recebe 404 com a empresa desativada', r.status === 404, r);
+  r = await chamar('GET', '/oportunidades/' + id, null, tokColab);
+  conferir('colaboradora recebe 404 com a empresa desativada', r.status === 404, r);
+  r = await chamar('GET', '/oportunidades/' + id, null, tokOutra);
+  conferir('outra empresa recebe 404 com a empresa desativada', r.status === 404, r);
+  r = await chamar('GET', '/oportunidades/' + id, null, tokDona);
+  conferir('empresa dona continua vendo a propria publicacao', r.status === 200, r);
+  r = await chamar('GET', '/oportunidades/' + id, null, tokAdmin);
+  conferir('admin continua vendo a publicacao da empresa desativada', r.status === 200, r);
+  r = await chamar('POST', '/oportunidades/' + id + '/inscricoes', { mensagem: 'oi' }, tokColab);
+  conferir('inscricao em publicacao de empresa desativada retorna 404', r.status === 404, r);
+
+  r = await chamar('PUT', '/admin/empresas/' + empresaDonaId + '/status', { status: 'aprovada' }, tokAdmin);
+  conferir('admin reativa a empresa dona', r.status === 200 && dadosDe(r).statusAprovacao === 'aprovada', r);
+  r = await chamar('GET', '/oportunidades');
+  conferir('publicacao volta ao feed quando a empresa e reativada', (dadosDe(r) || []).some((o) => o.id === id), r.status);
 }
 
 main()

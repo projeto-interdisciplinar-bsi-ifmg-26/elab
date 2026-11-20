@@ -9,7 +9,8 @@
     "migrate": "node db/migrate.js",
     "seed": "node db/seed.js",
     "test": "node scripts/teste-grafo.js && node scripts/teste-perfil.js && node scripts/teste-match.js && node scripts/teste-candidatos.js && node scripts/teste-vaga.js && node scripts/teste-alocacao.js",
-    "seed:demo": "node db/seed-demo.js --confirmar"
+    "seed:demo": "node db/seed-demo.js --confirmar",
+    "admin:criar": "node db/criar-admin.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

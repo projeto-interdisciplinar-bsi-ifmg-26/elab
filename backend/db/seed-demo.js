@@ -4,6 +4,10 @@
 const bcrypt = require('bcryptjs');
 const dados = require('./seeds/demo.json');
 const { withTransaction, query, closePool } = require('./pool');
+const { criarAdmin } = require('./criar-admin');
+
+const ADMIN_EMAIL = 'admin@elab.com';
+const ADMIN_SENHA = 'demo12345';
 
 if (!process.argv.includes('--confirmar')) {
   console.log('Este script APAGA usuarios, vagas e inscricoes. Rode: npm run seed:demo');
@@ -262,6 +266,8 @@ async function main() {
       for (const v of embaralhar(vagas).slice(0, 5)) await inscrever(v.id, c, v.diasPost);
     }
   });
+
+  await criarAdmin({ email: ADMIN_EMAIL, senha: ADMIN_SENHA });
 
   const cont = async (sql) => Number((await query(sql))[0].n);
   console.log('Usuarios:', await cont('SELECT COUNT(*) AS n FROM Usuarios'));

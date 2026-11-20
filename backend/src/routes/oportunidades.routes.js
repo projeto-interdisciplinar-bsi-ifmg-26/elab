@@ -9,6 +9,7 @@ const { receberImagem } = require('../middlewares/uploadImagem');
 const { uploadLimiter } = require('../middlewares/rateLimiter');
 
 const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt();
+const profissionalValido = param('profissionalId').isInt({ min: 1 }).withMessage('ID da candidata inválido').toInt();
 
 // Publico, mas o papel do visitante muda o que aparece (admin ve a fila inteira).
 router.get('/', autenticarOpcional, oportunidadesController.listar);
@@ -40,6 +41,9 @@ router.post('/:id/inscricoes', autenticar, permitir('colaboradora'), [
 ], validar, oportunidadesController.inscrever);
 
 router.get('/:id/candidatos', autenticar, permitir('empresa'), [idValido], validar, oportunidadesController.listarCandidatos);
+
+// Curriculo de uma candidata inscrita. Só a empresa dona da publicacao e so se ela se inscreveu.
+router.get('/:id/candidatos/:profissionalId/curriculo', autenticar, permitir('empresa'), [idValido, profissionalValido], validar, oportunidadesController.baixarCurriculoCandidata);
 
 // Banner da publicacao. So a empresa dona altera; trocar uma ja aprovada reabre a moderacao.
 router.put('/:id/imagem', autenticar, permitir('empresa'), uploadLimiter, [idValido], validar, receberImagem, oportunidadesController.enviarImagem);

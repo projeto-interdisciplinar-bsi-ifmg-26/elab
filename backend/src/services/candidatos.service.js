@@ -2,10 +2,11 @@ const ApiError = require('../utils/ApiError');
 const { obterContexto } = require('./grafo.service');
 const oportunidadeRepo = require('../repositories/oportunidade.repository');
 const candidatosRepo = require('../repositories/candidatos.repository');
+const curriculoService = require('./curriculo.service');
 const matchRepo = require('../repositories/match.repository');
 
-// Inscritos numa oportunidade da empresa logada, ordenados por score de match (quando for vaga).
-async function listarRanqueados(usuarioId, oportunidadeId) {
+// Garante que a oportunidade e da empresa logada e devolve o registro.
+async function oportunidadeDaEmpresa(usuarioId, oportunidadeId) {
   const empresaId = await candidatosRepo.idEmpresaPorUsuario(usuarioId);
   if (!empresaId) throw new ApiError(403, 'Acesso não permitido para este perfil');
 
@@ -14,6 +15,12 @@ async function listarRanqueados(usuarioId, oportunidadeId) {
   if (oportunidade.Entidade_Parceira_idEntidade_Parceira !== empresaId) {
     throw new ApiError(403, 'Esta oportunidade não pertence à sua empresa');
   }
+  return oportunidade;
+}
+
+// Inscritos numa oportunidade da empresa logada, ordenados por score de match (quando for vaga).
+async function listarRanqueados(usuarioId, oportunidadeId) {
+  await oportunidadeDaEmpresa(usuarioId, oportunidadeId);
 
   const inscritos = (await candidatosRepo.listarInscritos(oportunidadeId)).map(
     ({ foto_arquivo, ...resto }) => ({ ...resto, fotoUrl: foto_arquivo ? '/media/fotos/' + foto_arquivo : null })
@@ -43,4 +50,14 @@ async function listarRanqueados(usuarioId, oportunidadeId) {
   return pontuados.sort((a, b) => b.score - a.score);
 }
 
-module.exports = { listarRanqueados };
+// Curriculo de uma candidata inscrita numa oportunidade da empresa logada.
+// So libera para quem aplicou naquela oportunidade e so para a empresa dona dela.
+async function curriculoDaCandidata(usuarioId, oportunidadeId, profissionalId) {
+  await oportunidadeDaEmpresa(usuarioId, oportunidadeId);
+  if (!(await candidatosRepo.inscritaNaOportunidade(oportunidadeId, profissionalId))) {
+    throw new ApiError(404, 'Candidatura não encontrada');
+  }
+  return curriculoService.caminhoPorProfissional(profissionalId);
+}
+
+module.exports = { listarRanqueados, curriculoDaCandidata };

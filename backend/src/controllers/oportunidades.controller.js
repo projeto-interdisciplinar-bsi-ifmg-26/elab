@@ -34,6 +34,13 @@ const listarCandidatos = asyncHandler(async (req, res) => {
   sucesso(res, 200, candidatos);
 });
 
+const baixarCurriculoCandidata = asyncHandler(async (req, res) => {
+  const { caminho, nome } = await candidatosService.curriculoDaCandidata(
+    req.usuario.id, req.params.id, req.params.profissionalId
+  );
+  res.download(caminho, nome);
+});
+
 const listarMinhasInscricoes = asyncHandler(async (req, res) => {
   sucesso(res, 200, await inscricoesService.listarMinhas(req.usuario.id));
 });
@@ -54,6 +61,7 @@ module.exports = {
   criar,
   inscrever,
   listarCandidatos,
+  baixarCurriculoCandidata,
   listarMinhasInscricoes,
   enviarImagem,
   excluirImagem

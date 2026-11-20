@@ -20,9 +20,18 @@ const barras = comp => Object.entries(comp || {}).map(([k, v]) =>
   '<b>' + Number(v) + '%</b></div>'
 ).join('');
 
+// Botao de download do curriculo; so aparece quando a candidata anexou um arquivo.
+// O clique e tratado por delegacao na lista (pages/detalhe.js).
+const botaoCurriculo = c =>
+  c.curriculoNome
+    ? '<button class="btn sm ghost" type="button" data-curriculo="' + esc(c.profissionalId) + '" ' +
+      'title="' + esc('Baixar ' + c.curriculoNome) + '">Baixar currículo</button>'
+    : '';
+
 const candidata = c => {
   const faltantes = (c.faltantes || []).map(f => '<span class="chip">' + esc(f.nome || 'Habilidade') + '</span>').join('');
   const elim = (c.eliminatorias || []).map(e => esc(e.nome || 'Habilidade')).join(', ');
+  const botao = botaoCurriculo(c);
   return '<article class="cand">' +
     '<header><span class="avatar cand-avatar">' + avatarHtml(c.nome, c.fotoUrl) + '</span><strong>' + esc(c.nome) + '</strong> ' + selo(c.score) + '</header>' +
     '<p class="mut">' + esc(c.email) + (dataInscricao(c.data_inscricao) ? ' | inscrita em ' + esc(dataInscricao(c.data_inscricao)) : '') + '</p>' +
@@ -30,6 +39,7 @@ const candidata = c => {
     (elim ? '<p class="erro" role="note">Não tem requisito obrigatório: ' + elim + '</p>' : '') +
     barras(c.componentes) +
     (faltantes ? '<p class="mut">Habilidades que faltam:</p><div class="chips">' + faltantes + '</div>' : '') +
+    (botao ? '<div class="cand-acoes">' + botao + '</div>' : '') +
     '</article>';
 };
 

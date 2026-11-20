@@ -10,9 +10,11 @@ async function idEmpresaPorUsuario(usuarioId) {
 }
 
 // Inscritos numa oportunidade, com o id da profissional (necessario para pontuar no motor).
+// curriculo_nome_original diz se a empresa pode oferecer o download sem outra consulta.
 async function listarInscritos(oportunidadeId) {
   return query(
-    'SELECT p.idProfissionais AS profissionalId, p.nome, u.email, u.foto_arquivo, c.mensagem, c.data_aplicacao AS data_inscricao ' +
+    'SELECT p.idProfissionais AS profissionalId, p.nome, u.email, u.foto_arquivo, ' +
+      'p.curriculo_nome_original AS curriculoNome, c.mensagem, c.data_aplicacao AS data_inscricao ' +
       'FROM Cadastros_Oportunidades c ' +
       'JOIN Profissionais p ON c.Profissionais_idProfissionais = p.idProfissionais ' +
       'JOIN Usuarios u ON p.Usuario_idUsuario = u.idUsuario ' +
@@ -21,4 +23,14 @@ async function listarInscritos(oportunidadeId) {
   );
 }
 
-module.exports = { idEmpresaPorUsuario, listarInscritos };
+// Confere se a profissional se inscreveu nesta oportunidade (evita expor o curriculo
+// de alguem que nao aplicou, bastando adivinhar o id).
+async function inscritaNaOportunidade(oportunidadeId, profissionalId) {
+  const rows = await query(
+    'SELECT 1 AS existe FROM Cadastros_Oportunidades WHERE Oportunidade_idOportunidade = ? AND Profissionais_idProfissionais = ? LIMIT 1',
+    [oportunidadeId, profissionalId]
+  );
+  return rows.length > 0;
+}
+
+module.exports = { idEmpresaPorUsuario, listarInscritos, inscritaNaOportunidade };

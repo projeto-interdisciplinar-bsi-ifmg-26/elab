@@ -48,10 +48,16 @@ async function enviar(usuarioId, arquivo) {
   return { nome };
 }
 
-async function caminho(usuarioId) {
-  const atual = await repo.atual(await obterId(usuarioId));
+// Resolve o arquivo pelo id da profissional. Usado pela dona do perfil e pela
+// empresa que recebeu a inscricao (que ja conferiu a permissao antes de chamar).
+async function caminhoPorProfissional(profId) {
+  const atual = await repo.atual(profId);
   if (!atual) throw new ApiError(404, 'Nenhum currículo anexado');
   return { caminho: path.join(DIR, path.basename(atual.arquivo)), nome: atual.nome };
+}
+
+async function caminho(usuarioId) {
+  return caminhoPorProfissional(await obterId(usuarioId));
 }
 
 async function excluir(usuarioId) {
@@ -62,4 +68,4 @@ async function excluir(usuarioId) {
   await apagar(atual.arquivo);
 }
 
-module.exports = { enviar, caminho, excluir };
+module.exports = { enviar, caminho, caminhoPorProfissional, excluir };

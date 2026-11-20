@@ -1,6 +1,6 @@
 import { $, esc } from '../core/dom.js';
 import { params, user } from '../core/state.js';
-import { api } from '../core/api.js';
+import { api, baixar } from '../core/api.js';
 import { carregarMatch } from "../core/match.js";
 import { htmlCandidatas } from '../core/candidatas.js';
 import { montarLista } from '../core/lista.js';
@@ -18,7 +18,28 @@ const carregarCandidaturas = async (id) => {
   }
 };
 
-const montarCandidaturas = (el, candidaturas) => {
+// Download do curriculo por delegacao: os cards sao redesenhados a cada filtro/pagina.
+const ligarCurriculos = (el, oportunidadeId, candidaturas) => {
+  el.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-curriculo]');
+    if (!btn || btn.disabled) return;
+    const profissionalId = Number(btn.dataset.curriculo);
+    const cand = candidaturas.find(c => c.profissionalId === profissionalId);
+    btn.disabled = true;
+    try {
+      await baixar(
+        '/oportunidades/' + Number(oportunidadeId) + '/candidatos/' + profissionalId + '/curriculo',
+        (cand && cand.curriculoNome) || 'curriculo'
+      );
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+};
+
+const montarCandidaturas = (el, oportunidadeId, candidaturas) => {
   const comNota = candidaturas.some(temNota);
   const filtros = [];
   if (comNota) {
@@ -53,6 +74,7 @@ const montarCandidaturas = (el, candidaturas) => {
     vazio: 'Nenhuma candidata encontrada com esses filtros.',
     filtros
   });
+  ligarCurriculos(el, oportunidadeId, candidaturas);
 };
 
 export async function detalhe() {
@@ -122,5 +144,5 @@ export async function detalhe() {
       <a class="btn ghost" href="feed.html">Voltar ao feed</a>
     </div>`;
 
-  if (candidaturas) montarCandidaturas($('#lista-candidaturas'), candidaturas);
+  if (candidaturas) montarCandidaturas($('#lista-candidaturas'), id, candidaturas);
 }

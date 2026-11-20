@@ -22,11 +22,9 @@ async function anexarRequisitos(vagas) {
       obrigatoria: Boolean(r.obrigatoria)
     });
   });
+  // O spread preserva status_moderacao: buscarVagaAprovada depende dele.
   return vagas.map((v) => ({
-    id: v.id,
-    areaId: v.areaId,
-    nivel: v.nivel,
-    modalidade: v.modalidade,
+    ...v,
     salario_max: v.salario_max == null ? null : Number(v.salario_max),
     requisitos: porVaga.get(v.id)
   }));

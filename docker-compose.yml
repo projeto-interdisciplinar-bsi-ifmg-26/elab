@@ -1,0 +1,84 @@
+# ELAB — stack completa em Docker (back + front + banco).
+#
+#   cp .env.docker.example .env     # ajuste JWT_SECRET se quiser
+#   docker compose up --build       # app em http://localhost:3000
+#
+# O app roda as migrations e o seed do catálogo no boot (idempotentes).
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      # Prefixo ELAB_ de proposito: se o shell tiver DB_USER/DB_PASSWORD
+      # exportados, eles venceriam o .env e o app tentaria logar com outra
+      # conta (foi o que causou ER_ACCESS_DENIED_ERROR em loop).
+      MARIADB_DATABASE: ${ELAB_DB_NAME:-elab}
+      MARIADB_USER: ${ELAB_DB_USER:-elab}
+      MARIADB_PASSWORD: ${ELAB_DB_PASSWORD:-elab_dev}
+      MARIADB_ROOT_PASSWORD: ${ELAB_DB_ROOT_PASSWORD:-elab_root_dev}
+      # Datas em UTC, alinhado com o driver (timezone: 'Z').
+      TZ: UTC
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_dados:/var/lib/mysql
+    # Publicado só no loopback da máquina para acesso por ferramentas gráficas
+    # (DBeaver etc.). Porta 3307 no host para não conflitar com um MySQL local;
+    # para expor em rede, remova o "127.0.0.1:" com consciência do risco.
+    ports:
+      - "127.0.0.1:3307:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Fixo: a imagem e de execucao. Se o shell exportar NODE_ENV=development,
+      # os logs mudariam de formato (morgan 'dev' em vez de 'combined').
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET no .env (veja .env.docker.example)}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-2h}
+      # Credenciais lidas de ELAB_DB_* (não de DB_*): o app e o db abaixo usam a
+      # mesma fonte. Se o shell tiver DB_USER/DB_PASSWORD exportados, eles não
+      # vencem o .env; sem isso o app e o banco divergiam e o entrypoint ficava
+      # em ER_ACCESS_DENIED_ERROR em loop.
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${ELAB_DB_USER:-elab}
+      DB_PASSWORD: ${ELAB_DB_PASSWORD:-elab_dev}
+      DB_NAME: ${ELAB_DB_NAME:-elab}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      RUN_SEED: ${RUN_SEED:-true}
+      DB_WAIT_TIMEOUT_MS: ${DB_WAIT_TIMEOUT_MS:-90000}
+      # A suíte de testes faz muitos logins do mesmo IP; 200 comporta uma rodada
+      # inteira. Em produção, reduza para o padrão do app (20).
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-200}
+      UPLOAD_RATE_LIMIT_MAX: ${UPLOAD_RATE_LIMIT_MAX:-100}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - uploads:/app/backend/uploads
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/v1/status').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+volumes:
+  db_dados:
+  uploads:

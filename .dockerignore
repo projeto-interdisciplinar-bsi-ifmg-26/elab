@@ -1,0 +1,8 @@
+.git
+.gitignore
+.auto
+docs
+**/node_modules
+**/*.log
+backend/.env
+backend/uploads

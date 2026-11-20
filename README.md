@@ -30,6 +30,7 @@ O ELAB fomenta a equidade de gênero na área de tecnologia. A colaboradora mont
 ### 🏢 Para empresas
 - **Painel de publicações:** criação de vaga, evento, palestra ou bolsa. Vagas aceitam área, nível, modalidade, faixa salarial e requisitos com importância (1 a 5) e obrigatoriedade. A lista das publicações tem busca, filtro por tipo e paginação. Cada publicação pode receber um **banner** (JPEG, PNG ou WebP até 2 MB), exibido no feed e no detalhe.
 - **Candidaturas dentro da vaga:** a página de detalhe mostra as inscritas ordenadas por score, com as habilidades que faltam e o aviso de requisito obrigatório ausente, com busca e filtros por compatibilidade e por requisito obrigatório. Só a empresa dona da vaga enxerga.
+- **Currículo da candidata:** a empresa dona da vaga baixa o currículo (PDF/DOCX) de cada inscrita pelo botão no card, sem o arquivo ficar exposto em URL pública. A rota confere que a oportunidade é da empresa **e** que a colaboradora realmente se inscreveu nela.
 - **Alocação ótima:** distribui as candidatas entre as vagas da empresa maximizando o score total.
 - **Moderação:** publicações nascem pendentes e só entram no feed depois de aprovadas; a empresa dona acompanha o estado e o motivo da rejeição.
 
@@ -83,6 +84,132 @@ Colunas de moderação e mídia: `Entidades_Parceiras.status_aprovacao`/`motivo_
 ---
 
 ## 🚀 Como executar
+
+### 🐳 Tudo em Docker (recomendado)
+
+Um comando sobe banco, backend e frontend. O container da aplicação espera o MariaDB, aplica as migrations, carrega o catálogo e sobe o Express — front e API na mesma porta.
+
+```bash
+cp .env.docker.example .env        # ajuste o JWT_SECRET (openssl rand -hex 32)
+docker compose up --build          # http://localhost:3000
+```
+
+- Banco: MariaDB 10.11 (mesma versão usada no desenvolvimento), com volume `db_dados`.
+- As credenciais do banco usam o prefixo `ELAB_` (`ELAB_DB_USER`, `ELAB_DB_PASSWORD`...) justamente para que um `DB_USER`/`DB_PASSWORD` exportado no shell não sobrescreva o `.env` e faça o app logar em outra conta. `NODE_ENV` é fixo em `production` pelo mesmo motivo (log no formato `combined`).
+- **Renomeie as variáveis com `ELAB_` no seu `.env`:** um `.env` antigo com `DB_USER`/`DB_PASSWORD` não é lido pelo compose; o app cai no default `elab`. Use o `.env.docker.example` como base.
+- Uploads (`fotos`, `postagens`, `curriculos`): volume `uploads`, preservados entre recriações.
+- Migrations e seed rodam no boot e são idempotentes; reiniciar não duplica nada. Desligue com `RUN_MIGRATIONS=false` / `RUN_SEED=false`.
+- **Perfis de demonstração:** o boot do container cria apenas o schema e o catálogo — **não** cria usuárias. Para poder entrar com `admin@elab.com`, `empresa1..8@elab.com` ou `colab1..100@elab.com` (senha `demo12345`), rode uma vez:
+  ```bash
+  docker compose exec app npm run seed:demo
+  ```
+  Sem isso a tabela `Usuarios` fica vazia e o login falha (o app em si sobe normalmente). É **destrutivo**: apaga todas as usuárias, exceto a administradora.
+- Parar: `docker compose stop`. Apagar também os dados: `docker compose down -v` (**destrutivo**).
+
+#### Comandos do dia a dia
+
+```bash
+docker compose up -d --build       # sobe (ou recompila) em segundo plano
+docker compose ps                  # estado e health de app e db
+docker compose logs -f app         # acompanha os logs do app
+docker compose restart app         # reinicia só o app (migrations/seed re-rodam)
+docker compose stop                # desliga mantendo os dados
+docker compose down                # remove os containers (volumes preservados)
+docker compose down -v             # remove containers + dados (DESTRUTIVO)
+```
+
+**Se mudar o Dockerfile ou `package.json`:** `docker compose up -d --build` recompila a imagem. Se mudar só o `docker-compose.yml` ou o `.env`, `docker compose up -d` já recria os containers afetados.
+
+**Se mudar `ELAB_DB_*` depois do primeiro boot:** o MariaDB criou a conta no primeiro boot; o volume guarda a credencial antiga. Use `docker compose down -v` para recriar o banco do zero (apaga os dados).
+
+#### Como ler os logs
+
+O entrypoint imprime cada etapa com o prefixo `[entrypoint]`:
+
+```text
+[entrypoint] aguardando banco (ECONNREFUSED)...    # esperando o MariaDB subir
+[entrypoint] banco pronto em db:3306/elab
+[entrypoint] aplicando migrations
+Nenhuma migration pendente. Banco atualizado.      # ou "Aplicando: 0XX_..."
+[entrypoint] carregando catalogo (seed idempotente)
+  Areas_Atuacao: 33 registro(s) sincronizado(s)
+Servidor rodando em http://localhost:3000
+```
+
+- `aguardando banco (...)` por alguns segundos é normal no primeiro boot.
+- `ER_ACCESS_DENIED_ERROR` repetido indica credencial divergente entre app e banco — confira se o `.env` usa `ELAB_DB_*` e recrie o banco se mudou as credenciais (`down -v`).
+- Uma requisição por linha (`GET /api/v1/... 200`) vem do morgan; em produção o formato é o `combined` do Apache.
+
+Logs de um serviço só, com timestamp, ou desde um horário:
+
+```bash
+docker compose logs -f --timestamps app
+docker compose logs --since 10m db
+docker compose logs --tail=100 app
+```
+
+#### Rodar os testes
+
+Com a stack no ar, rode a suíte **dentro do container do app**:
+
+```bash
+docker compose exec -e BASE_URL=http://127.0.0.1:3000/api/v1 app npm test
+```
+
+A suíte cria dados temporários e remove tudo no final. Ao terminar, cada uma das 10 suítes imprime `TUDO OK`, e o processo sai com código 0. Para conferir o código de saída e guardar o log:
+
+```bash
+docker compose exec -T -e BASE_URL=http://127.0.0.1:3000/api/v1 app npm test > /tmp/testes.log 2>&1; echo "exit=$?"
+grep -c 'TUDO OK' /tmp/testes.log    # deve ser 10
+```
+
+O compose sobe `AUTH_RATE_LIMIT_MAX=200` porque a suíte faz ~35 logins/registros; em ambiente público, reduza para ~20 (padrão do app). O limitador é em memória com janela de 15 min, então rodadas seguidas muito próximas podem esbarrar em `429` — espere a janela ou reinicie o app (`docker compose restart app`) entre rodadas.
+
+#### Inspecionar o banco
+
+```bash
+# As variáveis vêm do próprio container, então funciona mesmo se você trocou
+# ELAB_DB_USER / ELAB_DB_PASSWORD / ELAB_DB_NAME no .env.
+docker compose exec -T db sh -c 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE" -e "SHOW TABLES;"'
+docker compose exec -T db sh -c 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE" -e "SELECT COUNT(*) FROM Habilidades;"'
+```
+
+Sessão interativa (para explorar à mão):
+
+```bash
+docker compose exec db sh -c 'exec mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE"'
+```
+
+Se você manteve as credenciais padrão, o atalho abaixo também serve:
+
+```bash
+docker compose exec db mariadb -uelab -pelab_dev elab -e 'SHOW TABLES;'
+```
+
+**Cliente gráfico (DBeaver, TablePlus...)** — o compose publica o MariaDB em `127.0.0.1:3307` (só no loopback; a porta 3306 do host fica livre para um MySQL local). Configure a conexão com:
+
+| Campo | Valor |
+|---|---|
+| Host | `127.0.0.1` |
+| Porta | `3307` |
+| Banco | `elab` |
+| Usuário | `elab` |
+| Senha | `elab_dev` |
+
+O usuário `root` (`elab_root_dev`) também serve, mas o `elab` basta para ler e escrever nas tabelas do app. Se você trocou `ELAB_DB_USER`/`ELAB_DB_PASSWORD` no `.env`, use esses valores. Para publicar em rede (outra máquina), troque `127.0.0.1:3307:3306` por `3307:3306` no `docker-compose.yml` — só faça isso ciente de que o banco fica acessível a quem alcançar a porta.
+
+#### Diagnóstico rápido
+
+| Sintoma | Causa provável / o que fazer |
+|---|---|
+| `app` unhealthy, logs com `aguardando banco` em loop | banco ainda subindo (aguarde) ou credencial divergente (veja `ER_ACCESS_DENIED_ERROR`) |
+| `429` nos testes | rate limit por IP estourou; `docker compose restart app` ou espere 15 min |
+| `port is already allocated` | outra coisa usa a porta 3000; mude `APP_PORT` no `.env` |
+| `JWT_SECRET` ausente | copie `.env.docker.example` para `.env` e preencha |
+| uploads somem após recriar | confira o volume `uploads`; `down -v` apaga tudo |
+| app loga como `root` / `Access denied` | há `DB_USER`/`DB_PASSWORD` antigos no shell ou no `.env`; use as chaves `ELAB_DB_*` |
+| mudou `ELAB_DB_*` e o banco não aceita | o volume guarda a conta do primeiro boot; `docker compose down -v` recria |
+| build falha em `npm ci` | `package-lock.json` divergente do `package.json`; rode `npm install` em `backend/` e commite o lock |
 
 ### ⚡ Rodar tudo localmente (banco + back + front)
 
@@ -174,10 +301,13 @@ ADMIN_EMAIL=admin@elab.com ADMIN_SENHA='sua-senha' npm run admin:criar
 Não há passo separado nem build: o próprio Express serve a pasta `frontend/` (via `express.static` no `server.js`). Com o `npm run dev` do backend rodando, o front já está no ar — abra `http://localhost:3000`.
 
 ### 🧪 Testes
-Com o servidor rodando:
+Com o servidor rodando, dentro de `backend/`:
 ```bash
 npm test
 ```
+
+Em Docker, o comando está na seção [Tudo em Docker](#-tudo-em-docker-recomendado) (role os testes dentro do container do app).
+
 Roda dez suítes: grafo (algoritmos e motor, com grafos pequenos de resposta conhecida), perfil, match, candidatos, criação de vaga, alocação, admin, moderação, imagem e foto de perfil. As suítes de API criam dados temporários e removem tudo no final.
 
 ---
@@ -194,6 +324,7 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 | | `GET /oportunidades/minhas-inscricoes` | colaboradora (histórico, com nota de compatibilidade nas vagas) |
 | | `POST /oportunidades/:id/inscricoes` | colaboradora |
 | | `GET /oportunidades/minhas`, `POST /oportunidades`, `GET /oportunidades/:id/candidatos` | empresa (candidatos só da própria vaga) |
+| | `GET /oportunidades/:id/candidatos/:profissionalId/curriculo` | empresa (só da própria vaga e só se a colaboradora se inscreveu) |
 | | `PUT/DELETE /oportunidades/:id/imagem` | empresa (dona da publicação) |
 | Perfil | `GET/PUT /perfil`, `GET /perfil/completo` | autenticado / colaboradora |
 | | `PUT /perfil/dados`, `/preferencias`, `/areas`, `/habilidades` | colaboradora |
@@ -212,6 +343,9 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 
 ```
 .
+├── Dockerfile            # imagem do app (back + front no mesmo Express)
+├── docker-compose.yml    # app + MariaDB, volumes de banco e uploads
+├── .env.docker.example   # variáveis do compose (copie para .env)
 ├── frontend/             # HTML, CSS e JS (ES Modules)
 │   └── js/
 │       ├── core/         # dom, api, state, forms, render, lista, match, candidatas, avatar, curriculo, vagaForm...
@@ -235,6 +369,7 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
     │   ├── criar-admin.js # cria a conta admin (npm run admin:criar)
     │   └── seeds/        # configuração e JSONs do catálogo e da demonstração
     ├── uploads/          # fotos, banners e currículos (não versionado)
+    ├── docker/           # entrypoint do container (espera banco, migrate, seed)
     └── scripts/          # suítes de teste (10 no npm test)
 ```
 

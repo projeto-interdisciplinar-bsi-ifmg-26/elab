@@ -65,6 +65,15 @@ export async function empresa() {
     });
   };
 
+  // ---- Banner opcional da publicação recém-criada ----
+  const blocoImagem = $('#bloco-imagem');
+  let publicacaoParaImagem = null;
+  const limparBlocoImagem = () => {
+    $('#imagem-publicacao').value = '';
+    $('#imagem-erro').textContent = '';
+    $('#imagem-ok').textContent = '';
+  };
+
   enviar(f, async d => {
     const body = {};
     for (const [k, v] of Object.entries(d)) {
@@ -76,9 +85,10 @@ export async function empresa() {
       for (const k of CAMPOS_VAGA) delete body[k];
     }
 
-    await api('/oportunidades', { method: 'POST', body });
+    const nova = await api('/oportunidades', { method: 'POST', body });
 
     f.reset();
+    limparBlocoImagem();
     if (bloco) bloco.limpar();
     ajustarBloco();
 
@@ -89,7 +99,42 @@ export async function empresa() {
     }
     $('.ok', f).textContent = 'Publicação criada. Ela aparece no feed após a aprovação do administrador.';
     setTimeout(() => { $('.ok', f).textContent = ''; }, 4000);
+
+    // A imagem é anexada depois: a rota precisa do id da publicação recém-criada.
+    publicacaoParaImagem = nova && nova.id ? nova.id : null;
+    blocoImagem.hidden = !publicacaoParaImagem;
+
     await carregar();
+  });
+
+  $('#btn-enviar-imagem').addEventListener('click', async ev => {
+    const botao = ev.currentTarget;
+    const arquivo = $('#imagem-publicacao').files[0];
+    const erroEl = $('#imagem-erro');
+    const okEl = $('#imagem-ok');
+    erroEl.textContent = '';
+    okEl.textContent = '';
+
+    if (!publicacaoParaImagem) return;
+    if (!arquivo) {
+      erroEl.textContent = 'Escolha uma imagem.';
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('imagem', arquivo);
+
+    botao.disabled = true;
+    try {
+      await api('/oportunidades/' + publicacaoParaImagem + '/imagem', { method: 'PUT', body: fd });
+      okEl.textContent = 'Imagem enviada. Ela aparece após a aprovação do administrador.';
+      $('#imagem-publicacao').value = '';
+      await carregar();
+    } catch (x) {
+      erroEl.textContent = x instanceof Error ? x.message : 'Não foi possível enviar a imagem.';
+    } finally {
+      botao.disabled = false;
+    }
   });
 
   await carregar();

@@ -41,7 +41,7 @@
           <label>
             Tipo de oportunidade
             <select name="tipo" required>
-              <option value="vaga">Vaga ou estágio</option>
+              <option value="vaga" selected>Vaga ou estágio</option>
               <option value="evento">Evento ou oficina</option>
               <option value="palestra">Palestra</option>
               <option value="bolsa">Bolsa de estudo</option>
@@ -71,6 +71,18 @@
 
           <button class="btn block" type="submit">Publicar</button>
         </form>
+
+        <div id="bloco-imagem" hidden>
+          <h3 style="margin-top:1.25rem;">Imagem da publicação</h3>
+          <p class="mut" style="font-size:0.88rem;">Anexe um banner (JPEG, PNG ou WebP, até 2 MB) à publicação que você acabou de criar.</p>
+          <label>
+            Imagem
+            <input type="file" id="imagem-publicacao" accept="image/jpeg,image/png,image/webp">
+          </label>
+          <p class="erro" role="alert" id="imagem-erro"></p>
+          <p class="ok" role="status" id="imagem-ok"></p>
+          <button class="btn block secundario" type="button" id="btn-enviar-imagem">Enviar imagem</button>
+        </div>
       </aside>
     </div>
   </main>

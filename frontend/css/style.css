@@ -3258,3 +3258,12 @@ body[data-page="index"] .landing-footer p {
 .status-badge.status-aprovada { background: var(--verde-bg); color: var(--verde) }
 .status-badge.status-pendente { background: #fff8e1; color: #8d6e00 }
 .status-badge.status-rejeitada { background: #fde8ed; color: #b51242 }
+
+/* Banner de publicacao: card horizontal com a imagem a esquerda, detalhe larga. */
+.card-imagem { flex: 0 0 8.5rem; width: 8.5rem; height: 6rem; object-fit: cover; border-radius: calc(var(--r) - 0.4rem); display: block }
+.banner-publicacao { display: block; width: 100%; max-height: 22rem; object-fit: contain; border-radius: var(--r); margin: 0 0 1.5rem; background: var(--bg-suave) }
+.admin-imagem { flex: 0 0 5rem; width: 5rem; height: 3.6rem; object-fit: cover; border-radius: 0.5rem; display: block }
+
+@media (max-width: 640px) {
+  .card-imagem { flex-basis: 5.5rem; width: 5.5rem; height: 4.2rem }
+}

@@ -32,6 +32,7 @@ export const card = (o, match) => {
   const id = o.id || o.idOportunidade;
   const tipo = o.tipo || 'vaga';
   return `<a class="card" href="detalhe.html?id=${Number(id)}" data-tipo="${esc(tipo)}">
+    ${o.imagemUrl ? `<img class="card-imagem" src="${esc(o.imagemUrl)}" alt="Imagem da publicação ${esc(o.titulo)}" loading="lazy">` : ''}
     <div class="card-corpo">
       <span class="tag ${esc(tipo)}" data-tipo="${esc(tipo)}">${esc(TIPOS[tipo] || tipo)}</span>
       ${badgeModeracao(o)}

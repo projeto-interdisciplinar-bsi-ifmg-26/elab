@@ -98,6 +98,8 @@ export async function detalhe() {
     <h1 style="margin-bottom:0.5rem;">${esc(o.titulo)}</h1>
     <p class="mut" style="font-size:1.05rem; margin-bottom:1.25rem;">Publicada por <strong>${esc(o.empresaNome || 'Instituição parceira')}</strong></p>
 
+    ${o.imagemUrl ? `<img class="banner-publicacao" src="${esc(o.imagemUrl)}" alt="Imagem da publicação ${esc(o.titulo)}">` : ''}
+
     <dl>
       <dt>Local / Modalidade</dt>
       <dd>${esc(o.local || 'A definir / Remoto')}</dd>

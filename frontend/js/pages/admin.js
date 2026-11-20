@@ -24,6 +24,7 @@ const htmlEmpresa = e => `
 
 const htmlPublicacao = o => `
   <div class="inscricao-item">
+    ${o.imagemUrl ? `<img class="admin-imagem" src="${esc(o.imagemUrl)}" alt="Imagem da publicação ${esc(o.titulo)}" loading="lazy">` : ''}
     <div>
       <span class="tag ${esc(o.tipo)}" style="margin-right:0.4rem;">${esc(TIPOS[o.tipo] || o.tipo)}</span>
       <strong style="color:var(--roxo); font-size:1.05rem;">${esc(o.titulo)}</strong>

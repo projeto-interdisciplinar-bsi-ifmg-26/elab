@@ -1,6 +1,6 @@
 # Casos de uso do ELAB
 
-Atores: **Visitante**, **Colaboradora** e **Empresa**. Os requisitos citados estão em [requisitos.md](requisitos.md) e as histórias em [historias-de-usuario.md](historias-de-usuario.md).
+Atores: **Visitante**, **Colaboradora**, **Empresa** e **Administradora**. Os requisitos citados estão em [requisitos.md](requisitos.md) e as histórias em [historias-de-usuario.md](historias-de-usuario.md).
 
 > Nos nomes técnicos da API, a colaboradora é o tipo `profissional` e a empresa é `entidade_parceira`. Erros seguem o formato `{ "sucesso": false, "erro": "mensagem" }`; erros inesperados devolvem 500 com mensagem genérica.
 
@@ -11,6 +11,7 @@ flowchart LR
   V([Visitante])
   C([Colaboradora])
   E([Empresa])
+  A([Administradora])
 
   V --- UC01[UC01 Cadastrar conta]
   V --- UC02[UC02 Entrar]
@@ -27,9 +28,13 @@ flowchart LR
   E --- UC11[UC11 Ver candidatas da vaga]
   E --- UC12[UC12 Alocar candidatas]
 
+  A --- UC13[UC13 Aprovar cadastro de empresas]
+  A --- UC14[UC14 Moderar publicações]
+
   UC06 -. inclui .-> UC05
   UC07 -. inclui .-> UC02
   UC11 -. inclui .-> UC02
+  UC09 -. "nasce pendente" .-> UC14
 ```
 
 ## 2. Descrição dos casos de uso
@@ -45,7 +50,7 @@ flowchart LR
   - 3a. Dado inválido (e-mail, senha com menos de 8 caracteres, CNPJ inválido): resposta 400 com a mensagem do campo.
   - 3b. E-mail ou CNPJ já cadastrado: resposta 409, nenhuma conta é criada.
   - 3c. Mais de 20 tentativas em 15 minutos pelo mesmo IP: resposta 429.
-- **Pós-condição:** conta criada e pronta para login.
+- **Pós-condição:** colaboradora criada e pronta para login; conta de empresa nasce com cadastro `pendente` e só publica após aprovação (UC13).
 
 ### UC02. Entrar
 - **Ator:** Visitante. **Requisitos:** RF03, RF04. **História:** HU02.
@@ -125,7 +130,8 @@ flowchart LR
   - 3a. Salário máximo menor que o mínimo, nível ou modalidade inválidos, importância fora de 1 a 5: resposta 400, nada é gravado.
   - 3b. Área ou habilidade inexistente: resposta 400.
   - 3c. Colaboradora tenta publicar: resposta 403.
-- **Pós-condição:** vaga `ativo` ou demais tipos `agendado`; vagas entram no ranking das colaboradoras.
+  - 3d. Empresa com cadastro pendente ou rejeitado: resposta 403.
+- **Pós-condição:** vaga `ativo` ou demais tipos `agendado`, todos com moderação `pendente`; só entram no feed e no ranking depois de aprovados em UC14.
 
 ### UC10. Listar minhas publicações
 - **Ator:** Empresa. **Requisitos:** RF16. **História:** HU11.
@@ -151,3 +157,31 @@ flowchart LR
 - **Fluxos alternativos:**
   - Empresa sem vagas: resposta 200 com nenhuma alocação.
   - Colaboradora: resposta 403. Sem token: resposta 401.
+
+### UC13. Aprovar cadastro de empresas
+- **Ator:** Administradora. **Requisitos:** RF27, RF28, RF30. **História:** HU16.
+- **Pré-condição:** autenticada como admin.
+- **Fluxo principal:**
+  1. Abre `admin.html` e vê a fila de empresas, com e-mail, CNPJ e status, filtrável por status.
+  2. Aprova ou rejeita uma empresa.
+  3. O sistema grava o novo status e libera ou bloqueia a publicação.
+- **Fluxos alternativos:**
+  - Rejeição sem motivo: resposta 400.
+  - Aprovar limpa o motivo anterior da rejeição.
+  - Empresa ou colaboradora: resposta 403. Sem token: resposta 401.
+  - Status de filtro inválido: resposta 400. Empresa inexistente: resposta 404.
+- **Pós-condição:** empresa `aprovada` publica; `pendente` ou `rejeitada` recebe 403 ao publicar.
+
+### UC14. Moderar publicações
+- **Ator:** Administradora. **Requisitos:** RF29, RF31, RF30. **História:** HU17.
+- **Pré-condição:** autenticada como admin.
+- **Fluxo principal:**
+  1. Abre a fila de publicações e filtra por status.
+  2. Aprova ou rejeita uma publicação, informando o motivo da rejeição.
+  3. O sistema grava a decisão e a data da moderação.
+- **Fluxos alternativos:**
+  - Rejeição sem motivo: resposta 400.
+  - Publicação pendente ou rejeitada: 404 no feed, no ranking, no detalhe público e na inscrição.
+  - A empresa dona continua vendo a publicação e o motivo; outra empresa e colaboradora recebem 404.
+  - Empresa tenta moderar a própria publicação: resposta 403. Status `pendente` como decisão: resposta 400.
+- **Pós-condição:** aprovada entra no feed público, no ranking e aceita inscrição; rejeitada mantém o motivo.

@@ -25,8 +25,11 @@ Cada suíte imprime `OK` por verificação e termina com `TUDO OK` ou com o núm
 | Candidatos | `scripts/teste-candidatos.js` | Empresa dona recebe as inscritas ordenadas por score; eliminatória identificada; 403 para outra empresa e para colaboradora; 401 sem token; 404 para vaga inexistente | RF20, RF21, RN06 |
 | Vaga | `scripts/teste-vaga.js` | Criação de vaga completa e dos campos gravados; requisitos com valores padrão; vaga aparece no ranking; 400 para área, habilidade, salário, nível e importância inválidos; nenhuma vaga pela metade; evento ignora requisitos; texto livre de habilidades ignorado; 403 para colaboradora | RF14, RF15, RN01, RN02 |
 | Alocação | `scripts/teste-alocacao.js` | Cenário de disputa em que o ótimo global supera o guloso; total igual à soma dos pares; empresa sem vagas; 403 e 401 | RF25, RN07 |
+| Admin | `scripts/teste-admin.js` | Aprovação de empresa (pendente, motivo obrigatório, aprovar limpa o motivo); empresa rejeitada não publica; empresa aprovada publica; fila de empresas e de publicações; 401/403; filtro de status inválido; alvos inexistentes | RF27, RF28, RF30 |
+| Moderação | `scripts/teste-moderacao.js` | Visibilidade por papel (pública, dona, admin, outra empresa, colaboradora); 404 para pendente/rejeitada; motivo obrigatório; aprovar limpa o motivo; efeito no feed e na inscrição; fila filtrada | RF29, RF31, RN08 |
+| Imagem | `scripts/teste-imagem.js` | Upload do banner (URL, arquivo em disco); `imagemUrl` nas listagens e no detalhe; 403 para outra empresa e colaboradora; 400 para arquivo falso e envio vazio; troca reabre a moderação e apaga o antigo; remoção apaga o arquivo | RF32, RF33, RNF07 |
 
-Ao todo são mais de cem verificações. Na última execução completa, as seis suítes terminaram com `TUDO OK`.
+Ao todo são mais de cento e cinquenta verificações em nove suítes. Na última execução completa, todas terminaram com `TUDO OK`.
 
 ## 4. Experimento (não faz parte do `npm test`)
 
@@ -45,8 +48,8 @@ node scripts/experimento-baseline.js
 
 - **Frontend:** não há testes automatizados de interface. A verificação das telas foi manual, em navegador.
 - **Rota `GET /oportunidades/minhas-inscricoes`:** testada manualmente com `curl` (8 itens, 403 para empresa, 401 sem token), sem suíte automatizada.
-- **Listagens públicas** (`GET /oportunidades`), **catálogo** e **limite de tentativas (429)**: sem teste automatizado.
-- **Segurança de cabeçalhos (CSP)** e **XSS**: sem teste automatizado.
+- **Catálogo** (`GET /catalogo/*`) e **limite de tentativas (429)**: sem teste automatizado. A listagem pública (`GET /oportunidades`) é verificada de forma indireta pelas suítes de moderação e imagem (o que aparece e o que some do feed), mas não há teste dedicado aos filtros de busca e tipo.
+- **Segurança de cabeçalhos (CSP)** e **XSS**: sem teste automatizado. O upload de imagem é conferido pela assinatura de bytes, então SVG e arquivos falsos são recusados (a suíte cobre o arquivo falso, não o SVG em particular).
 - **Integração contínua:** não há pipeline que rode os testes a cada push.
 - **Carga e desempenho:** não medidos.
 - **Dependência de ambiente:** as suítes de API exigem servidor e banco ligados; não há banco de teste isolado, e elas rodam contra o mesmo banco de desenvolvimento (por isso limpam o que criam).

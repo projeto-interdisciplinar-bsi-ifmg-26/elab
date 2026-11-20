@@ -14,22 +14,28 @@ O ELAB fomenta a equidade de gênero na área de tecnologia. A colaboradora mont
 - **Backend:** Node.js e Express, em camadas (routes, controllers, services, repositories)
 - **Banco de dados:** MySQL/MariaDB com migrations versionadas
 - **Autenticação:** JWT e bcrypt
-- **Segurança:** helmet (CSP, sem JavaScript inline), express-validator, prepared statements, rate limit nas rotas de autenticação, validação de CNPJ e upload de currículo conferido pela assinatura real do arquivo
+- **Segurança:** helmet (CSP, sem JavaScript inline), express-validator, prepared statements, rate limit nas rotas de autenticação, validação de CNPJ e uploads (currículo, foto e banner) conferidos pela assinatura real do arquivo, com imagens reprocessadas pelo sharp
+- **Imagens:** foto de perfil e banner de publicação convertidos para WebP, servidos só em `/media/fotos` e `/media/postagens`
 
 ---
 
 ## ✨ Funcionalidades
 
 ### 👩‍💻 Para colaboradoras
-- **Perfil completo:** dados pessoais, experiências, formações, áreas de atuação com nível de interesse, habilidades, preferências (modalidade e pretensão) e upload de currículo (PDF ou DOCX, até 5 MB), com barra de completude.
+- **Perfil completo:** dados pessoais, experiências, formações, áreas de atuação com nível de interesse, habilidades, preferências (modalidade e pretensão), foto de perfil (WebP gerado no servidor) e upload de currículo (PDF ou DOCX, até 5 MB), com barra de completude.
 - **Feed ranqueado:** vagas ordenadas por compatibilidade, com selo de porcentagem.
 - **Detalhe da vaga:** explica "por que deu X%" (habilidades, área, nível e preferências), mostra a situação de cada requisito e a **trilha de aprendizado** até as habilidades que faltam.
 - **Candidaturas:** envio de mensagem, protocolo de confirmação e histórico no perfil (vindo do servidor), com a nota de compatibilidade de cada vaga, busca e filtro por tipo.
 
 ### 🏢 Para empresas
-- **Painel de publicações:** criação de vaga, evento, palestra ou bolsa. Vagas aceitam área, nível, modalidade, faixa salarial e requisitos com importância (1 a 5) e obrigatoriedade. A lista das publicações tem busca, filtro por tipo e paginação.
+- **Painel de publicações:** criação de vaga, evento, palestra ou bolsa. Vagas aceitam área, nível, modalidade, faixa salarial e requisitos com importância (1 a 5) e obrigatoriedade. A lista das publicações tem busca, filtro por tipo e paginação. Cada publicação pode receber um **banner** (JPEG, PNG ou WebP até 2 MB), exibido no feed e no detalhe.
 - **Candidaturas dentro da vaga:** a página de detalhe mostra as inscritas ordenadas por score, com as habilidades que faltam e o aviso de requisito obrigatório ausente, com busca e filtros por compatibilidade e por requisito obrigatório. Só a empresa dona da vaga enxerga.
 - **Alocação ótima:** distribui as candidatas entre as vagas da empresa maximizando o score total.
+- **Moderação:** publicações nascem pendentes e só entram no feed depois de aprovadas; a empresa dona acompanha o estado e o motivo da rejeição.
+
+### 🛡️ Para a administradora
+- **Aprovação de empresas:** fila de cadastros com e-mail e CNPJ, filtro por status; rejeitar exige motivo. Empresa pendente ou rejeitada não publica.
+- **Moderação de publicações:** fila de publicações pendentes; aprovar libera no feed, no ranking e nas inscrições, e rejeitar exige motivo. Trocar o banner de uma publicação aprovada devolve o estado para pendente.
 
 ### 🔎 Listas
 Feed, vagas, oportunidades, painel da empresa, candidaturas e histórico usam o mesmo componente (`frontend/js/core/lista.js`): busca, filtros e paginação no topo e no rodapé. A filtragem acontece no navegador.
@@ -71,6 +77,8 @@ O código fica em `backend/src/graph/`. O grafo de habilidades e a árvore de á
 | `Oportunidades` | Vagas, eventos, palestras e bolsas (coluna `tipo`) |
 | `Oportunidades_Habilidades` | Requisitos da vaga (importância e obrigatoriedade) |
 | `Cadastros_Oportunidades` | Candidaturas e inscrições (N:N), com mensagem e protocolo |
+
+Colunas de moderação e mídia: `Entidades_Parceiras.status_aprovacao`/`motivo_rejeicao` (aprovação da empresa), `Oportunidades.status_moderacao`/`motivo_moderacao`/`moderada_em` (fila de publicações), `Usuarios.foto_arquivo` (foto de perfil) e `Oportunidades.imagem_arquivo` (banner).
 
 ---
 
@@ -132,7 +140,7 @@ cd backend
 npm install
 cp .env.example .env
 # edite o .env com o segredo do JWT (as credenciais do banco já batem com o Docker acima)
-npm run migrate   # cria e atualiza as tabelas (migrations 001 a 020)
+npm run migrate   # cria e atualiza as tabelas (migrations 001 a 025)
 npm run seed      # carrega o catálogo: áreas, habilidades e relações entre habilidades
 npm run dev       # servidor em http://localhost:3000
 ```
@@ -146,12 +154,19 @@ npm run seed:demo
 ```
 > ⚠️ **Destrutivo:** apaga todos os usuários, exceto `admin@elab.com`, e recria os dados de demonstração. Faça backup antes se o banco tiver algo que importe.
 
-Cria 8 empresas, 40 vagas, 8 eventos, palestras e bolsas, 100 colaboradoras e 429 candidaturas. A semente é fixa, então o resultado é sempre o mesmo. A tela de login tem botões de conta demo.
+Cria 8 empresas aprovadas, 40 vagas aprovadas, 8 eventos, palestras e bolsas, 100 colaboradoras e 429 candidaturas. A semente é fixa, então o resultado é sempre o mesmo. A tela de login tem botões de conta demo.
 
 | Contas | E-mail | Senha |
 |---|---|---|
+| Administradora | `admin@elab.com` | `demo12345` |
 | Empresas | `empresa1@elab.com` a `empresa8@elab.com` | `demo12345` |
 | Colaboradoras | `colab1@elab.com` a `colab100@elab.com` | `demo12345` |
+
+Para criar a administradora fora do demo:
+
+```bash
+ADMIN_EMAIL=admin@elab.com ADMIN_SENHA='sua-senha' npm run admin:criar
+```
 
 `empresa1` e `empresa2` recebem de 10 a 16 candidatas por vaga. `colab1` e `colab2` têm perfil completo e candidaturas, ideais para demonstrar o match.
 
@@ -163,7 +178,7 @@ Com o servidor rodando:
 ```bash
 npm test
 ```
-Roda seis suítes: grafo (algoritmos e motor, com grafos pequenos de resposta conhecida), perfil, match, candidatos, criação de vaga e alocação. As suítes de API criam dados temporários e removem tudo no final.
+Roda nove suítes: grafo (algoritmos e motor, com grafos pequenos de resposta conhecida), perfil, match, candidatos, criação de vaga, alocação, admin, moderação e imagem. As suítes de API criam dados temporários e removem tudo no final.
 
 ---
 
@@ -179,12 +194,17 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 | | `GET /oportunidades/minhas-inscricoes` | colaboradora (histórico, com nota de compatibilidade nas vagas) |
 | | `POST /oportunidades/:id/inscricoes` | colaboradora |
 | | `GET /oportunidades/minhas`, `POST /oportunidades`, `GET /oportunidades/:id/candidatos` | empresa (candidatos só da própria vaga) |
+| | `PUT/DELETE /oportunidades/:id/imagem` | empresa (dona da publicação) |
 | Perfil | `GET/PUT /perfil`, `GET /perfil/completo` | autenticado / colaboradora |
 | | `PUT /perfil/dados`, `/preferencias`, `/areas`, `/habilidades` | colaboradora |
 | | `/perfil/experiencias` e `/perfil/formacoes` (CRUD) | colaboradora |
 | | `POST/GET/DELETE /perfil/curriculo` | colaboradora |
+| | `POST/DELETE /perfil/foto` | colaboradora |
 | Match | `GET /match/vagas`, `GET /match/trilha/:vagaId` | colaboradora |
 | | `POST /match/alocacao` | empresa |
+| Admin | `GET /admin/empresas`, `PUT /admin/empresas/:id/status` | admin |
+| | `GET /admin/oportunidades`, `PUT /admin/oportunidades/:id/moderacao` | admin |
+| Mídia | `GET /media/fotos/:arquivo`, `GET /media/postagens/:arquivo` | público (arquivos WebP) |
 
 ---
 
@@ -194,8 +214,8 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 .
 ├── frontend/             # HTML, CSS e JS (ES Modules)
 │   └── js/
-│       ├── core/         # dom, api, state, forms, render, lista, match, candidatas, vagaForm...
-│       └── pages/        # um módulo por página
+│       ├── core/         # dom, api, state, forms, render, lista, match, candidatas, avatar, curriculo, vagaForm...
+│       └── pages/        # um módulo por página (inclui admin)
 └── backend/
     ├── server.js         # monta o Express e as rotas
     ├── src/
@@ -209,10 +229,12 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
     ├── db/
     │   ├── pool.js       # conexões MySQL e transações
     │   ├── migrate.js    # runner de migrations (lock, checksum, idempotente)
-    │   ├── migrations/   # 001 a 020
+    │   ├── migrations/   # 001 a 025
     │   ├── seed.js       # seed do catálogo, idempotente
     │   ├── seed-demo.js  # seed de demonstração (destrutivo)
+    │   ├── criar-admin.js # cria a conta admin (npm run admin:criar)
     │   └── seeds/        # configuração e JSONs do catálogo e da demonstração
+    ├── uploads/          # fotos, banners e currículos (não versionado)
     └── scripts/          # suítes de teste
 ```
 
@@ -224,7 +246,9 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
 
 - Os pesos do score (55/20/15/10) e o fator 0,7 são escolhas de projeto, ainda sem validação experimental contra um baseline simples (por exemplo, similaridade de Jaccard entre tags).
 - Não há ciclo de vida de candidatura: a empresa não altera o status (em análise, aprovada, recusada) e a colaboradora não cancela.
-- Não há recuperação de senha, exclusão de conta nem moderação de cadastro de empresas (o CNPJ tem só o formato validado).
+- Não há recuperação de senha nem exclusão de conta.
+- A moderação não guarda histórico: cada decisão sobrescreve o motivo anterior da empresa ou da publicação.
+- As imagens ficam no disco local da instância; não há storage externo nem CDN.
 - O score é uma ferramenta de apoio e não deve ser usado como filtro eliminatório: a página mostra o motivo de cada nota justamente para manter o cálculo transparente.
 - Busca, filtros e paginação rodam no navegador; com volume grande, seria preciso paginar no servidor.
 - Alguns serviços consultam o banco em loop (por candidata ou por vaga), adequado ao volume atual.

@@ -64,6 +64,13 @@ Formato: **Como** (papel), **quero** (ação), **para** (benefício). Cada hist�
 - Aceite: posso buscar e filtrar por tipo, com 5 itens por página.
 - Requisitos: RF19.
 
+### HU14. Usar foto de perfil
+**Como** colaboradora, **quero** enviar uma foto de perfil, **para** que meu rosto apareça no shell e na lista de candidatas da empresa.
+- Aceite: aceita JPEG, PNG ou WebP de até 2 MB; o servidor reprocessa e guarda em WebP, sem metadados.
+- Aceite: arquivo falso é rejeitado e a imagem antiga é apagada ao trocar.
+- Aceite: a foto aparece no cabeçalho e nas candidatas; removê-la volta ao avatar padrão.
+- Requisitos: RF34, RNF15, RNF16.
+
 ## Empresa
 
 ### HU10. Publicar oportunidades
@@ -71,7 +78,9 @@ Formato: **Como** (papel), **quero** (ação), **para** (benefício). Cada hist�
 - Aceite: título e tipo são obrigatórios.
 - Aceite: numa vaga posso definir área, nível, modalidade, faixa salarial e requisitos com importância de 1 a 5 e obrigatoriedade.
 - Aceite: salário máximo menor que o mínimo é rejeitado.
-- Requisitos: RF14, RF15.
+- Aceite: a publicação nasce pendente de moderação e não aparece no feed público até a aprovação.
+- Aceite: empresa com cadastro pendente ou rejeitado não consegue publicar (403).
+- Requisitos: RF14, RF15, RN08.
 
 ### HU11. Gerenciar minhas publicações
 **Como** empresa, **quero** ver e buscar minhas publicações, **para** acompanhar o que divulguei.
@@ -92,6 +101,30 @@ Formato: **Como** (papel), **quero** (ação), **para** (benefício). Cada hist�
 - Aceite: o total supera o da escolha gulosa em cenários de disputa.
 - Requisitos: RF25.
 
+### HU15. Dar banner à publicação
+**Como** empresa, **quero** anexar uma imagem de banner à minha publicação, **para** destacá-la no feed e no detalhe.
+- Aceite: aceita JPEG, PNG ou WebP de até 2 MB; o servidor reprocessa e guarda em WebP.
+- Aceite: arquivo falso ou envio vazio é rejeitado; outra empresa recebe 403.
+- Aceite: trocar o banner de uma publicação aprovada devolve o estado para pendente; remover apaga o arquivo.
+- Requisitos: RF32, RF33, RNF15, RNF16, RN09.
+
+## Administradora
+
+### HU16. Aprovar o cadastro de empresas
+**Como** administradora, **quero** aprovar ou rejeitar o cadastro de empresas, **para** impedir que contas irregulares publiquem.
+- Aceite: a fila lista as empresas com e-mail e CNPJ, filtrável por status.
+- Aceite: rejeitar exige motivo; aprovar limpa o motivo anterior.
+- Aceite: empresa pendente ou rejeitada recebe 403 ao tentar publicar.
+- Aceite: colaboradora e empresa recebem 403 no módulo administrativo; visitante recebe 401.
+- Requisitos: RF27, RF28, RF30, RN08, RN10.
+
+### HU17. Moderar publicações
+**Como** administradora, **quero** aprovar ou rejeitar as publicações enviadas, **para** manter o feed confiável.
+- Aceite: a fila lista as publicações pendentes com a empresa, filtrável por status.
+- Aceite: rejeitar exige motivo; publicações rejeitadas ou pendentes não aparecem no feed, no ranking nem aceitam inscrição.
+- Aceite: a empresa dona vê a publicação e o motivo em qualquer estado; as demais pessoas recebem 404.
+- Requisitos: RF29, RF31, RN08, RN10.
+
 ## Histórias fora do escopo atual
 
 Registradas para o backlog, ainda não implementadas:
@@ -103,4 +136,3 @@ Registradas para o backlog, ainda não implementadas:
 | Colaboradora | Excluir minha conta. |
 | Empresa | Aprovar ou recusar uma candidata e acompanhar o status. |
 | Empresa | Editar ou encerrar uma publicação. |
-| Administradora | Moderar o cadastro de empresas. |

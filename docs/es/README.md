@@ -26,6 +26,8 @@ O ELAB é uma rede profissional que conecta mulheres em tecnologia (colaboradora
 - Publicação de vagas, eventos, palestras e bolsas pela empresa.
 - Candidatura e inscrição, com protocolo e histórico.
 - Compatibilidade entre candidata e vaga, trilha de aprendizado e alocação ótima.
+- Foto de perfil da colaboradora e banner das publicações (WebP gerado no servidor).
+- Aprovação do cadastro de empresas e moderação das publicações pela administradora.
 
 ### Fora do escopo (não implementado)
 
@@ -33,7 +35,7 @@ O ELAB é uma rede profissional que conecta mulheres em tecnologia (colaboradora
 - Recuperação de senha e exclusão de conta.
 - Mudança de status de candidatura (em análise, aprovada, recusada) e cancelamento.
 - Edição e encerramento de publicações.
-- Moderação de cadastro de empresas.
+- Histórico de decisões de moderação (aprovar sobrescreve o motivo anterior).
 
 ## Equipe
 

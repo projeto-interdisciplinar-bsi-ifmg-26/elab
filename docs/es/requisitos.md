@@ -31,7 +31,7 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 |---|---|---|---|
 | RF12 | Listar e ver o detalhe de vagas, eventos, palestras e bolsas | Todos | `GET /oportunidades`, `GET /oportunidades/:id`, `vagas.html`, `oportunidades.html`, `detalhe.html` |
 | RF13 | Buscar, filtrar e paginar as listas | Todos | `frontend/js/core/lista.js` (filtragem no navegador) |
-| RF14 | Publicar vaga, evento, palestra ou bolsa | Empresa | `POST /oportunidades`, `painel-empresa.html` |
+| RF14 | Publicar vaga, evento, palestra ou bolsa (a publicação nasce pendente de moderação) | Empresa | `POST /oportunidades`, `painel-empresa.html` |
 | RF15 | Definir em uma vaga área, nível, modalidade, faixa salarial e requisitos com importância (1 a 5) e obrigatoriedade | Empresa | `POST /oportunidades` |
 | RF16 | Listar as próprias publicações | Empresa | `GET /oportunidades/minhas` |
 
@@ -60,6 +60,19 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 |---|---|---|---|
 | RF26 | Fornecer a lista de habilidades, áreas e opções de preenchimento | Todos | `GET /catalogo/habilidades`, `/areas`, `/opcoes` |
 
+### Administração e imagens
+
+| ID | Requisito | Papel | Implementação |
+|---|---|---|---|
+| RF27 | Aprovar ou rejeitar o cadastro de empresas, com motivo obrigatório na rejeição; empresa só publica quando aprovada | Admin | `GET /admin/empresas`, `PUT /admin/empresas/:id/status`, `admin.html` |
+| RF28 | Impedir acesso ao módulo administrativo para colaboradora e empresa (403) e visitante (401) | Todos | `permitir('admin')` em `/admin/*` |
+| RF29 | Publicação nova nasce pendente e só aparece no feed público, no ranking e aceita inscrição depois de aprovada pelo admin | Todos | `POST/PUT /admin/oportunidades/:id/moderacao`, `GET /oportunidades` |
+| RF30 | Listar a fila de empresas e de publicações, com filtro por status | Admin | `GET /admin/empresas?status=`, `GET /admin/oportunidades?status=` |
+| RF31 | Empresa dona e admin veem a publicação em qualquer estado; os demais recebem 404 enquanto pendente ou rejeitada | Empresa, Admin | `GET /oportunidades/:id`, `autenticarOpcional` |
+| RF32 | Anexar, trocar e remover o banner de uma publicação própria (JPEG, PNG ou WebP, até 2 MB) | Empresa | `PUT/DELETE /oportunidades/:id/imagem`, `painel-empresa.html` |
+| RF33 | Exibir o banner no feed, no detalhe e na fila do admin | Todos | `imagemUrl` nas respostas; `render.js` e `detalhe.js` |
+| RF34 | Enviar foto de perfil (WebP gerado no servidor) e exibi-la no shell e nas candidatas | Colaboradora | `POST /perfil/foto`, `/media/fotos` |
+
 ## 2. Requisitos não funcionais
 
 | ID | Categoria | Requisito | Como é atendido |
@@ -77,7 +90,9 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 | RNF11 | Confiabilidade | Operações compostas não ficam pela metade | Transações (`withTransaction`) |
 | RNF12 | Usabilidade | Explicar o resultado do cálculo | Página de detalhe mostra o motivo de cada nota |
 | RNF13 | Desempenho | Evitar recarregar o grafo a cada requisição | Cache em memória do grafo de habilidades e da árvore de áreas |
-| RNF14 | Testabilidade | Verificar o sistema de forma automática | `npm test`, seis suítes (ver [testes.md](testes.md)) |
+| RNF14 | Testabilidade | Verificar o sistema de forma automática | `npm test`, nove suítes (ver [testes.md](testes.md)) |
+| RNF15 | Segurança | Aceitar só imagens legítimas | Máximo de 2 MB e 1 arquivo; tipo conferido pela assinatura real dos bytes; reprocessamento com sharp (sem EXIF, converte para WebP) |
+| RNF16 | Segurança | Restringir arquivos enviados ao navegador | Fotos e banners só são servidos em `/media/fotos` e `/media/postagens`; currículo nunca é exposto por `/media` |
 
 ## 3. Regras de negócio
 
@@ -90,6 +105,9 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 | RN05 | Uma colaboradora só se inscreve uma vez em cada oportunidade. |
 | RN06 | A empresa só enxerga as candidaturas das próprias vagas. |
 | RN07 | A alocação descarta pares com score abaixo de 40. |
+| RN08 | Empresa recém-cadastrada fica `pendente` e não publica até o admin aprovar; publicação nova também nasce pendente e só entra no feed após aprovação. |
+| RN09 | Trocar o banner de uma publicação já aprovada devolve o estado para `pendente` (nova revisão). |
+| RN10 | Rejeição (de empresa ou de publicação) exige motivo; aprovar limpa o motivo anterior. |
 
 ## 4. Rastreabilidade
 

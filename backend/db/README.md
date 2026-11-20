@@ -22,6 +22,11 @@ db/
 | `006_create_cadastros.sql` | `Cadastros_Oportunidades` e `Cadastros_Eventos` (N:N) |
 | `007` a `019` | Perfil completo, catálogo de habilidades e áreas, grafo de habilidades, requisitos de vagas e ajustes de colunas |
 | `020_drop_tabelas_legadas.sql` | Remove `Eventos`, `Cadastros_Eventos` e `Habilidades_Oportunidade`, que nunca foram usadas ou foram substituídas |
+| `021_usuarios_foto_arquivo.sql` | Coluna `foto_arquivo` (foto de perfil em `uploads/fotos`) |
+| `022_entidades_motivo_rejeicao.sql` | Coluna `motivo_rejeicao` (motivo do admin ao rejeitar o cadastro) |
+| `023_oportunidades_moderacao.sql` | Colunas `status_moderacao`, `motivo_moderacao` e `moderada_em` (fila do admin) |
+| `024_aprovar_oportunidades_existentes.sql` | Aprova as publicações que já existiam antes da moderação |
+| `025_oportunidades_imagem.sql` | Coluna `imagem_arquivo` (banner em `uploads/postagens`) |
 
 A ordem numérica respeita as dependências de chave estrangeira. Eventos, palestras e bolsas vivem em `Oportunidades` (coluna `tipo`) e as inscrições em `Cadastros_Oportunidades`. Modelo ER e dicionário de dados: [docs/bd](../../docs/bd/README.md).
 

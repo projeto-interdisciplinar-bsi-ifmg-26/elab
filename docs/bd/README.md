@@ -1,6 +1,6 @@
 # Banco de dados do ELAB
 
-MySQL/MariaDB, 14 tabelas, InnoDB, `utf8mb4_unicode_ci`. O esquema é criado por migrations (001 a 020); como rodá-las e as garantias do runner estão em [../../backend/db/README.md](../../backend/db/README.md).
+MySQL/MariaDB, 14 tabelas, InnoDB, `utf8mb4_unicode_ci`. O esquema é criado por migrations (001 a 025); como rodá-las e as garantias do runner estão em [../../backend/db/README.md](../../backend/db/README.md).
 
 ## 1. Modelo entidade-relacionamento
 
@@ -52,6 +52,7 @@ Conta de acesso, comum a colaboradoras, empresas e administradora.
 | senha | varchar(255) | NN, hash bcrypt |
 | tipo_usuario | enum | NN: `profissional`, `entidade_parceira`, `admin` |
 | data_registro | datetime | NN, padrão agora |
+| foto_arquivo | varchar(255) | nome do arquivo WebP em `uploads/fotos`, servido em `/media/fotos` |
 
 ### Profissionais
 Perfil da colaboradora, 1:1 com `Usuarios`.
@@ -116,7 +117,8 @@ Perfil da empresa, 1:1 com `Usuarios`.
 | descricao | varchar(255) | |
 | cnpj | varchar(14) | NN, UQ (dígitos validados na API) |
 | tipo_entidade | varchar(45) | |
-| status_aprovacao | enum | NN, padrão `pendente` (`pendente`, `aprovada`, `rejeitada`). Não é usado pela API: só o seed:demo o preenche. |
+| status_aprovacao | enum | NN, padrão `pendente` (`pendente`, `aprovada`, `rejeitada`). Empresa só publica quando `aprovada`; o admin altera em `PUT /admin/empresas/:id/status`. |
+| motivo_rejeicao | varchar(255) | motivo informado pelo admin na rejeição; limpo ao aprovar |
 
 ### Areas_Atuacao
 Árvore de áreas.
@@ -175,6 +177,10 @@ Vagas, eventos, palestras e bolsas na mesma tabela, diferenciados por `tipo`.
 | nivel | enum | NN, padrão `qualquer` |
 | modalidade | enum | `remoto`, `hibrido`, `presencial` |
 | salario_min, salario_max | decimal(10,2) | |
+| status_moderacao | enum | NN, padrão `pendente` (`pendente`, `aprovada`, `rejeitada`); só `aprovada` aparece no feed, no ranking e permite inscrição |
+| motivo_moderacao | varchar(255) | motivo da rejeição, informado pelo admin; limpo ao aprovar |
+| moderada_em | datetime | data da última decisão do admin |
+| imagem_arquivo | varchar(255) | banner WebP em `uploads/postagens`, servido em `/media/postagens` |
 
 ### Oportunidades_Habilidades
 Requisitos de uma vaga.

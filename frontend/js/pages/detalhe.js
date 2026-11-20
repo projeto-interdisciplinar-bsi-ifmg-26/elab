@@ -72,7 +72,7 @@ export async function detalhe() {
   const avisoModeracao = statusModeracao && statusModeracao !== 'aprovada'
     ? `<p class="aviso-aprovacao ${esc(statusModeracao)}" role="status">${
         statusModeracao === 'rejeitada'
-          ? 'Publicação rejeitada' + (o.motivo_moderacao ? ': ' + o.motivo_moderacao : '.')
+          ? 'Publicação rejeitada' + (o.motivo_moderacao ? ': ' + esc(o.motivo_moderacao) : '.')
           : 'Publicação em análise pelo administrador.'
       }</p>`
     : '';

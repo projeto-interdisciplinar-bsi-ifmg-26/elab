@@ -119,6 +119,9 @@ async function main() {
   conferir('visita anonima le a publicacao aprovada', r.status === 200, r);
   r = await chamar('POST', '/oportunidades/' + id + '/inscricoes', { mensagem: 'quero' }, tokColab);
   conferir('inscricao em publicacao aprovada retorna 201', r.status === 201 && !!dadosDe(r).protocolo, r);
+  r = await chamar('GET', '/oportunidades/minhas-inscricoes', null, tokColab);
+  const minhas = (dadosDe(r) || []).find((i) => i.oportunidadeId === id);
+  conferir('historico da colaboradora inclui a inscricao com score', r.status === 200 && !!minhas && typeof minhas.score === 'number', minhas);
 
   // ---- Fila e erros ----
   r = await chamar('GET', '/admin/oportunidades?status=aprovada', null, tokAdmin);
@@ -127,6 +130,14 @@ async function main() {
   conferir('moderar publicacao inexistente retorna 404', r.status === 404, r);
   r = await chamar('PUT', '/admin/oportunidades/' + id + '/moderacao', { status: 'pendente' }, tokAdmin);
   conferir('status pendente nao e aceito na moderacao (400)', r.status === 400, r);
+
+  // ---- Publicacao rejeitada depois da inscricao sai do historico ----
+  r = await chamar('PUT', '/admin/oportunidades/' + id + '/moderacao', { status: 'rejeitada', motivo: 'Rejeitada apos a inscricao' }, tokAdmin);
+  conferir('admin rejeita a publicacao ja inscrita', r.status === 200 && dadosDe(r).status_moderacao === 'rejeitada', r);
+  r = await chamar('GET', '/oportunidades/minhas-inscricoes', null, tokColab);
+  conferir('historico da colaboradora some com a publicacao rejeitada', r.status === 200 && !(dadosDe(r) || []).some((i) => i.oportunidadeId === id), r.status);
+  r = await chamar('PUT', '/admin/oportunidades/' + id + '/moderacao', { status: 'aprovada' }, tokAdmin);
+  conferir('admin reaprova a publicacao para o resto do teste', r.status === 200 && dadosDe(r).status_moderacao === 'aprovada', r);
 
   // ---- Empresa desativada oculta tudo o que ela publicou ----
   r = await chamar('PUT', '/admin/empresas/' + empresaDonaId + '/status', { status: 'rejeitada', motivo: 'Desativada no teste' }, tokAdmin);
@@ -148,11 +159,15 @@ async function main() {
   conferir('inscricao em publicacao de empresa desativada retorna 404', r.status === 404, r);
   r = await chamar('GET', '/oportunidades/minhas', null, tokDona);
   conferir('dona desativada continua vendo as proprias publicacoes', (dadosDe(r) || []).some((o) => o.id === id), r.status);
+  r = await chamar('GET', '/oportunidades/minhas-inscricoes', null, tokColab);
+  conferir('historico da colaboradora some com a empresa desativada', r.status === 200 && !(dadosDe(r) || []).some((i) => i.oportunidadeId === id), r.status);
 
   r = await chamar('PUT', '/admin/empresas/' + empresaDonaId + '/status', { status: 'aprovada' }, tokAdmin);
   conferir('admin reativa a empresa dona', r.status === 200 && dadosDe(r).statusAprovacao === 'aprovada', r);
   r = await chamar('GET', '/oportunidades');
   conferir('publicacao volta ao feed quando a empresa e reativada', (dadosDe(r) || []).some((o) => o.id === id), r.status);
+  r = await chamar('GET', '/oportunidades/minhas-inscricoes', null, tokColab);
+  conferir('historico da colaboradora volta com a empresa reativada', (dadosDe(r) || []).some((i) => i.oportunidadeId === id), r.status);
 }
 
 main()

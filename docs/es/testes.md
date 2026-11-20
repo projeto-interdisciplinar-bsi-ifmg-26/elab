@@ -26,11 +26,11 @@ Cada suíte imprime `OK` por verificação e termina com `TUDO OK` ou com o núm
 | Vaga | `scripts/teste-vaga.js` | Criação de vaga completa e dos campos gravados; requisitos com valores padrão; vaga aparece no ranking; 400 para área, habilidade, salário, nível e importância inválidos; nenhuma vaga pela metade; evento ignora requisitos; texto livre de habilidades ignorado; 403 para colaboradora | RF14, RF15, RN01, RN02 |
 | Alocação | `scripts/teste-alocacao.js` | Cenário de disputa em que o ótimo global supera o guloso; total igual à soma dos pares; empresa sem vagas; empresa desativada não aloca; 403 e 401 | RF25, RN07, RF35 |
 | Admin | `scripts/teste-admin.js` | Aprovação de empresa (pendente, motivo obrigatório, aprovar limpa o motivo); empresa rejeitada não publica; empresa aprovada publica; fila de empresas e de publicações; 401/403; filtro de status inválido; alvos inexistentes | RF27, RF28, RF30 |
-| Moderação | `scripts/teste-moderacao.js` | Visibilidade por papel (pública, dona, admin, outra empresa, colaboradora); 404 para pendente/rejeitada; motivo obrigatório; aprovar limpa o motivo; efeito no feed e na inscrição; fila filtrada; desativar a empresa oculta do feed, do detalhe e da inscrição (dona e admin seguem vendo); reativar devolve ao feed | RF29, RF31, RF35, RN08 |
+| Moderação | `scripts/teste-moderacao.js` | Visibilidade por papel (pública, dona, admin, outra empresa, colaboradora); 404 para pendente/rejeitada; motivo obrigatório; aprovar limpa o motivo; efeito no feed e na inscrição; fila filtrada; histórico de inscrições esconde publicação rejeitada e empresa desativada, e volta ao reativar; desativar a empresa oculta do feed, do detalhe e da inscrição (dona e admin seguem vendo); reativar devolve ao feed | RF29, RF31, RF35, RN08 |
 | Imagem | `scripts/teste-imagem.js` | Upload do banner (URL, arquivo em disco, WebP real nas dimensões originais e sem EXIF); `imagemUrl` nas listagens e no detalhe; 403 para outra empresa e colaboradora; 400 para arquivo falso, PNG corrompido com assinatura válida, acima de 2 MB e envio vazio; erro de envio não apaga o banner atual; troca reabre a moderação e apaga o antigo; remoção apaga o arquivo | RF32, RF33, RNF07, RNF15 |
 | Foto | `scripts/teste-foto.js` | Upload da foto de perfil (URL, arquivo em disco, WebP 512×512 sem EXIF); `fotoUrl` no perfil; arquivo servido em `/media/fotos`; troca apaga a anterior sem apagar a nova em caso de erro; 400 para arquivo falso e envio vazio; 401 sem token; remoção apaga o arquivo, zera `fotoUrl` e repetir retorna 404 | RF34, RNF15, RNF16 |
 
-Ao todo são mais de cento e setenta verificações em dez suítes. Na última execução completa, todas terminaram com `TUDO OK`.
+Ao todo são mais de duzentas e cinquenta verificações em dez suítes. Na última execução completa, todas terminaram com `TUDO OK`.
 
 ## 4. Experimento (não faz parte do `npm test`)
 
@@ -48,7 +48,7 @@ node scripts/experimento-baseline.js
 ## 6. O que não está coberto
 
 - **Frontend:** não há testes automatizados de interface. A verificação das telas foi manual, em navegador.
-- **Rota `GET /oportunidades/minhas-inscricoes`:** testada manualmente com `curl` (8 itens, 403 para empresa, 401 sem token), sem suíte automatizada.
+- **Rota `GET /oportunidades/minhas-inscricoes`:** o caminho principal é coberto por `teste-moderacao.js` (inscrição com score, publicação rejeitada e empresa desativada somem do histórico, e voltam ao reaprovar/reativar). O 403 para empresa e o 401 sem token foram verificados manualmente com `curl`.
 - **Catálogo** (`GET /catalogo/*`) e **limite de tentativas (429)**: sem teste automatizado. A listagem pública (`GET /oportunidades`) é verificada de forma indireta pelas suítes de moderação e imagem (o que aparece e o que some do feed), mas não há teste dedicado aos filtros de busca e tipo.
 - **Segurança de cabeçalhos (CSP)** e **XSS**: sem teste automatizado. O upload de imagem é conferido pela assinatura de bytes, então SVG e arquivos falsos são recusados (a suíte cobre o arquivo falso, não o SVG em particular).
 - **Integração contínua:** não há pipeline que rode os testes a cada push.
@@ -57,7 +57,7 @@ node scripts/experimento-baseline.js
 
 ## 7. Melhorias sugeridas
 
-1. Teste automatizado para `minhas-inscricoes` e para o 429 do login.
+1. Teste automatizado para o 429 do login.
 2. Teste de que o frontend escapa texto do usuário.
 3. Banco de teste separado.
 4. Pipeline de CI (por exemplo, GitHub Actions) que suba MySQL, aplique migrations e rode `npm test`.

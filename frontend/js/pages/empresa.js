@@ -88,12 +88,14 @@ export async function empresa() {
     });
   };
 
-  // Depois de recarregar a lista o aviso é recolocado no item correspondente.
+  // Depois de recarregar a lista o aviso é recolocado no item correspondente. Se a
+  // atualização tirou o item da página (filtro de moderação, por exemplo), o aviso
+  // vai para o topo da seção para não se perder.
   const avisar = (id, texto) => {
-    const p = $('.item-publicacao[data-publicacao="' + id + '"] .ok', $('#lista'));
-    if (!p) return;
-    p.textContent = texto;
-    setTimeout(() => { p.textContent = ''; }, 5000);
+    const alvo = $('.item-publicacao[data-publicacao="' + id + '"] .ok', $('#lista')) || $('#aviso-lista');
+    if (!alvo) return;
+    alvo.textContent = texto;
+    setTimeout(() => { alvo.textContent = ''; }, 5000);
   };
 
   enviar(f, async d => {

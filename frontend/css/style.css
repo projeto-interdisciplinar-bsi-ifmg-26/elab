@@ -3304,7 +3304,8 @@ body[data-page="index"] .landing-footer p {
 .banner-controles input[type="file"] { flex: 1 1 14rem; min-width: 0 }
 .banner-controles .erro,
 .banner-controles .ok { flex: 1 1 100%; margin: 0; font-size: 0.85rem }
-.banner-controles :empty { display: none }
+.banner-controles .erro:empty,
+.banner-controles .ok:empty { display: none }
 
 @media (max-width: 640px) {
   .card-imagem { flex-basis: 5.5rem; width: 5.5rem; height: 4.2rem }

@@ -21,7 +21,7 @@ async function listarMinhas(usuarioId) {
   for (const i of lista) {
     let score = null;
     if (i.tipo === 'vaga') {
-      const vaga = await matchRepo.buscarVaga(i.oportunidadeId);
+      const vaga = await matchRepo.buscarVagaAprovada(i.oportunidadeId);
       if (vaga) score = motor.pontuar(prep, vaga).score;
     }
     saida.push({ ...i, score });

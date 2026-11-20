@@ -89,6 +89,11 @@ async function main() {
   conferir('enviar banner retorna 201 com URL /media/postagens', r.status === 201 && /^\/media\/postagens\/[0-9a-f]{32}\.webp$/.test(enviada && enviada.imagemUrl), enviada);
   conferir('arquivo do banner existe em uploads/postagens', existeNoDisco(primeiroNome), primeiroNome);
 
+  // O arquivo gravado e um WebP real, sem EXIF e "inside" 1280x720 (nao aumenta a imagem).
+  const meta = await sharp(path.join(DIR_POSTAGENS, primeiroNome)).metadata();
+  conferir('banner gravado e WebP nas dimensoes originais (inside)', meta.format === 'webp' && meta.width === 40 && meta.height === 30, { formato: meta.format, largura: meta.width, altura: meta.height });
+  conferir('banner gravado nao guarda EXIF', !meta.exif, { exif: !!meta.exif });
+
   r = await chamar('GET', '/oportunidades/minhas', null, tokDona);
   const minha = (dadosDe(r) || []).find((o) => o.id === id);
   conferir('listagem da empresa expoe imagemUrl', !!minha && minha.imagemUrl === enviada.imagemUrl, minha);
@@ -107,6 +112,19 @@ async function main() {
   conferir('colaboradora nao anexa banner (403)', r.status === 403, r);
   r = await chamar('PUT', '/oportunidades/' + id + '/imagem', await imagemForm(Buffer.from('isto nao e imagem'), 'image/png'), tokDona);
   conferir('conteudo que nao e imagem retorna 400 (assinatura invalida)', r.status === 400 && /inválid/i.test(JSON.stringify(r.dados)), r);
+
+  // Assinatura PNG valida, mas bytes corrompidos: passa pela assinatura e falha no sharp.
+  const pngQuebrado = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.from('lixo corrompido')]);
+  r = await chamar('PUT', '/oportunidades/' + id + '/imagem', await imagemForm(pngQuebrado, 'image/png'), tokDona);
+  conferir('PNG com assinatura valida mas corrompido retorna 400', r.status === 400 && /inválid/i.test(JSON.stringify(r.dados)), r);
+  conferir('envio corrompido nao apaga o banner valido atual', existeNoDisco(primeiroNome), primeiroNome);
+
+  // Acima de 2 MB: barrado pelo limite do multer antes de chegar ao sharp.
+  const grande = Buffer.alloc(2 * 1024 * 1024 + 1024);
+  grande[0] = 0xff; grande[1] = 0xd8; grande[2] = 0xff; // assinatura JPEG
+  r = await chamar('PUT', '/oportunidades/' + id + '/imagem', await imagemForm(grande, 'image/jpeg'), tokDona);
+  conferir('imagem acima de 2 MB retorna 400', r.status === 400 && /2 MB/.test(JSON.stringify(r.dados)), r);
+
   const fdSemArquivo = new FormData();
   fdSemArquivo.append('outro', 'x');
   r = await chamar('PUT', '/oportunidades/' + id + '/imagem', fdSemArquivo, tokDona);

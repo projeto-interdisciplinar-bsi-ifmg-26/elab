@@ -10,6 +10,8 @@ const SENHA = 'senha12345';
 const emailAdmin = 'teste.admin.' + stamp + '@elab.test';
 const emailA = 'teste.admin.emp.a.' + stamp + '@elab.test';
 const emailB = 'teste.admin.emp.b.' + stamp + '@elab.test';
+const cnpjA = String(stamp).padStart(14, '0').slice(-14);
+const cnpjB = String(stamp + 7).padStart(14, '0').slice(-14);
 let falhas = 0;
 
 async function chamar(metodo, rota, corpo, tok) {
@@ -55,8 +57,8 @@ async function login(email) {
 
 async function main() {
   await criarUsuario(emailAdmin, 'admin');
-  const idA = await criarEmpresa(emailA, 'Empresa A Admin', String(stamp).padStart(14, '0').slice(-14));
-  const idB = await criarEmpresa(emailB, 'Empresa B Admin', String(stamp + 7).padStart(14, '0').slice(-14));
+  const idA = await criarEmpresa(emailA, 'Empresa A Admin', cnpjA);
+  const idB = await criarEmpresa(emailB, 'Empresa B Admin', cnpjB);
 
   const tokAdmin = await login(emailAdmin);
   const tokA = await login(emailA);
@@ -74,11 +76,13 @@ async function main() {
   const lista = dadosDe(r) || [];
   const a = lista.find((e) => e.id === idA);
   conferir('empresa pendente aparece na fila do admin', r.status === 200 && !!a && a.statusAprovacao === 'pendente', a);
-  conferir('fila do admin traz e-mail e CNPJ da empresa', !!a && a.email === emailA && String(a.cnpj).length === 14, a);
+  conferir('fila do admin traz e-mail e CNPJ da empresa', !!a && a.email === emailA && a.cnpj === cnpjA, a);
 
   r = await chamar('GET', '/admin/empresas?status=pendente', null, tokAdmin);
   const pendentes = dadosDe(r) || [];
-  conferir('filtro por status devolve so pendentes', pendentes.every((e) => e.statusAprovacao === 'pendente'), pendentes.map((e) => e.statusAprovacao));
+  conferir('filtro por status responde 200 com lista', r.status === 200 && Array.isArray(dadosDe(r)), r.status);
+  conferir('filtro por status devolve so pendentes', pendentes.length > 0 && pendentes.every((e) => e.statusAprovacao === 'pendente'), pendentes.map((e) => e.statusAprovacao));
+  conferir('filtro por status inclui a empresa pendente criada', pendentes.some((e) => e.id === idA), pendentes.map((e) => e.id));
   r = await chamar('GET', '/admin/empresas?status=inexistente', null, tokAdmin);
   conferir('filtro com status invalido retorna 400', r.status === 400, r);
 

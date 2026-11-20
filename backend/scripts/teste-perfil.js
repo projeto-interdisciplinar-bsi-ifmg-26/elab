@@ -99,7 +99,8 @@ async function main() {
   r = await chamar('DELETE', '/perfil/experiencias/999999');
   conferir('apagar item inexistente retorna 404', r.status === 404, r);
 
-  r = await chamar('POST', '/perfil/curriculo', arquivo('%PDF-1.4\n% teste\n', 'meu-curriculo.pdf', 'application/pdf'));
+  const CONTEUDO_PDF = '%PDF-1.4\n% teste\nconteudo do curriculo\n';
+  r = await chamar('POST', '/perfil/curriculo', arquivo(CONTEUDO_PDF, 'meu-curriculo.pdf', 'application/pdf'));
   conferir('upload de PDF valido', r.status === 201, r);
 
   r = await chamar('POST', '/perfil/curriculo', arquivo('MZ-isto-nao-e-um-pdf', 'falso.pdf', 'application/pdf'));
@@ -108,8 +109,16 @@ async function main() {
   r = await chamar('POST', '/perfil/curriculo', arquivo('texto', 'x.txt', 'text/plain'));
   conferir('extensao nao permitida e rejeitada', r.status === 400, r);
 
-  r = await chamar('GET', '/perfil/curriculo');
-  conferir('download do curriculo', r.status === 200, r);
+  const grande = Buffer.alloc(5 * 1024 * 1024 + 1024, 0x41);
+  grande.write('%PDF-1.4\n', 0);
+  r = await chamar('POST', '/perfil/curriculo', arquivo(grande, 'grande.pdf', 'application/pdf'));
+  conferir('curriculo acima de 5 MB retorna 400', r.status === 400 && /5 MB/.test(JSON.stringify(r.dados)), r);
+
+  const curriculo = await chamar('GET', '/perfil/curriculo');
+  conferir('download do curriculo', curriculo.status === 200, curriculo);
+  conferir('download devolve o mesmo conteudo enviado', curriculo.dados === CONTEUDO_PDF, { recebido: curriculo.dados });
+  r = await chamar('GET', '/perfil');
+  conferir('perfil expoe o nome original do curriculo', r.status === 200 && r.dados.dados.curriculo && r.dados.dados.curriculo.nome === 'meu-curriculo.pdf', r.dados && r.dados.dados && r.dados.dados.curriculo);
 
   r = await chamar('GET', '/perfil/completo');
   conferir('perfil completo chega a 100%', r.status === 200 && r.dados.dados.completude.percentual === 100, r.dados && r.dados.dados && r.dados.dados.completude);

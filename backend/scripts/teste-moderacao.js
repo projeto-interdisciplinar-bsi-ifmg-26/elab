@@ -73,7 +73,8 @@ async function main() {
   if (!id) return;
 
   r = await chamar('GET', '/oportunidades');
-  conferir('publicacao pendente nao aparece no feed publico', !(dadosDe(r) || []).some((o) => o.id === id), r.status);
+  conferir('feed publico responde 200', r.status === 200, r.status);
+  conferir('publicacao pendente nao aparece no feed publico', Array.isArray(dadosDe(r)) && !dadosDe(r).some((o) => o.id === id), r.status);
 
   r = await chamar('GET', '/oportunidades/' + id);
   conferir('visita anonima recebe 404 na publicacao pendente', r.status === 404, r);
@@ -102,7 +103,8 @@ async function main() {
   r = await chamar('GET', '/oportunidades/' + id, null, tokDona);
   conferir('dona ve o motivo da rejeicao', r.status === 200 && dadosDe(r).motivo_moderacao === 'Falta descrição', r);
   r = await chamar('GET', '/oportunidades');
-  conferir('publicacao rejeitada continua fora do feed', !(dadosDe(r) || []).some((o) => o.id === id), r.status);
+  conferir('feed publico responde 200 apos rejeicao', r.status === 200, r.status);
+  conferir('publicacao rejeitada continua fora do feed', Array.isArray(dadosDe(r)) && !dadosDe(r).some((o) => o.id === id), r.status);
   r = await chamar('POST', '/oportunidades/' + id + '/inscricoes', { mensagem: 'oi' }, tokColab);
   conferir('inscricao em publicacao rejeitada retorna 404', r.status === 404, r);
 

@@ -1,6 +1,7 @@
 import { $, esc } from './dom.js';
 import { params, user } from './state.js';
 import { sair } from './api.js';
+import { avatarHtml } from './avatar.js';
 
 export function shell() {
   const page = document.body.dataset.page;
@@ -28,7 +29,7 @@ export function shell() {
       <input name="q" placeholder="Pesquisar" aria-label="Buscar vagas, eventos ou empresas" value="${esc(params.get('q') || '')}">
     </form>
     <a class="avatar" href="perfil.html" title="Meu Perfil (${esc(user.nome)})" aria-label="Acessar perfil de ${esc(user.nome)}">
-      ${esc((user.nome[0] || 'U').toUpperCase())}
+      ${avatarHtml(user.nome, user.fotoUrl)}
     </a>`;
 
   const lat = document.createElement('aside');

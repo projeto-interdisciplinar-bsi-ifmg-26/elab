@@ -3243,3 +3243,10 @@ body[data-page="index"] .landing-footer p {
 .lista-pag { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.25rem 0 }
 
 .lista-pag:empty { display: none }
+
+/* Avatar com foto: o container recorta em circulo e a imagem preenche o espaco. */
+.avatar-img { display: block; width: 100%; height: 100%; border-radius: inherit; overflow: hidden }
+.avatar img,
+.avatar-img img,
+.perfil-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block }
+.cand-avatar { width: 2.2rem; height: 2.2rem; flex: 0 0 auto; margin-left: 0; font-size: 0.95rem }

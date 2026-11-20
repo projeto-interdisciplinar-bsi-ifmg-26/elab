@@ -1,4 +1,5 @@
 import { esc } from './dom.js';
+import { avatarHtml } from './avatar.js';
 
 const ROTULOS = { habilidades: 'Habilidades', area: 'Área', nivel: 'Nível', preferencias: 'Preferências' };
 
@@ -23,7 +24,7 @@ const candidata = c => {
   const faltantes = (c.faltantes || []).map(f => '<span class="chip">' + esc(f.nome || 'Habilidade') + '</span>').join('');
   const elim = (c.eliminatorias || []).map(e => esc(e.nome || 'Habilidade')).join(', ');
   return '<article class="cand">' +
-    '<header><strong>' + esc(c.nome) + '</strong> ' + selo(c.score) + '</header>' +
+    '<header><span class="avatar cand-avatar">' + avatarHtml(c.nome, c.fotoUrl) + '</span><strong>' + esc(c.nome) + '</strong> ' + selo(c.score) + '</header>' +
     '<p class="mut">' + esc(c.email) + (dataInscricao(c.data_inscricao) ? ' | inscrita em ' + esc(dataInscricao(c.data_inscricao)) : '') + '</p>' +
     (c.mensagem ? '<p class="cand-msg">' + esc(c.mensagem) + '</p>' : '') +
     (elim ? '<p class="erro" role="note">Não tem requisito obrigatório: ' + elim + '</p>' : '') +

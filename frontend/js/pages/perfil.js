@@ -3,6 +3,7 @@ import { user } from '../core/state.js';
 import { api, baixar } from '../core/api.js';
 import { montarLista } from '../core/lista.js';
 import { exibirCurriculo } from '../core/curriculo.js';
+import { avatarHtml } from '../core/avatar.js';
 import { TIPOS, dataBR } from '../core/render.js';
 
 const nivelScore = s => (s >= 75 ? 'alto' : s >= 50 ? 'medio' : 'baixo');
@@ -56,7 +57,7 @@ const carregarHistorico = async () => {
 };
 
 export async function perfil() {
-  $('#avatar-grande').textContent = (user.nome[0] || 'U').toUpperCase();
+  $('#avatar-grande').innerHTML = avatarHtml(user.nome, user.fotoUrl);
   $('#perfil-nome').textContent = user.nome;
   $('#perfil-email').textContent = user.email;
   $('#perfil-tag-tipo').textContent = user.tipo === 'empresa' ? 'Empresa' : 'Profissional';

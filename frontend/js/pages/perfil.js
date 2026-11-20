@@ -1,7 +1,8 @@
 import { $, esc } from '../core/dom.js';
 import { user } from '../core/state.js';
-import { api } from '../core/api.js';
+import { api, baixar } from '../core/api.js';
 import { montarLista } from '../core/lista.js';
+import { exibirCurriculo } from '../core/curriculo.js';
 import { TIPOS, dataBR } from '../core/render.js';
 
 const nivelScore = s => (s >= 75 ? 'alto' : s >= 50 ? 'medio' : 'baixo');
@@ -69,6 +70,14 @@ export async function perfil() {
     ['Sobre / Apresentação', user.bio || 'Nenhuma descrição adicionada.']
   ];
   $('#dados').innerHTML = linhas.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+
+  if (user.tipo === 'colaboradora') {
+    const secaoCurriculo = $('#secao-curriculo');
+    if (secaoCurriculo) {
+      secaoCurriculo.hidden = false;
+      exibirCurriculo(secaoCurriculo, user.curriculo);
+    }
+  }
 
   if (user.tipo !== 'colaboradora') {
     const secao = $('#secao-inscricoes');

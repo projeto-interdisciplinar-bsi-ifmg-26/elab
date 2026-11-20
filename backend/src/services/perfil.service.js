@@ -17,15 +17,22 @@ async function obter(id) {
   let cidade = '';
   let bio = '';
   let entidadeId = null;
+  let curriculo = null;
 
   if (u.tipo_usuario === 'profissional') {
     const rows = await query(
-      'SELECT nome, area, cidade, bio FROM Profissionais WHERE Usuario_idUsuario = ?', [id]);
+      'SELECT nome, area, cidade, bio, curriculo_nome_original, curriculo_atualizado_em FROM Profissionais WHERE Usuario_idUsuario = ?', [id]);
     if (rows[0]) {
       nome = rows[0].nome;
       area = rows[0].area || '';
       cidade = rows[0].cidade || '';
       bio = rows[0].bio || '';
+      if (rows[0].curriculo_nome_original) {
+        curriculo = {
+          nome: rows[0].curriculo_nome_original,
+          atualizadoEm: rows[0].curriculo_atualizado_em || null
+        };
+      }
     }
   } else if (u.tipo_usuario === 'entidade_parceira') {
     const rows = await query(
@@ -45,7 +52,8 @@ async function obter(id) {
     area,
     cidade,
     bio,
-    entidadeId: entidadeId
+    entidadeId: entidadeId,
+    curriculo
   };
 }
 

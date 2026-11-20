@@ -3287,6 +3287,25 @@ body[data-page="index"] .landing-footer p {
 .banner-publicacao { display: block; width: 100%; max-height: 22rem; object-fit: contain; border-radius: var(--r); margin: 0 0 1.5rem; background: var(--bg-suave) }
 .admin-imagem { flex: 0 0 5rem; width: 5rem; height: 3.6rem; object-fit: cover; border-radius: 0.5rem; display: block }
 
+/* Controles do banner por publicacao, abaixo do card (o card e um link, por isso ficam fora). */
+.item-publicacao { display: grid; gap: 0.75rem }
+.banner-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed var(--borda-suave);
+  border-radius: var(--r);
+  background: var(--bg-suave)
+}
+.banner-controles .banner-atual { flex: 1 1 100%; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap }
+.banner-controles .banner-atual img { width: 8.5rem; height: 4.8rem; object-fit: cover; border-radius: 0.5rem; display: block }
+.banner-controles input[type="file"] { flex: 1 1 14rem; min-width: 0 }
+.banner-controles .erro,
+.banner-controles .ok { flex: 1 1 100%; margin: 0; font-size: 0.85rem }
+.banner-controles :empty { display: none }
+
 @media (max-width: 640px) {
   .card-imagem { flex-basis: 5.5rem; width: 5.5rem; height: 4.2rem }
 }

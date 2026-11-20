@@ -1,4 +1,4 @@
-import { $ } from '../core/dom.js';
+import { $, esc } from '../core/dom.js';
 import { user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { enviar } from '../core/forms.js';
@@ -7,6 +7,29 @@ import { montarLista } from '../core/lista.js';
 import { montarBlocoVaga } from '../core/vagaForm.js';
 
 const CAMPOS_VAGA = ['areaId', 'nivel', 'modalidade', 'salario_min', 'salario_max'];
+
+// O backend aceita JPEG, PNG e WebP ate 2 MB e devolve o banner ja em WebP.
+const MAX_BANNER = 2 * 1024 * 1024;
+const TIPOS_BANNER = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Card da publicação + controles do banner. A rota de imagem precisa do id, então o
+// banner é anexado, trocado e removido aqui na lista — não só logo após a criação.
+function itemComBanner(o) {
+  const id = Number(o.id);
+  return `<div class="item-publicacao" data-publicacao="${id}">
+    ${card(o)}
+    <div class="banner-controles">
+      <div class="banner-atual">${o.imagemUrl
+        ? `<img src="${esc(o.imagemUrl)}" alt="Banner atual da publicação ${esc(o.titulo)}">
+           <button class="btn sm ghost" type="button" data-acao="remover" data-id="${id}">Remover banner</button>`
+        : '<span class="mut">Sem banner. Anexe uma imagem JPEG, PNG ou WebP (até 2 MB).</span>'}</div>
+      <input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Banner da publicação ${esc(o.titulo)}">
+      <button class="btn sm" type="button" data-acao="enviar" data-id="${id}">Enviar banner</button>
+      <p class="erro" role="alert"></p>
+      <p class="ok" role="status"></p>
+    </div>
+  </div>`;
+}
 
 export async function empresa() {
   if (user.tipo !== 'empresa') return void (location.href = 'feed.html');
@@ -48,7 +71,7 @@ export async function empresa() {
     if (lista) return void lista.atualizar(minhas);
     lista = montarLista($('#lista'), {
       itens: minhas,
-      desenhar: o => card(o),
+      desenhar: itemComBanner,
       porPagina: 6,
       rotuloBusca: 'Buscar por título, local ou habilidade',
       busca: o => [o.titulo, o.local, o.tipo, ...(o.habilidades || [])].join(' '),
@@ -65,13 +88,12 @@ export async function empresa() {
     });
   };
 
-  // ---- Banner opcional da publicação recém-criada ----
-  const blocoImagem = $('#bloco-imagem');
-  let publicacaoParaImagem = null;
-  const limparBlocoImagem = () => {
-    $('#imagem-publicacao').value = '';
-    $('#imagem-erro').textContent = '';
-    $('#imagem-ok').textContent = '';
+  // Depois de recarregar a lista o aviso é recolocado no item correspondente.
+  const avisar = (id, texto) => {
+    const p = $('.item-publicacao[data-publicacao="' + id + '"] .ok', $('#lista'));
+    if (!p) return;
+    p.textContent = texto;
+    setTimeout(() => { p.textContent = ''; }, 5000);
   };
 
   enviar(f, async d => {
@@ -85,10 +107,9 @@ export async function empresa() {
       for (const k of CAMPOS_VAGA) delete body[k];
     }
 
-    const nova = await api('/oportunidades', { method: 'POST', body });
+    await api('/oportunidades', { method: 'POST', body });
 
     f.reset();
-    limparBlocoImagem();
     if (bloco) bloco.limpar();
     ajustarBloco();
 
@@ -100,40 +121,53 @@ export async function empresa() {
     $('.ok', f).textContent = 'Publicação criada. Ela aparece no feed após a aprovação do administrador.';
     setTimeout(() => { $('.ok', f).textContent = ''; }, 4000);
 
-    // A imagem é anexada depois: a rota precisa do id da publicação recém-criada.
-    publicacaoParaImagem = nova && nova.id ? nova.id : null;
-    blocoImagem.hidden = !publicacaoParaImagem;
-
     await carregar();
   });
 
-  $('#btn-enviar-imagem').addEventListener('click', async ev => {
-    const botao = ev.currentTarget;
-    const arquivo = $('#imagem-publicacao').files[0];
-    const erroEl = $('#imagem-erro');
-    const okEl = $('#imagem-ok');
-    erroEl.textContent = '';
+  // Um único listener para todos os itens: a lista é redesenhada a cada atualização.
+  $('#lista').addEventListener('click', async ev => {
+    const btn = ev.target.closest('button[data-acao]');
+    if (!btn || btn.disabled) return;
+
+    const item = btn.closest('.item-publicacao');
+    const id = Number(btn.dataset.id);
+    const erro = $('.erro', item);
+    const okEl = $('.ok', item);
+    erro.textContent = '';
     okEl.textContent = '';
 
-    if (!publicacaoParaImagem) return;
-    if (!arquivo) {
-      erroEl.textContent = 'Escolha uma imagem.';
+    if (btn.dataset.acao === 'remover') {
+      if (!confirm('Remover o banner desta publicação?')) return;
+      btn.disabled = true;
+      try {
+        await api('/oportunidades/' + id + '/imagem', { method: 'DELETE' });
+        await carregar();
+        avisar(id, 'Banner removido.');
+      } catch (x) {
+        erro.textContent = x instanceof Error ? x.message : 'Não foi possível remover o banner.';
+      } finally {
+        btn.disabled = false;
+      }
       return;
     }
+
+    const arquivo = $('input[type=file]', item).files[0];
+    if (!arquivo) return void (erro.textContent = 'Escolha uma imagem.');
+    if (!TIPOS_BANNER.includes(arquivo.type)) return void (erro.textContent = 'Envie uma imagem JPEG, PNG ou WebP.');
+    if (arquivo.size > MAX_BANNER) return void (erro.textContent = 'A imagem deve ter no máximo 2 MB.');
 
     const fd = new FormData();
     fd.append('imagem', arquivo);
 
-    botao.disabled = true;
+    btn.disabled = true;
     try {
-      await api('/oportunidades/' + publicacaoParaImagem + '/imagem', { method: 'PUT', body: fd });
-      okEl.textContent = 'Imagem enviada. Ela aparece após a aprovação do administrador.';
-      $('#imagem-publicacao').value = '';
+      await api('/oportunidades/' + id + '/imagem', { method: 'PUT', body: fd });
       await carregar();
+      avisar(id, 'Banner enviado. Ele aparece após a aprovação do administrador.');
     } catch (x) {
-      erroEl.textContent = x instanceof Error ? x.message : 'Não foi possível enviar a imagem.';
+      erro.textContent = x instanceof Error ? x.message : 'Não foi possível enviar o banner.';
     } finally {
-      botao.disabled = false;
+      btn.disabled = false;
     }
   });
 

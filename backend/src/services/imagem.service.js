@@ -26,9 +26,12 @@ function assinaturaValida(buf) {
 
 // Reprocessa: corrige orientacao, recorta/preenche no enquadramento pedido, converte para
 // WebP e descarta metadados (inclusive localizacao) — o padrao do sharp ja remove EXIF.
+// limitInputPixels limita o total de pixels antes de decodificar: o teto de 2 MB do multer
+// sozinho nao barra um PNG pequeno com dimensoes enormes (bomba de descompressao).
+const LIMITE_PIXELS = 40 * 1000 * 1000; // 40 megapixels
 async function processar(buffer, largura, altura, fit) {
   try {
-    return await sharp(buffer)
+    return await sharp(buffer, { limitInputPixels: LIMITE_PIXELS })
       .rotate()
       .resize(largura, altura, { fit, withoutEnlargement: fit === 'inside' })
       .webp({ quality: 80 })

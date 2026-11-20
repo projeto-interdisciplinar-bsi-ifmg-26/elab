@@ -90,7 +90,7 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 | RNF11 | Confiabilidade | Operações compostas não ficam pela metade | Transações (`withTransaction`) |
 | RNF12 | Usabilidade | Explicar o resultado do cálculo | Página de detalhe mostra o motivo de cada nota |
 | RNF13 | Desempenho | Evitar recarregar o grafo a cada requisição | Cache em memória do grafo de habilidades e da árvore de áreas |
-| RNF14 | Testabilidade | Verificar o sistema de forma automática | `npm test`, nove suítes (ver [testes.md](testes.md)) |
+| RNF14 | Testabilidade | Verificar o sistema de forma automática | `npm test`, dez suítes (ver [testes.md](testes.md)) |
 | RNF15 | Segurança | Aceitar só imagens legítimas | Máximo de 2 MB e 1 arquivo; tipo conferido pela assinatura real dos bytes; reprocessamento com sharp (sem EXIF, converte para WebP) |
 | RNF16 | Segurança | Restringir arquivos enviados ao navegador | Fotos e banners só são servidos em `/media/fotos` e `/media/postagens`; currículo nunca é exposto por `/media` |
 

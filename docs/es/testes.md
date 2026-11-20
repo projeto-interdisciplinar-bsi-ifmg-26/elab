@@ -27,9 +27,10 @@ Cada suíte imprime `OK` por verificação e termina com `TUDO OK` ou com o núm
 | Alocação | `scripts/teste-alocacao.js` | Cenário de disputa em que o ótimo global supera o guloso; total igual à soma dos pares; empresa sem vagas; 403 e 401 | RF25, RN07 |
 | Admin | `scripts/teste-admin.js` | Aprovação de empresa (pendente, motivo obrigatório, aprovar limpa o motivo); empresa rejeitada não publica; empresa aprovada publica; fila de empresas e de publicações; 401/403; filtro de status inválido; alvos inexistentes | RF27, RF28, RF30 |
 | Moderação | `scripts/teste-moderacao.js` | Visibilidade por papel (pública, dona, admin, outra empresa, colaboradora); 404 para pendente/rejeitada; motivo obrigatório; aprovar limpa o motivo; efeito no feed e na inscrição; fila filtrada | RF29, RF31, RN08 |
-| Imagem | `scripts/teste-imagem.js` | Upload do banner (URL, arquivo em disco); `imagemUrl` nas listagens e no detalhe; 403 para outra empresa e colaboradora; 400 para arquivo falso e envio vazio; troca reabre a moderação e apaga o antigo; remoção apaga o arquivo | RF32, RF33, RNF07 |
+| Imagem | `scripts/teste-imagem.js` | Upload do banner (URL, arquivo em disco, WebP real nas dimensões originais e sem EXIF); `imagemUrl` nas listagens e no detalhe; 403 para outra empresa e colaboradora; 400 para arquivo falso, PNG corrompido com assinatura válida, acima de 2 MB e envio vazio; erro de envio não apaga o banner atual; troca reabre a moderação e apaga o antigo; remoção apaga o arquivo | RF32, RF33, RNF07, RNF15 |
+| Foto | `scripts/teste-foto.js` | Upload da foto de perfil (URL, arquivo em disco, WebP 512×512 sem EXIF); `fotoUrl` no perfil; arquivo servido em `/media/fotos`; troca apaga a anterior sem apagar a nova em caso de erro; 400 para arquivo falso e envio vazio; 401 sem token; remoção apaga o arquivo, zera `fotoUrl` e repetir retorna 404 | RF34, RNF15, RNF16 |
 
-Ao todo são mais de cento e cinquenta verificações em nove suítes. Na última execução completa, todas terminaram com `TUDO OK`.
+Ao todo são mais de cento e setenta verificações em dez suítes. Na última execução completa, todas terminaram com `TUDO OK`.
 
 ## 4. Experimento (não faz parte do `npm test`)
 

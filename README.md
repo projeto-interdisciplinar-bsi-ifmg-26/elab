@@ -178,7 +178,7 @@ Com o servidor rodando:
 ```bash
 npm test
 ```
-Roda nove suítes: grafo (algoritmos e motor, com grafos pequenos de resposta conhecida), perfil, match, candidatos, criação de vaga, alocação, admin, moderação e imagem. As suítes de API criam dados temporários e removem tudo no final.
+Roda dez suítes: grafo (algoritmos e motor, com grafos pequenos de resposta conhecida), perfil, match, candidatos, criação de vaga, alocação, admin, moderação, imagem e foto de perfil. As suítes de API criam dados temporários e removem tudo no final.
 
 ---
 
@@ -235,7 +235,7 @@ Resposta padrão: `{ "sucesso": true, "dados": ... }`. Erros seguem o mesmo enve
     │   ├── criar-admin.js # cria a conta admin (npm run admin:criar)
     │   └── seeds/        # configuração e JSONs do catálogo e da demonstração
     ├── uploads/          # fotos, banners e currículos (não versionado)
-    └── scripts/          # suítes de teste
+    └── scripts/          # suítes de teste (10 no npm test)
 ```
 
 > Migrations já aplicadas nunca são editadas: qualquer mudança de esquema vira uma migration nova. A 020 removeu tabelas legadas sem uso (`Eventos`, `Cadastros_Eventos` e `Habilidades_Oportunidade`).

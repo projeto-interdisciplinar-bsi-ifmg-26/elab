@@ -38,4 +38,23 @@ const listarMinhasInscricoes = asyncHandler(async (req, res) => {
   sucesso(res, 200, await inscricoesService.listarMinhas(req.usuario.id));
 });
 
-module.exports = { listar, listarMinhas, obter, criar, inscrever, listarCandidatos, listarMinhasInscricoes };
+const enviarImagem = asyncHandler(async (req, res) => {
+  sucesso(res, 201, await oportunidadeService.anexarImagem(req.usuario.id, req.params.id, req.file));
+});
+
+const excluirImagem = asyncHandler(async (req, res) => {
+  await oportunidadeService.removerImagem(req.usuario.id, req.params.id);
+  sucesso(res, 200, { removido: true });
+});
+
+module.exports = {
+  listar,
+  listarMinhas,
+  obter,
+  criar,
+  inscrever,
+  listarCandidatos,
+  listarMinhasInscricoes,
+  enviarImagem,
+  excluirImagem
+};

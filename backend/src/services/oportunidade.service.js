@@ -4,8 +4,13 @@ const usuarioRepository = require('../repositories/usuario.repository');
 const { query } = require('../../db/pool');
 const detalhesRepo = require('../repositories/oportunidadeDetalhes.repository');
 const perfilRepo = require('../repositories/perfilCompleto.repository');
+const imagemService = require('./imagem.service');
 
 const STATUS_MODERACAO = ['pendente', 'aprovada', 'rejeitada'];
+
+// A API expoe a URL publica do banner, nao o nome do arquivo no disco.
+const comImagem = (o) => (o ? { ...o, imagemUrl: imagemService.urlPostagem(o.imagem_arquivo) } : o);
+const listaComImagem = (lista) => lista.map(comImagem);
 
 const ehAdmin = (usuario) => usuario?.tipo === 'admin';
 
@@ -30,14 +35,14 @@ async function listar(filtros = {}, usuario) {
     params.moderacao = 'aprovada';
   }
 
-  return oportunidadeRepository.listar(params);
+  return listaComImagem(await oportunidadeRepository.listar(params));
 }
 
 async function listarPorEmpresa(usuarioId) {
   const empresaId = await idEmpresaDoUsuario(usuarioId);
   if (!empresaId) return [];
   // A empresa ve todas as suas publicacoes, inclusive pendentes e rejeitadas.
-  return oportunidadeRepository.listar({ empresaId });
+  return listaComImagem(await oportunidadeRepository.listar({ empresaId }));
 }
 
 // Visibilidade da publicacao: aprovada para todos; qualquer estado para o admin
@@ -45,12 +50,12 @@ async function listarPorEmpresa(usuarioId) {
 async function obter(id, usuario) {
   const o = await oportunidadeRepository.buscarPorId(id);
   if (!o) throw new ApiError(404, 'Oportunidade não encontrada');
-  if (o.status_moderacao === 'aprovada') return o;
-  if (ehAdmin(usuario)) return o;
+  if (o.status_moderacao === 'aprovada') return comImagem(o);
+  if (ehAdmin(usuario)) return comImagem(o);
 
   if (usuario?.tipo === 'entidade_parceira') {
     const empresaId = await idEmpresaDoUsuario(usuario.id);
-    if (empresaId && empresaId === o.Entidade_Parceira_idEntidade_Parceira) return o;
+    if (empresaId && empresaId === o.Entidade_Parceira_idEntidade_Parceira) return comImagem(o);
   }
 
   throw new ApiError(404, 'Oportunidade não encontrada');
@@ -130,7 +135,7 @@ async function listarCandidatos(oportunidadeId) {
 // Fila do admin: todas as publicacoes, opcionalmente filtradas por estado.
 async function listarParaAdmin({ status } = {}) {
   if (status && !STATUS_MODERACAO.includes(status)) throw new ApiError(400, 'Status inválido');
-  return oportunidadeRepository.listar({ moderacao: status });
+  return listaComImagem(await oportunidadeRepository.listar({ moderacao: status }));
 }
 
 async function moderar(id, { status, motivo }) {
@@ -145,6 +150,33 @@ async function moderar(id, { status, motivo }) {
   return oportunidadeRepository.definirModeracao(id, status, motivo);
 }
 
+// Garante que a publicacao existe e pertence a empresa logada (403 se for de outra).
+async function publicacaoDaEmpresa(usuarioId, id) {
+  const empresaId = await idEmpresaDoUsuario(usuarioId);
+  const o = await oportunidadeRepository.buscarPorId(id);
+  if (!o) throw new ApiError(404, 'Publicação não encontrada');
+  if (!empresaId || empresaId !== o.Entidade_Parceira_idEntidade_Parceira) {
+    throw new ApiError(403, 'Esta publicação não pertence à sua empresa');
+  }
+  return o;
+}
+
+// Anexa (ou substitui) o banner. Uma publicacao ja aprovada volta para a fila.
+async function anexarImagem(usuarioId, id, arquivo) {
+  const o = await publicacaoDaEmpresa(usuarioId, id);
+  const nome = await imagemService.gerarPostagem(arquivo);
+  await oportunidadeRepository.definirImagem(id, nome, o.status_moderacao === 'aprovada');
+  if (o.imagem_arquivo) await imagemService.apagar(imagemService.DIR_POSTAGENS, o.imagem_arquivo);
+  return { imagemUrl: imagemService.urlPostagem(nome) };
+}
+
+async function removerImagem(usuarioId, id) {
+  const o = await publicacaoDaEmpresa(usuarioId, id);
+  if (!o.imagem_arquivo) throw new ApiError(404, 'Esta publicação não tem imagem');
+  await oportunidadeRepository.definirImagem(id, null, o.status_moderacao === 'aprovada');
+  await imagemService.apagar(imagemService.DIR_POSTAGENS, o.imagem_arquivo);
+}
+
 module.exports = {
   listar,
   listarPorEmpresa,
@@ -154,5 +186,7 @@ module.exports = {
   listarCandidatos,
   listarParaAdmin,
   moderar,
+  anexarImagem,
+  removerImagem,
   STATUS_MODERACAO
 };

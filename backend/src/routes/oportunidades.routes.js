@@ -5,6 +5,8 @@ const router = express.Router();
 const oportunidadesController = require('../controllers/oportunidades.controller');
 const { autenticar, autenticarOpcional, permitir } = require('../middlewares/auth.middleware');
 const validar = require('../middlewares/validate');
+const { receberImagem } = require('../middlewares/uploadImagem');
+const { uploadLimiter } = require('../middlewares/rateLimiter');
 
 const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt();
 
@@ -38,5 +40,9 @@ router.post('/:id/inscricoes', autenticar, permitir('colaboradora'), [
 ], validar, oportunidadesController.inscrever);
 
 router.get('/:id/candidatos', autenticar, permitir('empresa'), [idValido], validar, oportunidadesController.listarCandidatos);
+
+// Banner da publicacao. So a empresa dona altera; trocar uma ja aprovada reabre a moderacao.
+router.put('/:id/imagem', autenticar, permitir('empresa'), uploadLimiter, [idValido], validar, receberImagem, oportunidadesController.enviarImagem);
+router.delete('/:id/imagem', autenticar, permitir('empresa'), [idValido], validar, oportunidadesController.excluirImagem);
 
 module.exports = router;

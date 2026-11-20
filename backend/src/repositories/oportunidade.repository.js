@@ -53,6 +53,19 @@ async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data
   return { id: id, empresaId, titulo, tipo, descricao, local, data, status, statusModeracao };
 }
 
+// Banner da publicacao. `resetar` devolve uma publicacao ja aprovada para a fila
+// de moderacao (imagem trocada exige nova revisao).
+async function definirImagem(id, arquivo, resetar) {
+  if (resetar) {
+    await query(
+      "UPDATE Oportunidades SET imagem_arquivo = ?, status_moderacao = 'pendente', motivo_moderacao = NULL, moderada_em = NULL WHERE idOportunidade = ?",
+      [arquivo, id]
+    );
+    return;
+  }
+  await query('UPDATE Oportunidades SET imagem_arquivo = ? WHERE idOportunidade = ?', [arquivo, id]);
+}
+
 // Moderacao pelo admin: grava o estado, o motivo (so na rejeicao) e a data da decisao.
 async function definirModeracao(id, status, motivo) {
   await query(
@@ -89,4 +102,4 @@ async function buscarCandidatos(oportunidadeId) {
   return await query(sql, [oportunidadeId]);
 }
 
-module.exports = { listar, buscarPorId, criar, definirModeracao, buscarInscricao, criarInscricao, buscarCandidatos };
+module.exports = { listar, buscarPorId, criar, definirImagem, definirModeracao, buscarInscricao, criarInscricao, buscarCandidatos };

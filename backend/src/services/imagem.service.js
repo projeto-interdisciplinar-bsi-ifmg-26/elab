@@ -47,6 +47,11 @@ async function gerar(arquivo, dir, largura, altura, fit) {
   return nome;
 }
 
+// Banner de postagem: cabe inteiro em 1280x720 sem cortar (fit "inside").
+async function gerarPostagem(arquivo) {
+  return gerar(arquivo, DIR_POSTAGENS, 1280, 720, 'inside');
+}
+
 async function enviarFoto(usuarioId, arquivo) {
   const nome = await gerar(arquivo, DIR_FOTOS, 512, 512, 'cover');
   const anterior = await repo.atual(usuarioId);
@@ -62,4 +67,4 @@ async function excluirFoto(usuarioId) {
   await apagar(DIR_FOTOS, anterior);
 }
 
-module.exports = { enviarFoto, excluirFoto, gerar, apagar, urlFoto, urlPostagem, DIR_FOTOS, DIR_POSTAGENS };
+module.exports = { enviarFoto, excluirFoto, gerar, gerarPostagem, apagar, urlFoto, urlPostagem, DIR_FOTOS, DIR_POSTAGENS };

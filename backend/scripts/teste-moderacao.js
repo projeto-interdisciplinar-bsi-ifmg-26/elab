@@ -146,6 +146,8 @@ async function main() {
   conferir('admin continua vendo a publicacao da empresa desativada', r.status === 200, r);
   r = await chamar('POST', '/oportunidades/' + id + '/inscricoes', { mensagem: 'oi' }, tokColab);
   conferir('inscricao em publicacao de empresa desativada retorna 404', r.status === 404, r);
+  r = await chamar('GET', '/oportunidades/minhas', null, tokDona);
+  conferir('dona desativada continua vendo as proprias publicacoes', (dadosDe(r) || []).some((o) => o.id === id), r.status);
 
   r = await chamar('PUT', '/admin/empresas/' + empresaDonaId + '/status', { status: 'aprovada' }, tokAdmin);
   conferir('admin reativa a empresa dona', r.status === 200 && dadosDe(r).statusAprovacao === 'aprovada', r);

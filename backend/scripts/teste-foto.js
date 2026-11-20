@@ -13,6 +13,7 @@ const DIR_FOTOS = path.join(__dirname, '..', 'uploads', 'fotos');
 const stamp = Date.now();
 const SENHA = 'senha12345';
 const emailColab = 'teste.foto.' + stamp + '@elab.test';
+const emailEmpresa = 'teste.foto.emp.' + stamp + '@elab.test';
 let falhas = 0;
 
 async function chamar(metodo, rota, corpo, tok, base) {
@@ -40,9 +41,9 @@ const dadosDe = (r) => (r.dados && r.dados.dados) || null;
 const nomeDoArquivo = (url) => (url ? path.basename(url) : null);
 const existeNoDisco = (nome) => !!nome && fs.existsSync(path.join(DIR_FOTOS, nome));
 
-async function usuario(email) {
+async function usuario(email, tipo = 'profissional') {
   const hash = await bcrypt.hash(SENHA, 4);
-  return (await query('INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)', [email, hash, 'profissional'])).insertId;
+  return (await query('INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)', [email, hash, tipo])).insertId;
 }
 
 async function login(email) {
@@ -54,6 +55,16 @@ function fotoForm(buffer, tipo) {
   const fd = new FormData();
   fd.append('foto', new Blob([buffer], { type: tipo || 'image/png' }), 'foto.png');
   return fd;
+}
+
+// Empresa tambem tem foto: o servico e as rotas nao restringem papel.
+async function empresa(email) {
+  const uid = await usuario(email, 'entidade_parceira');
+  await query(
+    'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
+    [uid, 'Empresa Foto', 'F' + String(stamp).slice(-13)]
+  );
+  return login(email);
 }
 
 async function main() {
@@ -120,18 +131,37 @@ async function main() {
 
   r = await chamar('DELETE', '/perfil/foto', null, tok);
   conferir('remover de novo retorna 404 (sem foto)', r.status === 404, r);
+
+  // ---- Empresa tambem tem foto de perfil ----
+  const tokEmpresa = await empresa(emailEmpresa);
+  conferir('login da empresa', !!tokEmpresa, { tok: !!tokEmpresa });
+  if (tokEmpresa) {
+    r = await chamar('POST', '/perfil/foto', await fotoForm(png), tokEmpresa);
+    const fotoEmpresa = dadosDe(r);
+    const nomeEmpresa = nomeDoArquivo(fotoEmpresa && fotoEmpresa.fotoUrl);
+    conferir('empresa envia foto de perfil', r.status === 201 && existeNoDisco(nomeEmpresa), fotoEmpresa);
+
+    r = await chamar('GET', '/perfil', null, tokEmpresa);
+    conferir('perfil da empresa expoe fotoUrl', r.status === 200 && dadosDe(r).fotoUrl === fotoEmpresa.fotoUrl, dadosDe(r));
+
+    r = await chamar('DELETE', '/perfil/foto', null, tokEmpresa);
+    conferir('empresa remove a foto de perfil', r.status === 200 && !existeNoDisco(nomeEmpresa), r);
+  }
 }
 
 main()
   .catch((err) => { console.error('ERRO', err); falhas++; })
   .finally(async () => {
-    const rows = await query('SELECT foto_arquivo FROM Usuarios WHERE email = ?', [emailColab]);
-    if (rows[0] && rows[0].foto_arquivo) {
-      fs.promises.unlink(path.join(DIR_FOTOS, path.basename(rows[0].foto_arquivo))).catch(() => {});
+    // Se uma falha deixou foto gravada, apaga o arquivo antes de remover os usuarios.
+    const rows = await query('SELECT foto_arquivo FROM Usuarios WHERE email IN (?, ?)', [emailColab, emailEmpresa]);
+    for (const u of rows) {
+      if (u.foto_arquivo) {
+        fs.promises.unlink(path.join(DIR_FOTOS, path.basename(u.foto_arquivo))).catch(() => {});
+      }
     }
-    await query('DELETE FROM Usuarios WHERE email = ?', [emailColab]);
-    const sobra = await query('SELECT COUNT(*) AS n FROM Usuarios WHERE email = ?', [emailColab]);
-    conferir('limpeza: nenhuma usuaria de teste sobrou', Number(sobra[0].n) === 0, sobra);
+    await query('DELETE FROM Usuarios WHERE email IN (?, ?)', [emailColab, emailEmpresa]);
+    const sobra = await query('SELECT COUNT(*) AS n FROM Usuarios WHERE email IN (?, ?)', [emailColab, emailEmpresa]);
+    conferir('limpeza: nenhum usuario de teste sobrou', Number(sobra[0].n) === 0, sobra);
     await closePool();
     console.log(falhas ? falhas + ' falha(s)' : 'TUDO OK');
     process.exit(falhas ? 1 : 0);

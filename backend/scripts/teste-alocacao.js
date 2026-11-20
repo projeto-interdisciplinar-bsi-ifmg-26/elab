@@ -124,6 +124,8 @@ async function main() {
     "UPDATE Entidades_Parceiras e JOIN Usuarios u ON u.idUsuario = e.Usuario_idUsuario SET e.status_aprovacao = 'aprovada' WHERE u.email = ?",
     [E.e1]
   );
+  r = await chamar('POST', '/match/alocacao', null, tokE1);
+  conferir('empresa reativada volta a alocar os pares', r.status === 200 && dadosDe(r).pares.length === 2, r);
 
   r = await chamar('POST', '/match/alocacao', null, tokE2);
   conferir('empresa sem vagas recebe 200 e nenhuma alocacao', r.status === 200 && dadosDe(r).pares.length === 0, r);

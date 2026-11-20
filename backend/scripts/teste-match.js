@@ -190,6 +190,14 @@ async function main() {
     "UPDATE Entidades_Parceiras SET status_aprovacao = 'aprovada' WHERE idEntidade_Parceira = ?",
     [e.insertId]
   );
+  r = await chamar('GET', '/match/vagas');
+  conferir(
+    'vaga volta ao ranking quando a empresa e reativada',
+    r.status === 200 && [idA, idB, idC].some((v) => (dadosDe(r) || []).some((x) => x.vagaId === v)),
+    r.status
+  );
+  r = await chamar('GET', '/match/trilha/' + idA);
+  conferir('trilha volta a responder quando a empresa e reativada', r.status === 200, r);
 
   r = await chamar('POST', '/auth/login', { email: emailEmp, senha: SENHA });
   const tokenEmp = dadosDe(r) && dadosDe(r).token;

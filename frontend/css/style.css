@@ -1072,6 +1072,29 @@ main {
   margin: 0
 }
 
+.foto-editor {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem
+}
+
+.foto-controles {
+  flex: 1;
+  min-width: 0
+}
+
+.foto-controles input[type="file"] {
+  max-width: 100%
+}
+
+@media (max-width: 520px) {
+  .foto-editor {
+    flex-direction: column;
+    align-items: center;
+    text-align: center
+  }
+}
+
 .minhas-inscricoes {
   margin-top: 2rem
 }

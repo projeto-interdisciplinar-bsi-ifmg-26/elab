@@ -2,6 +2,7 @@
 // Cria 1 empresa e 1 candidata temporarias e REMOVE tudo no final.
 const bcrypt = require('bcryptjs');
 const { query, closePool } = require('../db/pool');
+const { aprovarEmpresa, aprovarOportunidade } = require('./_aprovar');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000/api/v1';
 const stamp = Date.now();
@@ -38,6 +39,7 @@ async function main() {
     'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
     [u.insertId, 'Empresa Teste Vaga', String(stamp).padStart(14, '0').slice(-14)]
   );
+  await aprovarEmpresa(emailEmp);
   let r = await chamar('POST', '/auth/login', { email: emailEmp, senha: SENHA });
   const tokEmp = dadosDe(r) && dadosDe(r).token;
   conferir('login da empresa', !!tokEmp, r);
@@ -72,6 +74,8 @@ async function main() {
   const vagaId = dadosDe(r) && dadosDe(r).id;
   conferir('criar vaga completa retorna 201', r.status === 201 && !!vagaId, r);
   if (!vagaId) return;
+  // Publicacao nasce pendente de moderacao; libera para ela aparecer no match.
+  await aprovarOportunidade(vagaId);
 
   const linha = (await query('SELECT Area_idArea AS a, nivel, modalidade, salario_min AS smin, salario_max AS smax FROM Oportunidades WHERE idOportunidade = ?', [vagaId]))[0];
   conferir('campos gravados no banco', linha && linha.a === area.id && linha.nivel === 'junior' && linha.modalidade === 'remoto' && Number(linha.smin) === 3000 && Number(linha.smax) === 6000, linha);

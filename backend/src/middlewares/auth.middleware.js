@@ -17,6 +17,20 @@ function autenticar(req, res, next) {
   }
 }
 
+// Token opcional: se vier um Bearer valido preenche req.usuario; sem token (ou token
+// invalido) segue como anonimo, para rotas publicas que mudam conforme o papel.
+function autenticarOpcional(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return next();
+
+  try {
+    req.usuario = jwt.verify(authHeader.split(' ')[1], jwtSecret);
+  } catch {
+    // token invalido: segue anonimo; a rota decide o que expor.
+  }
+  next();
+}
+
 function permitir(...tipos) {
   return (req, res, next) => {
     const usuarioTipo = req.usuario?.tipo;
@@ -37,4 +51,4 @@ function permitir(...tipos) {
   };
 }
 
-module.exports = { autenticar, permitir };
+module.exports = { autenticar, autenticarOpcional, permitir };

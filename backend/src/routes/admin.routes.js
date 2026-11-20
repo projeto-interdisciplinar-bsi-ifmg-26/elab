@@ -27,4 +27,23 @@ router.put(
   adminController.definirStatusEmpresa
 );
 
+// Moderacao de publicacoes (vagas, eventos, palestras, bolsas).
+router.get(
+  '/oportunidades',
+  [query('status').optional().isIn(['pendente', 'aprovada', 'rejeitada']).withMessage('Status inválido')],
+  validar,
+  adminController.listarOportunidades
+);
+
+router.put(
+  '/oportunidades/:id/moderacao',
+  [
+    param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt(),
+    body('status').isIn(['aprovada', 'rejeitada']).withMessage('Status inválido'),
+    body('motivo').optional().trim().isLength({ max: 255 }).withMessage('Motivo muito longo')
+  ],
+  validar,
+  adminController.moderarOportunidade
+);
+
 module.exports = router;

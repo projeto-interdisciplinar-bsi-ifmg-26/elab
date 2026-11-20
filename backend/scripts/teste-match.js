@@ -2,6 +2,7 @@
 // Cria candidata, empresa e vagas temporarias e REMOVE tudo no final.
 const bcrypt = require('bcryptjs');
 const { query, closePool } = require('../db/pool');
+const { aprovarEmpresa } = require('./_aprovar');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000/api/v1';
 const stamp = Date.now();
@@ -35,7 +36,7 @@ const dadosDe = (r) => (r.dados && r.dados.dados) || null;
 async function criarVaga(empId, titulo, v, reqs) {
   const res = await query(
     'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, status, ' +
-      "Area_idArea, nivel, modalidade, salario_max) VALUES (?, ?, 'vaga', 'ativo', ?, ?, ?, ?)",
+      "Area_idArea, nivel, modalidade, salario_max, status_moderacao) VALUES (?, ?, 'vaga', 'ativo', ?, ?, ?, ?, 'aprovada')",
     [empId, titulo, v.areaId, v.nivel, v.modalidade, v.salarioMax]
   );
   for (const q of reqs) {
@@ -117,6 +118,7 @@ async function main() {
     'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
     [u.insertId, 'Empresa Teste Match', cnpj]
   );
+  await aprovarEmpresa(emailEmp);
 
   const base = { areaId: area.id, nivel: 'junior', modalidade: 'remoto', salarioMax: 6000 };
   const idA = await criarVaga(e.insertId, 'TESTE-MATCH A', base, [

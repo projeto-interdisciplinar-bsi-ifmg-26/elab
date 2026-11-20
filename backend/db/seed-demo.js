@@ -97,8 +97,8 @@ async function main() {
         const descricao = empresas[e].descricao + ' ' + escolher(dados.descricoesVaga);
         const diasPost = sorteio(1, 30);
         const r = await ex(
-          'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, descricao, tipo, local, status, data_postagem, Area_idArea, nivel, modalidade, salario_min, salario_max) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-          [empresas[e].id, titulo, descricao, 'vaga', modalidade === 'remoto' ? 'Remoto' : cidade[0] + ' - ' + cidade[1], 'ativo', dataHora(somarDias(agora, -diasPost)), areaId.get(arq.area) || null, nivel, modalidade, salMin, salMax]
+          'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, descricao, tipo, local, status, data_postagem, Area_idArea, nivel, modalidade, salario_min, salario_max, status_moderacao, moderada_em) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [empresas[e].id, titulo, descricao, 'vaga', modalidade === 'remoto' ? 'Remoto' : cidade[0] + ' - ' + cidade[1], 'ativo', dataHora(somarDias(agora, -diasPost)), areaId.get(arq.area) || null, nivel, modalidade, salMin, salMax, 'aprovada', dataHora(agora)]
         );
         const importancias = [5, 5, 4, 3, 3];
         const obrigatorias = nivel === 'estagio' ? 1 : 2;
@@ -120,8 +120,8 @@ async function main() {
     for (let i = 0; i < dados.eventos.length; i++) {
       const ev = dados.eventos[i];
       const r = await ex(
-        'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, descricao, tipo, local, data, status, data_postagem, nivel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [empresas[i % empresas.length].id, ev.titulo, ev.descricao, ev.tipo, ev.local, dia(somarDias(agora, ev.dias)), 'agendado', dataHora(somarDias(agora, -sorteio(1, 10))), 'qualquer']
+        'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, descricao, tipo, local, data, status, data_postagem, nivel, status_moderacao, moderada_em) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [empresas[i % empresas.length].id, ev.titulo, ev.descricao, ev.tipo, ev.local, dia(somarDias(agora, ev.dias)), 'agendado', dataHora(somarDias(agora, -sorteio(1, 10))), 'qualquer', 'aprovada', dataHora(agora)]
       );
       eventos.push({ id: r.insertId });
     }

@@ -30,9 +30,10 @@ async function ranquearVagas(usuarioId) {
 }
 
 // Trilha de aprendizado: caminho minimo ate cada habilidade que a vaga pede e ela ainda nao tem.
+// Vaga nao aprovada e tratada como inexistente (404).
 async function trilhaParaVaga(usuarioId, vagaId) {
   const candidata = await obterCandidata(usuarioId);
-  const vaga = await matchRepo.buscarVaga(vagaId);
+  const vaga = await matchRepo.buscarVagaAprovada(vagaId);
   if (!vaga) throw new ApiError(404, 'Vaga não encontrada');
   const { motor, nomes } = await obterContexto();
   const prep = motor.prepararCandidata(candidata);

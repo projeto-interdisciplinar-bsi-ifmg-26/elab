@@ -1,9 +1,9 @@
 const { query } = require('../../db/pool');
 
-// Ids das vagas ativas de uma empresa (Entidades_Parceiras).
+// Ids das vagas ativas e aprovadas de uma empresa (Entidades_Parceiras).
 async function idsVagasAtivasDaEmpresa(empresaId) {
   const rows = await query(
-    "SELECT idOportunidade AS id FROM Oportunidades WHERE tipo = 'vaga' AND status = 'ativo' AND Entidade_Parceira_idEntidade_Parceira = ?",
+    "SELECT idOportunidade AS id FROM Oportunidades WHERE tipo = 'vaga' AND status = 'ativo' AND status_moderacao = 'aprovada' AND Entidade_Parceira_idEntidade_Parceira = ?",
     [empresaId]
   );
   return rows.map((r) => r.id);

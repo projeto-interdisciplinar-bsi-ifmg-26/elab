@@ -2,7 +2,7 @@ const { query } = require('../../db/pool');
 const perfilRepo = require('./perfilCompleto.repository');
 
 const SELECT_VAGA =
-  "SELECT idOportunidade AS id, Area_idArea AS areaId, nivel, modalidade, salario_max FROM Oportunidades WHERE tipo = 'vaga'";
+  "SELECT idOportunidade AS id, Area_idArea AS areaId, nivel, modalidade, salario_max, status_moderacao FROM Oportunidades WHERE tipo = 'vaga'";
 
 // Anexa os requisitos (Oportunidades_Habilidades) a cada vaga, no formato do motor de match.
 async function anexarRequisitos(vagas) {
@@ -32,17 +32,24 @@ async function anexarRequisitos(vagas) {
   }));
 }
 
-// Vagas ativas, prontas para o motor.
+// Vagas ativas e aprovadas, prontas para o motor.
 async function listarVagasAtivas() {
-  const vagas = await query(SELECT_VAGA + " AND status = 'ativo'");
+  const vagas = await query(SELECT_VAGA + " AND status = 'ativo' AND status_moderacao = 'aprovada'");
   return anexarRequisitos(vagas);
 }
 
 // Uma vaga (qualquer status) pelo id, pronta para o motor. Devolve null se nao existir.
+// A moderacao fica no resultado para o chamador decidir se a vaga e visivel.
 async function buscarVaga(id) {
   const vagas = await query(SELECT_VAGA + ' AND idOportunidade = ?', [id]);
   const lista = await anexarRequisitos(vagas);
   return lista[0] || null;
+}
+
+// Vaga visivel (aprovada) pelo id. Devolve null se nao existir ou nao estiver aprovada.
+async function buscarVagaAprovada(id) {
+  const vaga = await buscarVaga(id);
+  return vaga && vaga.status_moderacao === 'aprovada' ? vaga : null;
 }
 
 // Candidata (idProfissionais) no formato do motor. Devolve null se nao existir.
@@ -63,4 +70,4 @@ async function carregarCandidata(profId) {
   };
 }
 
-module.exports = { listarVagasAtivas, buscarVaga, carregarCandidata };
+module.exports = { listarVagasAtivas, buscarVaga, buscarVagaAprovada, carregarCandidata };

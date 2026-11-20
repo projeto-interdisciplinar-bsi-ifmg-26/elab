@@ -59,8 +59,23 @@ export async function detalhe() {
   const id = params.get('id');
   if (!id) return void (location.href = 'feed.html');
 
-  const o = await api('/oportunidades/' + encodeURIComponent(id), { auth: false });
+  // Com token, a empresa dona e o admin enxergam publicações pendentes/rejeitadas;
+  // sem token (ou para outros papéis) a API responde 404 e cai no feed.
+  let o;
+  try {
+    o = await api('/oportunidades/' + encodeURIComponent(id));
+  } catch (e) {
+    return void (location.href = 'feed.html');
+  }
   const vaga = o.tipo === 'vaga';
+  const statusModeracao = o.status_moderacao;
+  const avisoModeracao = statusModeracao && statusModeracao !== 'aprovada'
+    ? `<p class="aviso-aprovacao ${esc(statusModeracao)}" role="status">${
+        statusModeracao === 'rejeitada'
+          ? 'Publicação rejeitada' + (o.motivo_moderacao ? ': ' + o.motivo_moderacao : '.')
+          : 'Publicação em análise pelo administrador.'
+      }</p>`
+    : '';
   const matchHtml = await carregarMatch(o, user);
   const candidaturas = await carregarCandidaturas(id);
   const candidaturasHtml = candidaturas
@@ -70,11 +85,12 @@ export async function detalhe() {
     </section>`
     : '';
   let acao = '';
-  if (user.tipo === 'colaboradora') {
+  if (user.tipo === 'colaboradora' && (!statusModeracao || statusModeracao === 'aprovada')) {
     acao = `<a class="btn" href="inscricao.html?id=${Number(id)}">${vaga ? 'Candidatar-se à vaga' : 'Fazer inscrição'}</a>`;
   }
 
   $('#conteudo').innerHTML = `
+    ${avisoModeracao}
     <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem;">
       <span class="tag ${esc(o.tipo)}">${esc(TIPOS[o.tipo] || o.tipo)}</span>
       <span class="status-badge">Disponível</span>

@@ -5,27 +5,55 @@ const { query } = require('../../db/pool');
 const detalhesRepo = require('../repositories/oportunidadeDetalhes.repository');
 const perfilRepo = require('../repositories/perfilCompleto.repository');
 
-async function listar(filtros) {
-  return oportunidadeRepository.listar(filtros);
+const STATUS_MODERACAO = ['pendente', 'aprovada', 'rejeitada'];
+
+const ehAdmin = (usuario) => usuario?.tipo === 'admin';
+
+// Id da empresa (Entidades_Parceiras) do usuario logado, ou null.
+async function idEmpresaDoUsuario(usuarioId) {
+  if (!usuarioId) return null;
+  const rows = await query(
+    'SELECT idEntidade_Parceira AS id FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
+    [usuarioId]
+  );
+  return rows[0] ? rows[0].id : null;
+}
+
+async function listar(filtros = {}, usuario) {
+  const params = { tipo: filtros.tipo, status: filtros.status };
+
+  // Visitantes, colaboradoras e empresas enxergam apenas publicacoes aprovadas.
+  // O admin pode filtrar qualquer estado pela fila de moderacao.
+  if (ehAdmin(usuario)) {
+    if (filtros.moderacao) params.moderacao = filtros.moderacao;
+  } else {
+    params.moderacao = 'aprovada';
+  }
+
+  return oportunidadeRepository.listar(params);
 }
 
 async function listarPorEmpresa(usuarioId) {
-  const rows = await query(
-    'SELECT idEntidade_Parceira FROM Entidades_Parceiras WHERE Usuario_idUsuario = ?',
-    [usuarioId]
-  );
-
-  if (!rows || rows.length === 0) {
-    return [];
-  }
-
-  return oportunidadeRepository.listar({ empresaId: rows[0].idEntidade_Parceira });
+  const empresaId = await idEmpresaDoUsuario(usuarioId);
+  if (!empresaId) return [];
+  // A empresa ve todas as suas publicacoes, inclusive pendentes e rejeitadas.
+  return oportunidadeRepository.listar({ empresaId });
 }
 
-async function obter(id) {
+// Visibilidade da publicacao: aprovada para todos; qualquer estado para o admin
+// e para a empresa dona; para os demais, 404 (nao revela que existe).
+async function obter(id, usuario) {
   const o = await oportunidadeRepository.buscarPorId(id);
   if (!o) throw new ApiError(404, 'Oportunidade não encontrada');
-  return o;
+  if (o.status_moderacao === 'aprovada') return o;
+  if (ehAdmin(usuario)) return o;
+
+  if (usuario?.tipo === 'entidade_parceira') {
+    const empresaId = await idEmpresaDoUsuario(usuario.id);
+    if (empresaId && empresaId === o.Entidade_Parceira_idEntidade_Parceira) return o;
+  }
+
+  throw new ApiError(404, 'Oportunidade não encontrada');
 }
 
 async function criar(empresaId, dados) {
@@ -60,7 +88,12 @@ async function criar(empresaId, dados) {
 
 // Serve tanto para candidatura (vaga) quanto para inscrição (demais tipos).
 async function inscrever(usuarioId, oportunidadeId, mensagem) {
-  const o = await obter(oportunidadeId);
+  const o = await oportunidadeRepository.buscarPorId(oportunidadeId);
+
+  // Publicacao pendente ou rejeitada nao existe para a colaboradora.
+  if (!o || o.status_moderacao !== 'aprovada') {
+    throw new ApiError(404, 'Oportunidade não encontrada');
+  }
 
   // Buscar o ID do profissional vinculado ao usuário
   const profissional = await query(
@@ -94,4 +127,32 @@ async function listarCandidatos(oportunidadeId) {
   return oportunidadeRepository.buscarCandidatos(oportunidadeId);
 }
 
-module.exports = { listar, listarPorEmpresa, obter, criar, inscrever, listarCandidatos };
+// Fila do admin: todas as publicacoes, opcionalmente filtradas por estado.
+async function listarParaAdmin({ status } = {}) {
+  if (status && !STATUS_MODERACAO.includes(status)) throw new ApiError(400, 'Status inválido');
+  return oportunidadeRepository.listar({ moderacao: status });
+}
+
+async function moderar(id, { status, motivo }) {
+  if (!STATUS_MODERACAO.includes(status)) throw new ApiError(400, 'Status inválido');
+  if (status === 'rejeitada' && !String(motivo || '').trim()) {
+    throw new ApiError(400, 'Informe o motivo da rejeição');
+  }
+
+  const o = await oportunidadeRepository.buscarPorId(id);
+  if (!o) throw new ApiError(404, 'Publicação não encontrada');
+
+  return oportunidadeRepository.definirModeracao(id, status, motivo);
+}
+
+module.exports = {
+  listar,
+  listarPorEmpresa,
+  obter,
+  criar,
+  inscrever,
+  listarCandidatos,
+  listarParaAdmin,
+  moderar,
+  STATUS_MODERACAO
+};

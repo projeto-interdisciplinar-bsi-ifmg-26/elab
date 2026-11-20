@@ -18,22 +18,18 @@ async function anexarHabilidades(lista) {
 }
 
 
-async function listar({ tipo, status, empresaId } = {}) {
+async function listar({ tipo, status, empresaId, moderacao } = {}) {
   let sql = 'SELECT o.*, o.idOportunidade AS id, e.nome_organizacao AS empresaNome FROM Oportunidades o JOIN Entidades_Parceiras e ON e.idEntidade_Parceira = o.Entidade_Parceira_idEntidade_Parceira';
   const params = [];
+  const filtro = (coluna, valor) => {
+    sql += (params.length ? ' AND' : ' WHERE') + ' ' + coluna + ' = ?';
+    params.push(valor);
+  };
 
-  if (tipo) {
-    sql += (params.length ? ' AND' : ' WHERE') + ' tipo = ?';
-    params.push(tipo);
-  }
-  if (status) {
-    sql += (params.length ? ' AND' : ' WHERE') + ' status = ?';
-    params.push(status);
-  }
-  if (empresaId) {
-    sql += (params.length ? ' AND' : ' WHERE') + ' Entidade_Parceira_idEntidade_Parceira = ?';
-    params.push(empresaId);
-  }
+  if (tipo) filtro('tipo', tipo);
+  if (status) filtro('status', status);
+  if (empresaId) filtro('Entidade_Parceira_idEntidade_Parceira', empresaId);
+  if (moderacao) filtro('status_moderacao', moderacao);
 
   return anexarHabilidades(await query(sql, params));
 }
@@ -45,15 +41,25 @@ async function buscarPorId(id) {
 
 async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data = null }) {
   const status = tipo === 'vaga' ? 'ativo' : 'agendado';
+  const statusModeracao = 'pendente';
 
   const result = await query(
-    'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, descricao, local, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [empresaId, titulo, tipo, descricao, local, data === '' ? null : data, status]
+    'INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, descricao, local, data, status, status_moderacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [empresaId, titulo, tipo, descricao, local, data === '' ? null : data, status, statusModeracao]
   );
 
   const id = result.insertId;
 
-  return { id: id, empresaId, titulo, tipo, descricao, local, data, status };
+  return { id: id, empresaId, titulo, tipo, descricao, local, data, status, statusModeracao };
+}
+
+// Moderacao pelo admin: grava o estado, o motivo (so na rejeicao) e a data da decisao.
+async function definirModeracao(id, status, motivo) {
+  await query(
+    "UPDATE Oportunidades SET status_moderacao = ?, motivo_moderacao = ?, moderada_em = NOW() WHERE idOportunidade = ?",
+    [status, status === 'rejeitada' ? motivo || '' : null, id]
+  );
+  return buscarPorId(id);
 }
 
 async function buscarInscricao(oportunidadeId, profissionalId) {
@@ -83,4 +89,4 @@ async function buscarCandidatos(oportunidadeId) {
   return await query(sql, [oportunidadeId]);
 }
 
-module.exports = { listar, buscarPorId, criar, buscarInscricao, criarInscricao, buscarCandidatos };
+module.exports = { listar, buscarPorId, criar, definirModeracao, buscarInscricao, criarInscricao, buscarCandidatos };

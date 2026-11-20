@@ -13,17 +13,32 @@
   <main>
     <div style="margin-bottom: 1.5rem;">
       <h1>Administração</h1>
-      <p class="mut">Aprove ou rejeite o cadastro de empresas parceiras.</p>
+      <p class="mut">Aprove cadastros de empresas parceiras e modere as publicações.</p>
+    </div>
+
+    <div class="abas" role="tablist">
+      <button type="button" class="btn sm" role="tab" data-aba="empresas" aria-selected="true">Empresas</button>
+      <button type="button" class="btn sm secundario" role="tab" data-aba="publicacoes" aria-selected="false">Publicações</button>
     </div>
 
     <p class="erro" id="admin-erro" role="alert"></p>
     <p class="ok" id="admin-ok" role="status"></p>
 
-    <div id="lista">
-      <div class="vazio">
-        <p>Carregando empresas...</p>
+    <section id="aba-empresas">
+      <div id="lista">
+        <div class="vazio">
+          <p>Carregando empresas...</p>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section id="aba-publicacoes" hidden>
+      <div id="lista-publicacoes">
+        <div class="vazio">
+          <p>Carregando publicações...</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script type="module" src="js/main.js"></script>

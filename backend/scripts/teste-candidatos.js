@@ -2,6 +2,7 @@
 // Cria 2 empresas, 2 candidatas e 1 vaga temporarias e REMOVE tudo no final.
 const bcrypt = require('bcryptjs');
 const { query, closePool } = require('../db/pool');
+const { aprovarEmpresa } = require('./_aprovar');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000/api/v1';
 const stamp = Date.now();
@@ -44,6 +45,7 @@ async function empresa(em, nome, cnpj) {
     'INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)',
     [u.insertId, nome, cnpj]
   );
+  await aprovarEmpresa(em);
   const r = await chamar('POST', '/auth/login', { email: em, senha: SENHA });
   return { empresaId: e.insertId, token: dadosDe(r) && dadosDe(r).token };
 }
@@ -69,7 +71,7 @@ async function main() {
   conferir('candidata X recebe a habilidade', r.status === 200, r);
 
   const v = await query(
-    "INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, status, nivel) VALUES (?, 'TESTE-CAND vaga', 'vaga', 'ativo', 'qualquer')",
+    "INSERT INTO Oportunidades (Entidade_Parceira_idEntidade_Parceira, titulo, tipo, status, nivel, status_moderacao) VALUES (?, 'TESTE-CAND vaga', 'vaga', 'ativo', 'qualquer', 'aprovada')",
     [emp1.empresaId]
   );
   await query(

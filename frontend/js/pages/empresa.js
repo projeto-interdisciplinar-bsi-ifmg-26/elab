@@ -2,7 +2,7 @@ import { $ } from '../core/dom.js';
 import { user } from '../core/state.js';
 import { api } from '../core/api.js';
 import { enviar } from '../core/forms.js';
-import { card, TIPOS } from '../core/render.js';
+import { card, TIPOS, ROTULO_MODERACAO } from '../core/render.js';
 import { montarLista } from '../core/lista.js';
 import { montarBlocoVaga } from '../core/vagaForm.js';
 
@@ -57,6 +57,10 @@ export async function empresa() {
         chave: 'tipo', rotulo: 'Tipo',
         opcoes: Object.keys(TIPOS).map(t => ({ valor: t, rotulo: TIPOS[t] })),
         teste: (o, v) => o.tipo === v
+      }, {
+        chave: 'moderacao', rotulo: 'Moderação',
+        opcoes: Object.keys(ROTULO_MODERACAO).map(k => ({ valor: k, rotulo: ROTULO_MODERACAO[k] })),
+        teste: (o, v) => o.status_moderacao === v
       }]
     });
   };
@@ -83,7 +87,7 @@ export async function empresa() {
       btn.disabled = false;
       btn.textContent = 'Publicar';
     }
-    $('.ok', f).textContent = 'Publicação criada.';
+    $('.ok', f).textContent = 'Publicação criada. Ela aparece no feed após a aprovação do administrador.';
     setTimeout(() => { $('.ok', f).textContent = ''; }, 4000);
     await carregar();
   });

@@ -5,8 +5,8 @@ const asyncHandler = require('../utils/asyncHandler');
 const { sucesso } = require('../utils/response');
 
 const listar = asyncHandler(async (req, res) => {
-  const { tipo, status } = req.query;
-  const lista = await oportunidadeService.listar({ tipo, status });
+  const { tipo, status, moderacao } = req.query;
+  const lista = await oportunidadeService.listar({ tipo, status, moderacao }, req.usuario);
   sucesso(res, 200, lista);
 });
 
@@ -16,7 +16,7 @@ const listarMinhas = asyncHandler(async (req, res) => {
 });
 
 const obter = asyncHandler(async (req, res) => {
-  sucesso(res, 200, await oportunidadeService.obter(req.params.id));
+  sucesso(res, 200, await oportunidadeService.obter(req.params.id, req.usuario));
 });
 
 const criar = asyncHandler(async (req, res) => {

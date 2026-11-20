@@ -3,15 +3,16 @@ const { body, param } = require('express-validator');
 const router = express.Router();
 
 const oportunidadesController = require('../controllers/oportunidades.controller');
-const { autenticar, permitir } = require('../middlewares/auth.middleware');
+const { autenticar, autenticarOpcional, permitir } = require('../middlewares/auth.middleware');
 const validar = require('../middlewares/validate');
 
 const idValido = param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt();
 
-router.get('/', oportunidadesController.listar);
+// Publico, mas o papel do visitante muda o que aparece (admin ve a fila inteira).
+router.get('/', autenticarOpcional, oportunidadesController.listar);
 router.get('/minhas', autenticar, permitir('empresa'), oportunidadesController.listarMinhas);
 router.get('/minhas-inscricoes', autenticar, permitir('colaboradora'), oportunidadesController.listarMinhasInscricoes);
-router.get('/:id', [idValido], validar, oportunidadesController.obter);
+router.get('/:id', autenticarOpcional, [idValido], validar, oportunidadesController.obter);
 
 router.post('/', autenticar, permitir('empresa'), [
   body('titulo').trim().notEmpty().withMessage('Título é obrigatório').isLength({ max: 120 }).withMessage('Título muito longo'),

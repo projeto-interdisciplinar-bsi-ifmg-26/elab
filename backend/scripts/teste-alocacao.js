@@ -4,6 +4,7 @@
 // Cria 2 empresas, 2 candidatas, 3 habilidades e 2 vagas temporarias e REMOVE tudo no final.
 const bcrypt = require('bcryptjs');
 const { query, closePool } = require('../db/pool');
+const { aprovarEmpresa, aprovarOportunidade } = require('./_aprovar');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000/api/v1';
 const stamp = Date.now();
@@ -42,6 +43,7 @@ async function empresa(em, nome, cnpj) {
   const hash = await bcrypt.hash(SENHA, 4);
   const u = await query('INSERT INTO Usuarios (email, senha, tipo_usuario) VALUES (?, ?, ?)', [em, hash, 'entidade_parceira']);
   await query('INSERT INTO Entidades_Parceiras (Usuario_idUsuario, nome_organizacao, cnpj) VALUES (?, ?, ?)', [u.insertId, nome, cnpj]);
+  await aprovarEmpresa(em);
   const r = await chamar('POST', '/auth/login', { email: em, senha: SENHA });
   return dadosDe(r) && dadosDe(r).token;
 }
@@ -79,6 +81,8 @@ async function main() {
   const v2 = dadosDe(r) && dadosDe(r).id;
   conferir('empresa 1 cria as vagas V1 e V2', !!v1 && !!v2, { v1, v2 });
   if (!v1 || !v2) return;
+  await aprovarOportunidade(v1);
+  await aprovarOportunidade(v2);
 
   for (const [tok, id] of [[tokX, v1], [tokX, v2], [tokY, v1], [tokY, v2]]) {
     r = await chamar('POST', '/oportunidades/' + id + '/inscricoes', { mensagem: 'teste' }, tok);

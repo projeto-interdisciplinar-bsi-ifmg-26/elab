@@ -12,6 +12,16 @@ export const filtrar = (lista, q) => {
 
 export const dataBR = d => (d ? d.split('-').reverse().join('/') : '');
 
+export const ROTULO_MODERACAO = { pendente: 'Em análise', aprovada: 'Aprovada', rejeitada: 'Rejeitada' };
+
+const badgeModeracao = o => {
+  const status = o.status_moderacao;
+  if (!status) return '';
+  const rotulo = ROTULO_MODERACAO[status] || status;
+  const motivo = status === 'rejeitada' && o.motivo_moderacao ? ': ' + o.motivo_moderacao : '';
+  return `<span class="status-badge status-${esc(status)}">${esc(rotulo + motivo)}</span>`;
+};
+
 const badgeMatch = m => {
   if (!m || typeof m !== "object" || typeof m.score !== "number") return "";
   const nivel = m.score >= 75 ? "alto" : m.score >= 50 ? "medio" : "baixo";
@@ -24,6 +34,7 @@ export const card = (o, match) => {
   return `<a class="card" href="detalhe.html?id=${Number(id)}" data-tipo="${esc(tipo)}">
     <div class="card-corpo">
       <span class="tag ${esc(tipo)}" data-tipo="${esc(tipo)}">${esc(TIPOS[tipo] || tipo)}</span>
+      ${badgeModeracao(o)}
       ${badgeMatch(match)}
       <h3>${esc(o.titulo)}</h3>
       <p class="mut">${esc([o.empresaNome || 'Empresa', o.local].filter(Boolean).join(' | '))}</p>

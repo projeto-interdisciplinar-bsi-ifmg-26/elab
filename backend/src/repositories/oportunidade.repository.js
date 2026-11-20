@@ -1,4 +1,4 @@
-const { query } = require('../../db/pool');
+const { query, withTransaction } = require('../../db/pool');
 
 // Anexa "habilidades" (lista de nomes) a cada oportunidade, a partir dos requisitos estruturados.
 async function anexarHabilidades(lista) {
@@ -56,16 +56,22 @@ async function criar({ empresaId, titulo, tipo, descricao = '', local = '', data
 }
 
 // Banner da publicacao. `resetar` devolve uma publicacao ja aprovada para a fila
-// de moderacao (imagem trocada exige nova revisao).
+// de moderacao (imagem trocada exige nova revisao). Le o banner anterior sob a trava
+// da linha e devolve, para o chamador apagar so o arquivo que realmente substituiu.
 async function definirImagem(id, arquivo, resetar) {
-  if (resetar) {
-    await query(
-      "UPDATE Oportunidades SET imagem_arquivo = ?, status_moderacao = 'pendente', motivo_moderacao = NULL, moderada_em = NULL WHERE idOportunidade = ?",
-      [arquivo, id]
-    );
-    return;
-  }
-  await query('UPDATE Oportunidades SET imagem_arquivo = ? WHERE idOportunidade = ?', [arquivo, id]);
+  return withTransaction(async (conn) => {
+    const [rows] = await conn.execute('SELECT imagem_arquivo AS arquivo FROM Oportunidades WHERE idOportunidade = ? FOR UPDATE', [id]);
+    const anterior = rows[0] ? rows[0].arquivo : null;
+    if (resetar) {
+      await conn.execute(
+        "UPDATE Oportunidades SET imagem_arquivo = ?, status_moderacao = 'pendente', motivo_moderacao = NULL, moderada_em = NULL WHERE idOportunidade = ?",
+        [arquivo, id]
+      );
+    } else {
+      await conn.execute('UPDATE Oportunidades SET imagem_arquivo = ? WHERE idOportunidade = ?', [arquivo, id]);
+    }
+    return anterior;
+  });
 }
 
 // Moderacao pelo admin: grava o estado, o motivo (so na rejeicao) e a data da decisao.

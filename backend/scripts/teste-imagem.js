@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const { query, closePool } = require('../db/pool');
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000/api/v1';
+const RAIZ = BASE.replace(/\/api\/v1\/?$/, '');
 const DIR_POSTAGENS = path.join(__dirname, '..', 'uploads', 'postagens');
 const stamp = Date.now();
 const SENHA = 'senha12345';
@@ -147,6 +148,27 @@ async function main() {
   conferir('arquivo antigo foi apagado do disco', !existeNoDisco(primeiroNome), primeiroNome);
   conferir('novo arquivo existe no disco', existeNoDisco(segundoNome), segundoNome);
 
+  // ---- Trocas simultaneas nao deixam banner orfao servido em /media ----
+  // A troca le o banner anterior sob a trava da linha, entao apenas um envio vira o
+  // atual e o perdedor apaga o proprio arquivo, que nunca chegou a ser referenciado.
+  const pngA = await sharp({ create: { width: 20, height: 20, channels: 3, background: '#22aa44' } }).png().toBuffer();
+  const pngB = await sharp({ create: { width: 24, height: 24, channels: 3, background: '#aa2244' } }).png().toBuffer();
+  const [ra, rb] = await Promise.all([
+    chamar('PUT', '/oportunidades/' + id + '/imagem', await imagemForm(pngA), tokDona),
+    chamar('PUT', '/oportunidades/' + id + '/imagem', await imagemForm(pngB), tokDona)
+  ]);
+  const nomes = [ra, rb].map((x) => nomeDoArquivo(dadosDe(x) && dadosDe(x).imagemUrl));
+  conferir('duas trocas simultaneas de banner retornam 201', ra.status === 201 && rb.status === 201, { a: ra.status, b: rb.status });
+
+  r = await chamar('GET', '/oportunidades/' + id, null, tokDona);
+  const bannerAtual = nomeDoArquivo(dadosDe(r).imagemUrl);
+  conferir('publicacao fica com um dos banners enviados', nomes.includes(bannerAtual), { atual: bannerAtual, enviadas: nomes });
+  conferir('banner que perdeu a corrida nao fica no disco', nomes.filter((n) => n !== bannerAtual).every((n) => !existeNoDisco(n)), nomes);
+  const bannerPerdedor = nomes.find((n) => n !== bannerAtual);
+  r = await chamar('GET', '/media/postagens/' + bannerPerdedor, null, null, RAIZ);
+  conferir('banner perdedor nao fica acessivel em /media/postagens', r.status === 404, { status: r.status, nome: bannerPerdedor });
+  conferir('banner anterior a corrida tambem foi apagado', !existeNoDisco(segundoNome), segundoNome);
+
   r = await chamar('GET', '/oportunidades/' + id, null, tokDona);
   conferir('trocar banner de publicacao aprovada reabre a moderacao', r.status === 200 && dadosDe(r).status_moderacao === 'pendente', r.dados);
   r = await chamar('GET', '/oportunidades/' + id);
@@ -157,7 +179,7 @@ async function main() {
   conferir('outra empresa nao remove banner (403)', r.status === 403, r);
   r = await chamar('DELETE', '/oportunidades/' + id + '/imagem', null, tokDona);
   conferir('empresa dona remove o banner (200)', r.status === 200 && dadosDe(r).removido === true, r);
-  conferir('arquivo removido do disco', !existeNoDisco(segundoNome), segundoNome);
+  conferir('arquivo removido do disco', !existeNoDisco(bannerAtual), bannerAtual);
 
   r = await chamar('GET', '/oportunidades/' + id, null, tokDona);
   conferir('publicacao fica sem imagemUrl apos remover', r.status === 200 && dadosDe(r).imagemUrl === null, r.dados);

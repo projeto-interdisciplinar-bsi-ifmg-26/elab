@@ -57,16 +57,21 @@ async function gerarPostagem(arquivo) {
 
 async function enviarFoto(usuarioId, arquivo) {
   const nome = await gerar(arquivo, DIR_FOTOS, 512, 512, 'cover');
-  const anterior = await repo.atual(usuarioId);
-  await repo.salvar(usuarioId, nome);
+  let anterior;
+  try {
+    anterior = await repo.trocar(usuarioId, nome);
+  } catch (err) {
+    // O arquivo novo nunca virou o atual: apaga para nao deixar orfao servido em /media.
+    await apagar(DIR_FOTOS, nome);
+    throw err;
+  }
   if (anterior) await apagar(DIR_FOTOS, anterior);
   return { fotoUrl: urlFoto(nome) };
 }
 
 async function excluirFoto(usuarioId) {
-  const anterior = await repo.atual(usuarioId);
+  const anterior = await repo.limpar(usuarioId);
   if (!anterior) throw new ApiError(404, 'Nenhuma foto de perfil');
-  await repo.limpar(usuarioId);
   await apagar(DIR_FOTOS, anterior);
 }
 

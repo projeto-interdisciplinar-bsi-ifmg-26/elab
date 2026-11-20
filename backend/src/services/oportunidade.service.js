@@ -172,16 +172,23 @@ async function publicacaoDaEmpresa(usuarioId, id) {
 async function anexarImagem(usuarioId, id, arquivo) {
   const o = await publicacaoDaEmpresa(usuarioId, id);
   const nome = await imagemService.gerarPostagem(arquivo);
-  await oportunidadeRepository.definirImagem(id, nome, o.status_moderacao === 'aprovada');
-  if (o.imagem_arquivo) await imagemService.apagar(imagemService.DIR_POSTAGENS, o.imagem_arquivo);
+  let anterior;
+  try {
+    anterior = await oportunidadeRepository.definirImagem(id, nome, o.status_moderacao === 'aprovada');
+  } catch (err) {
+    // O banner novo nunca virou o atual: apaga para nao deixar orfao servido em /media.
+    await imagemService.apagar(imagemService.DIR_POSTAGENS, nome);
+    throw err;
+  }
+  if (anterior) await imagemService.apagar(imagemService.DIR_POSTAGENS, anterior);
   return { imagemUrl: imagemService.urlPostagem(nome) };
 }
 
 async function removerImagem(usuarioId, id) {
   const o = await publicacaoDaEmpresa(usuarioId, id);
   if (!o.imagem_arquivo) throw new ApiError(404, 'Esta publicação não tem imagem');
-  await oportunidadeRepository.definirImagem(id, null, o.status_moderacao === 'aprovada');
-  await imagemService.apagar(imagemService.DIR_POSTAGENS, o.imagem_arquivo);
+  const anterior = await oportunidadeRepository.definirImagem(id, null, o.status_moderacao === 'aprovada');
+  if (anterior) await imagemService.apagar(imagemService.DIR_POSTAGENS, anterior);
 }
 
 module.exports = {

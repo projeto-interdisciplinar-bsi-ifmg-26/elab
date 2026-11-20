@@ -108,10 +108,33 @@ async function main() {
   r = await chamar('GET', '/perfil', null, tok);
   conferir('perfil passa a apontar para a foto nova', dadosDe(r).fotoUrl === trocada.fotoUrl, dadosDe(r));
 
+  // ---- Trocas simultaneas nao deixam arquivo orfao servido em /media ----
+  // Cada envio grava o proprio arquivo; a troca e feita sob a trava da linha, entao
+  // apenas um vira o atual e o perdedor apaga o arquivo que nunca chegou a ser usado.
+  const pngA = await sharp({ create: { width: 20, height: 20, channels: 3, background: '#22aa44' } }).png().toBuffer();
+  const pngB = await sharp({ create: { width: 24, height: 24, channels: 3, background: '#aa2244' } }).png().toBuffer();
+  const [ra, rb] = await Promise.all([
+    chamar('POST', '/perfil/foto', await fotoForm(pngA), tok),
+    chamar('POST', '/perfil/foto', await fotoForm(pngB), tok)
+  ]);
+  const nomes = [ra, rb].map((x) => nomeDoArquivo(dadosDe(x) && dadosDe(x).fotoUrl));
+  conferir('duas trocas simultaneas retornam 201', ra.status === 201 && rb.status === 201, { a: ra.status, b: rb.status });
+
+  r = await chamar('GET', '/perfil', null, tok);
+  const atualNome = nomeDoArquivo(dadosDe(r).fotoUrl);
+  conferir('perfil fica com uma das fotos enviadas', nomes.includes(atualNome), { atual: atualNome, enviadas: nomes });
+  conferir('arquivo atual existe no disco', existeNoDisco(atualNome), atualNome);
+  conferir('a foto que perdeu a corrida nao fica no disco', nomes.filter((n) => n !== atualNome).every((n) => !existeNoDisco(n)), nomes);
+
+  const perdedor = nomes.find((n) => n !== atualNome);
+  r = await chamar('GET', '/media/fotos/' + perdedor, null, null, RAIZ);
+  conferir('a foto perdedora nao fica acessivel em /media/fotos', r.status === 404, { status: r.status, nome: perdedor });
+  conferir('a foto anterior a corrida tambem foi apagada', !existeNoDisco(segundoNome), segundoNome);
+
   // ---- Erros de envio e autorizacao ----
   r = await chamar('POST', '/perfil/foto', await fotoForm(Buffer.from('isto nao e imagem'), 'image/png'), tok);
   conferir('conteudo que nao e imagem retorna 400 (assinatura invalida)', r.status === 400 && /inválid/i.test(JSON.stringify(r.dados)), r);
-  conferir('envio invalido nao apaga a foto valida atual', existeNoDisco(segundoNome), segundoNome);
+  conferir('envio invalido nao apaga a foto valida atual', existeNoDisco(atualNome), atualNome);
 
   const fdSemArquivo = new FormData();
   fdSemArquivo.append('outro', 'x');
@@ -124,7 +147,7 @@ async function main() {
   // ---- Remocao ----
   r = await chamar('DELETE', '/perfil/foto', null, tok);
   conferir('remover foto retorna 200 com removido=true', r.status === 200 && dadosDe(r).removido === true, r);
-  conferir('arquivo removido do disco', !existeNoDisco(segundoNome), segundoNome);
+  conferir('arquivo removido do disco', !existeNoDisco(atualNome), atualNome);
 
   r = await chamar('GET', '/perfil', null, tok);
   conferir('perfil fica sem fotoUrl apos remover', r.status === 200 && dadosDe(r).fotoUrl === null, dadosDe(r));

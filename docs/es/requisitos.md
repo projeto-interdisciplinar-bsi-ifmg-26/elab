@@ -71,7 +71,8 @@ Cada requisito aponta para a rota (API) ou tela que o implementa, para ser verif
 | RF31 | Empresa dona e admin veem a publicação em qualquer estado; os demais recebem 404 enquanto pendente ou rejeitada | Empresa, Admin | `GET /oportunidades/:id`, `autenticarOpcional` |
 | RF32 | Anexar, trocar e remover o banner de uma publicação própria (JPEG, PNG ou WebP, até 2 MB) | Empresa | `PUT/DELETE /oportunidades/:id/imagem`, `painel-empresa.html` |
 | RF33 | Exibir o banner no feed, no detalhe e na fila do admin | Todos | `imagemUrl` nas respostas; `render.js` e `detalhe.js` |
-| RF34 | Enviar foto de perfil (WebP gerado no servidor) e exibi-la no shell e nas candidatas | Colaboradora | `POST /perfil/foto`, `/media/fotos` |
+| RF34 | Enviar, trocar e remover a foto de perfil (WebP gerado no servidor) e exibi-la no shell, no perfil e nas candidatas | Todos | `POST/DELETE /perfil/foto`, `/media/fotos`, `core/foto.js` |
+| RF35 | Empresa pendente ou rejeitada tem as publicações ocultas automaticamente no feed, detalhe, inscrição, ranking, trilha e alocação; a dona e o admin continuam vendo | Empresa, Admin | `GET /oportunidades`, `GET /oportunidades/:id`, `inscrever`, `match`, `alocacao` |
 
 ## 2. Requisitos não funcionais
 

@@ -6,6 +6,9 @@ import { TIPOS, dataBR, ROTULO_MODERACAO } from '../core/render.js';
 
 const ROTULO_STATUS = { pendente: 'Pendente', aprovada: 'Aprovada', rejeitada: 'Rejeitada' };
 
+// Aprovar fica desabilitado se já aprovada; Rejeitar, se já rejeitada.
+const desabilitar = (status, acao) => (status === acao ? ' disabled aria-disabled="true"' : '');
+
 const htmlEmpresa = e => `
   <div class="inscricao-item">
     <div>
@@ -17,8 +20,8 @@ const htmlEmpresa = e => `
     </div>
     <div class="acoes" style="margin:0;">
       <span class="status-badge status-${esc(e.statusAprovacao || 'pendente')}">${esc(ROTULO_STATUS[e.statusAprovacao] || e.statusAprovacao)}</span>
-      <button type="button" class="btn sm" data-acao="aprovada" data-id="${Number(e.id)}">Aprovar</button>
-      <button type="button" class="btn sm ghost" data-acao="rejeitada" data-id="${Number(e.id)}">Rejeitar</button>
+      <button type="button" class="btn sm" data-acao="aprovada" data-id="${Number(e.id)}"${desabilitar(e.statusAprovacao, 'aprovada')}>Aprovar</button>
+      <button type="button" class="btn sm ghost" data-acao="rejeitada" data-id="${Number(e.id)}"${desabilitar(e.statusAprovacao, 'rejeitada')}>Rejeitar</button>
     </div>
   </div>`;
 
@@ -36,8 +39,8 @@ const htmlPublicacao = o => `
     </div>
     <div class="acoes" style="margin:0;">
       <span class="status-badge status-${esc(o.status_moderacao || 'pendente')}">${esc(ROTULO_MODERACAO[o.status_moderacao] || o.status_moderacao)}</span>
-      <button type="button" class="btn sm" data-acao="aprovada" data-id="${Number(o.id)}">Aprovar</button>
-      <button type="button" class="btn sm ghost" data-acao="rejeitada" data-id="${Number(o.id)}">Rejeitar</button>
+      <button type="button" class="btn sm" data-acao="aprovada" data-id="${Number(o.id)}"${desabilitar(o.status_moderacao, 'aprovada')}>Aprovar</button>
+      <button type="button" class="btn sm ghost" data-acao="rejeitada" data-id="${Number(o.id)}"${desabilitar(o.status_moderacao, 'rejeitada')}>Rejeitar</button>
       <a class="btn sm secundario" href="detalhe.html?id=${Number(o.id)}">Ver</a>
     </div>
   </div>`;
